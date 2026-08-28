@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Association du Réveil Chrétien">
+  <meta name="apple-mobile-web-app-title" content="ARC">
   <meta name="theme-color" content="#0b2f68">
   <script src="https://cdn.kkiapay.me/k.js"></script>
   <style>
@@ -20,7 +20,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 #ecranDashboard{display:none}.tabs{display:flex;gap:8px;margin:0 0 22px;overflow-x:auto;padding:5px 2px 8px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{padding:11px 16px;border-radius:12px;background:#fff;color:var(--blue2);font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;border:1px solid var(--line);box-shadow:0 4px 12px rgba(12,47,104,.05)}.tab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(7,87,168,.2)}.section,.auth-screen{display:none}.section.active,.auth-screen.active{display:block}.item-row{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);gap:14px}.item-row:last-child{border-bottom:0}.item-block{border-bottom:1px solid var(--line);padding:15px 0}.item-block:last-child{border-bottom:0}.item-nom{font-weight:800;font-size:14px}.item-desc{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}.btn-rejoindre{width:auto;padding:9px 14px;font-size:12px;background:#1fbe68;box-shadow:none}.btn-meet{background:linear-gradient(135deg,var(--blue2),var(--blue));width:auto;padding:9px 14px;font-size:12px}.join-form{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}.join-form.active{display:flex;gap:8px;flex-wrap:wrap}.join-form input{flex:1;min-width:160px;margin:0}.join-form button{width:auto}.join-error{width:100%;color:var(--danger);font-size:12px}
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}.stat-box{background:linear-gradient(145deg,#fff,#f7faff);border:1px solid var(--line);border-radius:16px;padding:18px;text-align:center;position:relative;overflow:hidden}.stat-box:after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--red),var(--yellow))}.stat-num{font-size:25px;font-weight:800;color:var(--blue2);font-family:Montserrat}.stat-label{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600}
 .badge-portrait{width:330px;max-width:100%;margin:0 auto;border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 18px 45px rgba(7,47,104,.24);position:relative;border:1px solid #e7eaf1}.badge-top-band{background:linear-gradient(135deg,var(--blue2),var(--blue) 55%,var(--red));padding:20px 16px 48px;text-align:center;color:#fff;position:relative}.badge-top-band:after{content:"";position:absolute;bottom:0;left:0;right:0;height:7px;background:var(--yellow)}.badge-mini-logo{width:46px;height:46px;border-radius:13px;background:#fff;margin:0 auto 9px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.75);font-weight:800;color:var(--blue2)}.badge-org-name{font-weight:800;font-size:11px;letter-spacing:.8px;text-transform:uppercase;line-height:1.4}.badge-photo-wrap{width:106px;height:106px;border-radius:50%;background:#eef3f9;border:5px solid white;box-shadow:0 7px 18px rgba(0,0,0,.2);margin:-43px auto 0;overflow:hidden;position:relative;z-index:2;display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--muted)}.badge-photo-wrap img{width:100%;height:100%;object-fit:cover}.badge-body{padding:13px 24px 26px;text-align:center}.badge-fullname{font-family:Montserrat;font-weight:800;font-size:19px;color:var(--ink);margin-top:8px}.badge-role-tag{display:inline-block;margin-top:7px;font-size:10px;font-weight:800;color:#9b0f17;background:#fff0f0;padding:5px 12px;border-radius:999px}.badge-divider{height:1px;background:var(--line);margin:17px 0 13px}.badge-info-row{display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;color:var(--ink);margin-bottom:9px}.badge-status-tag{display:inline-block;margin-top:4px;font-size:10px;font-weight:800;color:var(--green);background:#e7f7ef;padding:5px 12px;border-radius:999px}.badge-qr-wrap{margin-top:18px;display:flex;justify-content:center}.badge-qr-wrap img{border-radius:10px;padding:6px;background:white;border:1px solid var(--line)}.badge-code-small{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.6px}
-.photo-upload-preview,.logo-upload-preview{width:88px;height:88px;border-radius:18px;background:#eef3f9;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 13px;border:2px dashed #cbd5e5;font-size:30px;color:var(--muted)}.photo-upload-preview img,.logo-upload-preview img{width:100%;height:100%;object-fit:cover}.file-btn-label{display:inline-block;padding:10px 15px;background:#edf3fb;color:var(--blue2);border-radius:11px;font-size:12px;font-weight:800;cursor:pointer}.loading{text-align:center;color:var(--muted);padding:28px;font-size:13px}.empty-state{text-align:center;color:var(--muted);padding:24px 10px;font-size:13px}.admin-subtabs{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}.admin-subtab{padding:9px 13px;border-radius:10px;background:#edf3fb;color:var(--blue2);font-size:11px;font-weight:800;cursor:pointer}.admin-subtab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff}.admin-section{display:none}.admin-section.active{display:block}.codes-box{background:#f6f8fc;border:1px dashed #cfd7e5;border-radius:10px;padding:12px;font-family:monospace;font-size:11px;max-height:160px;overflow-y:auto;white-space:pre-wrap;margin-top:10px}.role-pill,.statut-pill{font-size:10px;font-weight:800;padding:5px 9px;border-radius:999px}.role-admin{background:#fff0f0;color:#b00f18}.role-membre{background:#edf3fb;color:var(--muted)}.statut-nouveau{background:#fff0f0;color:#b00f18}.statut-traite{background:#e7f7ef;color:var(--green)}table.mini-table{width:100%;border-collapse:collapse;font-size:12px;display:block;overflow-x:auto;white-space:nowrap}table.mini-table th{text-align:left;color:var(--muted);font-weight:800;padding:9px 7px;border-bottom:2px solid var(--line);font-size:10px;text-transform:uppercase}table.mini-table td{padding:10px 7px;border-bottom:1px solid var(--line)}.message-bulle{background:#edf3fb;border-radius:15px;padding:13px 15px;margin-bottom:7px;font-size:13px}.message-reponse{background:#fff2f1;border-left:4px solid var(--red);border-radius:0 13px 13px 0;padding:11px 14px;margin:7px 0 16px 14px;font-size:12px}.message-date{font-size:10px;color:var(--muted);margin-top:5px}.message-attente{font-style:italic;color:var(--muted);font-size:11px;margin:4px 0 16px 14px}.admin-message-card{border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;background:#fff}.youtube-card{text-align:center;padding:38px 24px}.youtube-icon{font-size:45px;margin-bottom:10px}.cotisation-type-card{border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:linear-gradient(145deg,#fff,#fafcff)}.cotisation-type-nom{font-weight:800;font-size:14px}.cotisation-type-periode{color:var(--muted);font-size:11px;margin-top:3px}.cotisation-type-montant{font-family:Montserrat;font-weight:800;color:var(--blue2);font-size:16px;white-space:nowrap}
+.photo-upload-preview,.logo-upload-preview{width:88px;height:88px;border-radius:18px;background:#eef3f9;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 13px;border:2px dashed #cbd5e5;font-size:30px;color:var(--muted)}.photo-upload-preview img,.logo-upload-preview img{width:100%;height:100%;object-fit:cover}.file-btn-label{display:inline-block;padding:10px 15px;background:#edf3fb;color:var(--blue2);border-radius:11px;font-size:12px;font-weight:800;cursor:pointer}.loading{text-align:center;color:var(--muted);padding:28px;font-size:13px}.empty-state{text-align:center;color:var(--muted);padding:24px 10px;font-size:13px}.admin-subtabs{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}.admin-subtab{padding:9px 13px;border-radius:10px;background:#edf3fb;color:var(--blue2);font-size:11px;font-weight:800;cursor:pointer}.admin-subtab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff}.admin-section{display:none}.admin-section.active{display:block}.codes-box{background:#f6f8fc;border:1px dashed #cfd7e5;border-radius:10px;padding:12px;font-family:monospace;font-size:11px;max-height:160px;overflow-y:auto;white-space:pre-wrap;margin-top:10px}.role-pill,.statut-pill{font-size:10px;font-weight:800;padding:5px 9px;border-radius:999px}.role-admin{background:#fff0f0;color:#b00f18}.role-membre{background:#edf3fb;color:var(--muted)}.statut-nouveau{background:#fff0f0;color:#b00f18}.statut-traite{background:#e7f7ef;color:var(--green)}table.mini-table{width:100%;border-collapse:collapse;font-size:12px;display:block;overflow-x:auto;white-space:nowrap}table.mini-table th{text-align:left;color:var(--muted);font-weight:800;padding:9px 7px;border-bottom:2px solid var(--line);font-size:10px;text-transform:uppercase}table.mini-table td{padding:10px 7px;border-bottom:1px solid var(--line)}.message-bulle{background:#edf3fb;border-radius:15px;padding:13px 15px;margin-bottom:7px;font-size:13px}.message-reponse{background:#fff2f1;border-left:4px solid var(--red);border-radius:0 13px 13px 0;padding:11px 14px;margin:7px 0 16px 14px;font-size:12px}.message-date{font-size:10px;color:var(--muted);margin-top:5px}.message-attente{font-style:italic;color:var(--muted);font-size:11px;margin:4px 0 16px 14px}.admin-message-card{border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;background:#fff}.youtube-card{text-align:center;padding:38px 24px}.youtube-icon{font-size:45px;margin-bottom:10px}.video-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}.video-item:last-child{border-bottom:0}.video-thumb{width:110px;height:62px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#eef3f9}.video-titre{font-weight:700;font-size:13px;line-height:1.35}.video-date{font-size:11px;color:var(--muted);margin-top:3px}.cotisation-type-card{border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:linear-gradient(145deg,#fff,#fafcff)}.cotisation-type-nom{font-weight:800;font-size:14px}.cotisation-type-periode{color:var(--muted);font-size:11px;margin-top:3px}.cotisation-type-montant{font-family:Montserrat;font-weight:800;color:var(--blue2);font-size:16px;white-space:nowrap}
 @media(min-width:900px){#ecranDashboard{width:min(1180px,calc(100% - 48px));margin:0 auto}.auth-screen .card{padding:32px}.stat-grid{grid-template-columns:repeat(4,1fr)}#section-groupes .card,#section-messages .card,#section-cotisation .card{max-width:none}.admin-subtabs{position:sticky;top:73px;background:var(--bg);z-index:10;padding:8px 0}.item-row{min-height:62px}}
 @media(max-width:600px){.wrap{width:min(100% - 22px,1180px);padding:18px 0 55px}.topbar{padding:11px 15px}.topbar-nom{font-size:14px}.card{padding:18px;border-radius:17px}.tabs{margin-left:-2px;margin-right:-2px}.tab{padding:10px 13px}.item-row{align-items:flex-start}.cotisation-type-card{align-items:flex-start;flex-direction:column}.cotisation-type-card>div:last-child{width:100%;text-align:left!important}.cotisation-type-card button{width:auto}.stat-grid{gap:9px}.stat-box{padding:15px 9px}.stat-num{font-size:21px}.admin-subtab{padding:8px 10px}}
 @media print{body *{visibility:hidden}.topbar{display:none!important}#badgePrintZone,#badgePrintZone *,#recuPrintZone,#recuPrintZone *{visibility:visible}#badgePrintZone{position:absolute;top:25px;left:0;right:0;margin:auto}#recuPrintZone{position:absolute;top:25px;left:0;right:0;margin:auto;display:block!important}.badge-portrait{box-shadow:none;border:1px solid #ddd}}
@@ -323,12 +323,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     </div>
 
     <div class="section" id="section-videos">
-      <div class="card youtube-card">
-        <div class="youtube-icon">▶️</div>
-        <h2 class="titre" style="font-size:18px;">Nos vidéos et enseignements</h2>
-        <p class="subtitle">Retrouvez toutes les prédications, prières et annonces sur notre chaîne YouTube.</p>
-        <button class="flame" onclick="ouvrirYoutube()">Voir la chaîne YouTube</button>
-      </div>
+      <div class="section-title"><span class="ic">▶️</span> Nos vidéos et enseignements</div>
+      <p class="subtitle left" style="margin-top:-6px;">Les dernières vidéos publiées sur notre chaîne YouTube.</p>
+      <div class="card" id="listeVideos"><div class="loading">Chargement…</div></div>
+      <button class="secondary" onclick="ouvrirYoutube()">Voir toute la chaîne YouTube</button>
     </div>
 
     <div class="section" id="section-prieres">
@@ -365,6 +363,12 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <input id="adminNomAssoc" type="text" placeholder="Nom de l'association">
           <label class="field-label">Lien de la chaîne YouTube</label>
           <input id="adminYoutube" type="text" placeholder="https://www.youtube.com/@...">
+          <label class="field-label">ID de la chaîne YouTube (facultatif)</label>
+          <input id="adminYoutubeChannelId" type="text" placeholder="Ex : UCxxxxxxxxxxxxxxxxxxxxxx">
+          <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">
+            Normalement détecté automatiquement. Si la liste des vidéos ne s'affiche pas, trouvez-le sur
+            YouTube Studio > Paramètres > Chaîne > Informations de base > "ID de la chaîne", et collez-le ici.
+          </p>
           <div id="erreurApparence" class="error" style="display:none;"></div>
           <button onclick="sauvegarderApparence()">Enregistrer</button>
         </div>
@@ -505,7 +509,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // ==================== ADRESSE DE L'API (backend Apps Script) ====================
   // Collez ici l'URL de déploiement de votre Apps Script (celle qui se termine par /exec).
   // C'est la SEULE ligne à modifier après avoir déployé Code.gs comme API.
-  const API_URL = "https://script.google.com/macros/s/AKfycby-5WPQ4WZofiW0ClVTDN-qf-7Fz_fh2L9m_OwTNA7-B26OPCYAYUofk_5LchsyKhwG/exec";
+  const API_URL = "COLLEZ_ICI_VOTRE_URL_APPS_SCRIPT_SE_TERMINANT_PAR_/exec";
 
   // ==================== APPEL SERVEUR (via l'API Apps Script) ====================
   // Remplace l'ancien google.script.run : la page est maintenant hébergée séparément
@@ -854,6 +858,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     else if (nom === "offrandes") chargerMesOffrandes();
     else if (nom === "archives") chargerArchives();
     else if (nom === "messages") chargerMesMessages();
+    else if (nom === "videos") chargerVideos();
     else if (nom === "prieres") chargerSeances();
     else if (nom === "admin") chargerDonneesAdmin();
   }
@@ -1161,10 +1166,31 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     window.open(lien, "_blank");
   }
 
+  function chargerVideos() {
+    appelServeur("getDernieresVideos").then(function (res) {
+      if (!res.succes) { afficherErreurZone("listeVideos", { message: res.message }); return; }
+      afficherVideos(res.videos);
+    }).catch(function (err) { afficherErreurZone("listeVideos", err); });
+  }
+
+  function afficherVideos(videos) {
+    videos = videos || [];
+    const zone = document.getElementById("listeVideos");
+    if (!videos.length) { zone.innerHTML = '<p class="empty-state">Aucune vidéo trouvée pour le moment.</p>'; return; }
+    zone.innerHTML = videos.map(function (v) {
+      return '<div class="video-item" onclick="window.open(\'' + v.lien + '\', \'_blank\')">' +
+        '<img class="video-thumb" src="' + v.miniature + '" alt="">' +
+        '<div><div class="video-titre">' + escapeHtml(v.titre) + '</div>' +
+        '<div class="video-date">' + escapeHtml(v.datePublication) + '</div></div>' +
+        '</div>';
+    }).join("");
+  }
+
   // ==================== ADMINISTRATION ====================
   function chargerDonneesAdmin() {
     document.getElementById("adminNomAssoc").value = (configApp && configApp.NomAssociation) || "";
     document.getElementById("adminYoutube").value = (configApp && configApp.LienYoutube) || "";
+    document.getElementById("adminYoutubeChannelId").value = (configApp && configApp.YoutubeChannelId) || "";
     if (configApp && configApp.LogoBase64) {
       document.getElementById("logoPreview").innerHTML = '<img src="data:image/png;base64,' + configApp.LogoBase64 + '">';
     }
@@ -1197,14 +1223,17 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function sauvegarderApparence() {
     const nom = document.getElementById("adminNomAssoc").value.trim();
     const youtube = document.getElementById("adminYoutube").value.trim();
+    const youtubeChannelId = document.getElementById("adminYoutubeChannelId").value.trim();
     const err = document.getElementById("erreurApparence");
     err.style.display = "none";
     Promise.all([
       nom ? appelServeur("mettreAJourConfig", membreCourant.code, "NomAssociation", nom) : Promise.resolve(),
-      youtube ? appelServeur("mettreAJourConfig", membreCourant.code, "LienYoutube", youtube) : Promise.resolve()
+      youtube ? appelServeur("mettreAJourConfig", membreCourant.code, "LienYoutube", youtube) : Promise.resolve(),
+      youtubeChannelId ? appelServeur("mettreAJourConfig", membreCourant.code, "YoutubeChannelId", youtubeChannelId) : Promise.resolve()
     ]).then(function () {
       if (nom) { configApp.NomAssociation = nom; appliquerBranding(configApp); }
       if (youtube) configApp.LienYoutube = youtube;
+      if (youtubeChannelId) configApp.YoutubeChannelId = youtubeChannelId;
       alert("Informations enregistrées.");
     }).catch(function (e) {
       err.textContent = "Erreur : " + e.message;
