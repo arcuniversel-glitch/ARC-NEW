@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Association du Réveil Chrétien">
+  <meta name="theme-color" content="#0b2f68">
+  <script src="https://cdn.kkiapay.me/k.js"></script>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap');
+:root{--blue:#0757a8;--blue2:#0b2f68;--red:#d71920;--red2:#a90812;--yellow:#f4c400;--ink:#17233c;--muted:#69758a;--bg:#f4f7fb;--card:#fff;--line:#e4e9f2;--green:#168653;--danger:#c62828;--shadow:0 12px 35px rgba(12,47,104,.09)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#f7f9fd,#eef3f9);color:var(--ink);font-family:Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased}h1,h2,.display{font-family:Montserrat,Arial,sans-serif}.wrap{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:28px 0 70px}.center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 10% 10%,rgba(7,87,168,.13),transparent 35%),radial-gradient(circle at 90% 90%,rgba(215,25,32,.13),transparent 35%)}
+.topbar{background:linear-gradient(110deg,var(--blue2),var(--blue) 55%,var(--red));padding:13px max(22px,calc((100% - 1180px)/2));color:#fff;display:none;align-items:center;gap:13px;position:sticky;top:0;z-index:100;box-shadow:0 8px 25px rgba(7,47,104,.22);min-height:72px}.topbar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--yellow)}.logo-circle{width:46px;height:46px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--blue2);font-weight:800;overflow:hidden;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.15)}.logo-circle img,.logo-circle-lg img,.badge-mini-logo img{width:100%;height:100%;object-fit:cover}.topbar-nom{font-size:16px;font-weight:800;line-height:1.25}.topbar-sub{font-size:11px;opacity:.78;margin-top:2px}
+.brand-center{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:24px}.logo-circle-lg{width:92px;height:92px;border-radius:24px;background:#fff;box-shadow:0 14px 35px rgba(7,47,104,.18);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:30px;color:var(--blue2);overflow:hidden;border:4px solid #fff;margin-bottom:14px;position:relative}.logo-circle-lg:after{content:"";position:absolute;inset:-4px;border-radius:27px;padding:4px;background:linear-gradient(135deg,var(--blue),var(--red),var(--yellow));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}.brand-nom{font-family:Montserrat;font-weight:800;font-size:20px;color:var(--blue2);line-height:1.3}.card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow);margin-bottom:18px}.auth-screen .wrap{width:min(520px,calc(100% - 30px))}.auth-screen .card{position:relative;overflow:hidden}.auth-screen .card:before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,var(--blue),var(--red),var(--yellow))}
+h1.titre{font-size:25px;margin:0 0 7px;color:var(--blue2);text-align:center;font-weight:800}.subtitle{color:var(--muted);font-size:14px;margin:0 0 20px;line-height:1.6;text-align:center}.subtitle.left,h1.titre.left{text-align:left}.section-title{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;color:var(--blue2);margin:8px 0 14px}.section-title .ic{font-size:20px}
+input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;margin-bottom:13px;font-family:inherit;background:#fbfcfe;transition:.2s}input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(7,87,168,.09);background:#fff}label.field-label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.55px;margin-bottom:7px;display:block}button{width:100%;padding:13px 16px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:transform .15s,box-shadow .15s,opacity .15s;box-shadow:0 7px 16px rgba(7,87,168,.18)}button:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(7,87,168,.22)}button.secondary{background:#edf3fb;color:var(--blue2);box-shadow:none}button.flame{background:linear-gradient(135deg,var(--red2),var(--red),#ee4a24);box-shadow:0 7px 16px rgba(215,25,32,.18)}button.danger-outline{background:#fff0f0;color:var(--danger);box-shadow:none}button.small{width:auto;padding:9px 14px;font-size:12px}button.full-mt{margin-top:10px}button.ghost-link{background:transparent;color:var(--blue);box-shadow:none;text-decoration:none}button.ghost-link:hover{box-shadow:none}.error{color:var(--danger);font-size:13px;margin:-5px 0 12px}.success-text{color:var(--green);font-size:13px}
+#ecranDashboard{display:none}.tabs{display:flex;gap:8px;margin:0 0 22px;overflow-x:auto;padding:5px 2px 8px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{padding:11px 16px;border-radius:12px;background:#fff;color:var(--blue2);font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;border:1px solid var(--line);box-shadow:0 4px 12px rgba(12,47,104,.05)}.tab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(7,87,168,.2)}.section,.auth-screen{display:none}.section.active,.auth-screen.active{display:block}.item-row{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);gap:14px}.item-row:last-child{border-bottom:0}.item-block{border-bottom:1px solid var(--line);padding:15px 0}.item-block:last-child{border-bottom:0}.item-nom{font-weight:800;font-size:14px}.item-desc{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}.btn-rejoindre{width:auto;padding:9px 14px;font-size:12px;background:#1fbe68;box-shadow:none}.btn-meet{background:linear-gradient(135deg,var(--blue2),var(--blue));width:auto;padding:9px 14px;font-size:12px}.join-form{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}.join-form.active{display:flex;gap:8px;flex-wrap:wrap}.join-form input{flex:1;min-width:160px;margin:0}.join-form button{width:auto}.join-error{width:100%;color:var(--danger);font-size:12px}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}.stat-box{background:linear-gradient(145deg,#fff,#f7faff);border:1px solid var(--line);border-radius:16px;padding:18px;text-align:center;position:relative;overflow:hidden}.stat-box:after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--red),var(--yellow))}.stat-num{font-size:25px;font-weight:800;color:var(--blue2);font-family:Montserrat}.stat-label{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600}
+.badge-portrait{width:330px;max-width:100%;margin:0 auto;border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 18px 45px rgba(7,47,104,.24);position:relative;border:1px solid #e7eaf1}.badge-top-band{background:linear-gradient(135deg,var(--blue2),var(--blue) 55%,var(--red));padding:20px 16px 48px;text-align:center;color:#fff;position:relative}.badge-top-band:after{content:"";position:absolute;bottom:0;left:0;right:0;height:7px;background:var(--yellow)}.badge-mini-logo{width:46px;height:46px;border-radius:13px;background:#fff;margin:0 auto 9px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.75);font-weight:800;color:var(--blue2)}.badge-org-name{font-weight:800;font-size:11px;letter-spacing:.8px;text-transform:uppercase;line-height:1.4}.badge-photo-wrap{width:106px;height:106px;border-radius:50%;background:#eef3f9;border:5px solid white;box-shadow:0 7px 18px rgba(0,0,0,.2);margin:-43px auto 0;overflow:hidden;position:relative;z-index:2;display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--muted)}.badge-photo-wrap img{width:100%;height:100%;object-fit:cover}.badge-body{padding:13px 24px 26px;text-align:center}.badge-fullname{font-family:Montserrat;font-weight:800;font-size:19px;color:var(--ink);margin-top:8px}.badge-role-tag{display:inline-block;margin-top:7px;font-size:10px;font-weight:800;color:#9b0f17;background:#fff0f0;padding:5px 12px;border-radius:999px}.badge-divider{height:1px;background:var(--line);margin:17px 0 13px}.badge-info-row{display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;color:var(--ink);margin-bottom:9px}.badge-status-tag{display:inline-block;margin-top:4px;font-size:10px;font-weight:800;color:var(--green);background:#e7f7ef;padding:5px 12px;border-radius:999px}.badge-qr-wrap{margin-top:18px;display:flex;justify-content:center}.badge-qr-wrap img{border-radius:10px;padding:6px;background:white;border:1px solid var(--line)}.badge-code-small{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.6px}
+.photo-upload-preview,.logo-upload-preview{width:88px;height:88px;border-radius:18px;background:#eef3f9;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 13px;border:2px dashed #cbd5e5;font-size:30px;color:var(--muted)}.photo-upload-preview img,.logo-upload-preview img{width:100%;height:100%;object-fit:cover}.file-btn-label{display:inline-block;padding:10px 15px;background:#edf3fb;color:var(--blue2);border-radius:11px;font-size:12px;font-weight:800;cursor:pointer}.loading{text-align:center;color:var(--muted);padding:28px;font-size:13px}.empty-state{text-align:center;color:var(--muted);padding:24px 10px;font-size:13px}.admin-subtabs{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}.admin-subtab{padding:9px 13px;border-radius:10px;background:#edf3fb;color:var(--blue2);font-size:11px;font-weight:800;cursor:pointer}.admin-subtab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff}.admin-section{display:none}.admin-section.active{display:block}.codes-box{background:#f6f8fc;border:1px dashed #cfd7e5;border-radius:10px;padding:12px;font-family:monospace;font-size:11px;max-height:160px;overflow-y:auto;white-space:pre-wrap;margin-top:10px}.role-pill,.statut-pill{font-size:10px;font-weight:800;padding:5px 9px;border-radius:999px}.role-admin{background:#fff0f0;color:#b00f18}.role-membre{background:#edf3fb;color:var(--muted)}.statut-nouveau{background:#fff0f0;color:#b00f18}.statut-traite{background:#e7f7ef;color:var(--green)}table.mini-table{width:100%;border-collapse:collapse;font-size:12px;display:block;overflow-x:auto;white-space:nowrap}table.mini-table th{text-align:left;color:var(--muted);font-weight:800;padding:9px 7px;border-bottom:2px solid var(--line);font-size:10px;text-transform:uppercase}table.mini-table td{padding:10px 7px;border-bottom:1px solid var(--line)}.message-bulle{background:#edf3fb;border-radius:15px;padding:13px 15px;margin-bottom:7px;font-size:13px}.message-reponse{background:#fff2f1;border-left:4px solid var(--red);border-radius:0 13px 13px 0;padding:11px 14px;margin:7px 0 16px 14px;font-size:12px}.message-date{font-size:10px;color:var(--muted);margin-top:5px}.message-attente{font-style:italic;color:var(--muted);font-size:11px;margin:4px 0 16px 14px}.admin-message-card{border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;background:#fff}.youtube-card{text-align:center;padding:38px 24px}.youtube-icon{font-size:45px;margin-bottom:10px}.cotisation-type-card{border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:linear-gradient(145deg,#fff,#fafcff)}.cotisation-type-nom{font-weight:800;font-size:14px}.cotisation-type-periode{color:var(--muted);font-size:11px;margin-top:3px}.cotisation-type-montant{font-family:Montserrat;font-weight:800;color:var(--blue2);font-size:16px;white-space:nowrap}
+@media(min-width:900px){#ecranDashboard{width:min(1180px,calc(100% - 48px));margin:0 auto}.auth-screen .card{padding:32px}.stat-grid{grid-template-columns:repeat(4,1fr)}#section-groupes .card,#section-messages .card,#section-cotisation .card{max-width:none}.admin-subtabs{position:sticky;top:73px;background:var(--bg);z-index:10;padding:8px 0}.item-row{min-height:62px}}
+@media(max-width:600px){.wrap{width:min(100% - 22px,1180px);padding:18px 0 55px}.topbar{padding:11px 15px}.topbar-nom{font-size:14px}.card{padding:18px;border-radius:17px}.tabs{margin-left:-2px;margin-right:-2px}.tab{padding:10px 13px}.item-row{align-items:flex-start}.cotisation-type-card{align-items:flex-start;flex-direction:column}.cotisation-type-card>div:last-child{width:100%;text-align:left!important}.cotisation-type-card button{width:auto}.stat-grid{gap:9px}.stat-box{padding:15px 9px}.stat-num{font-size:21px}.admin-subtab{padding:8px 10px}}
+@media print{body *{visibility:hidden}.topbar{display:none!important}#badgePrintZone,#badgePrintZone *,#recuPrintZone,#recuPrintZone *{visibility:visible}#badgePrintZone{position:absolute;top:25px;left:0;right:0;margin:auto}#recuPrintZone{position:absolute;top:25px;left:0;right:0;margin:auto;display:block!important}.badge-portrait{box-shadow:none;border:1px solid #ddd}}
+.cotisation-progress-track{width:100%;height:8px;border-radius:999px;background:#e9edf5;overflow:hidden;margin:10px 0 6px;}
+.cotisation-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--red));border-radius:999px;}
+.cotisation-dates{font-size:11px;color:var(--muted);margin-top:2px;}
+.cotisation-montants-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:8px;}
+.cotisation-pay-row{display:flex;gap:8px;margin-top:12px;}
+.cotisation-pay-row input{margin:0;flex:1;}
+.cotisation-pay-row button{width:auto;white-space:nowrap;}
+.archive-item{border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px;background:#fff;}
+.archive-icon{font-size:20px;margin-right:6px;}
+.archive-viewer-frame{width:100%;height:420px;border:none;border-radius:12px;background:#000;}
+.archive-audio-frame{width:100%;height:100px;border:none;border-radius:12px;}
+.archive-protect-note{font-size:11px;color:var(--muted);margin-top:8px;text-align:center;}
+.recu-portrait{width:360px;max-width:100%;margin:0 auto;border:1px solid var(--line);border-radius:16px;padding:26px;background:#fff;}
+.recu-header{display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--blue2);padding-bottom:14px;margin-bottom:16px;}
+.recu-header .logo-circle{width:44px;height:44px;}
+.recu-header .nom{font-family:Montserrat;font-weight:800;color:var(--blue2);font-size:15px;}
+.recu-titre{text-align:center;font-family:Montserrat;font-weight:800;font-size:16px;color:var(--ink);margin-bottom:16px;letter-spacing:.5px;text-transform:uppercase;}
+.recu-ligne{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px;}
+.recu-ligne strong{color:var(--ink);}
+.recu-montant{text-align:center;font-family:Montserrat;font-weight:800;font-size:26px;color:var(--blue2);margin:18px 0;}
+.recu-footer{text-align:center;font-size:11px;color:var(--muted);margin-top:16px;}
+  </style>
+</head>
+<body>
+
+  <!-- Zone d'impression du reçu de paiement (cachée sauf lors de l'impression) -->
+  <div id="recuPrintZone" style="display:none;">
+    <div class="recu-portrait">
+      <div class="recu-header">
+        <div class="logo-circle" id="recuLogo">🙏</div>
+        <div class="nom" id="recuOrgName">Association</div>
+      </div>
+      <div class="recu-titre">Reçu de paiement</div>
+      <div class="recu-ligne"><span>Membre</span><strong id="recuNomMembre">—</strong></div>
+      <div class="recu-ligne"><span>Code membre</span><strong id="recuCodeMembre">—</strong></div>
+      <div class="recu-ligne"><span>Type</span><strong id="recuType">—</strong></div>
+      <div class="recu-ligne"><span>Méthode</span><strong id="recuMethode">—</strong></div>
+      <div class="recu-ligne"><span>Date</span><strong id="recuDate">—</strong></div>
+      <div class="recu-ligne"><span>Référence</span><strong id="recuTransactionId">—</strong></div>
+      <div class="recu-montant" id="recuMontant">0 FCFA</div>
+      <div class="recu-footer">Reçu généré automatiquement — conservez-le comme preuve de paiement.</div>
+    </div>
+  </div>
+
+  <div class="topbar" id="topbar">
+    <div class="logo-circle" id="topbarLogo">🙏</div>
+    <div>
+      <div class="topbar-nom" id="topbarNom">Association</div>
+      <div class="topbar-sub">Espace membres</div>
+    </div>
+    <button id="btnInstallerApp" onclick="installerApplication()" style="display:none;width:auto;margin-left:auto;padding:8px 12px;font-size:12px;background:rgba(255,255,255,.18);color:#fff;box-shadow:none;white-space:nowrap;">📲 Installer</button>
+  </div>
+
+  <!-- ===== ACCUEIL (branding centré) ===== -->
+  <div id="ecranAccueil" class="center-screen auth-screen active">
+    <div class="wrap">
+      <div class="card">
+        <div class="brand-center">
+          <div class="logo-circle-lg" id="accueilLogo">🙏</div>
+          <div class="brand-nom" id="accueilNomAssoc">Association</div>
+        </div>
+        <h1 class="titre">Bienvenue 🙏</h1>
+        <p class="subtitle">Connectez-vous à votre espace membre ou créez votre compte.</p>
+        <button onclick="afficherEcran('connexionForm')">Se connecter</button>
+        <button class="secondary full-mt" onclick="demarrerInscription()">Créer un compte</button>
+        <button id="btnInstallerAppAccueil" onclick="installerApplication()" class="ghost-link full-mt" style="display:none;">📲 Installer l'application sur mon téléphone</button>
+        <button onclick="diagnostiquerPWA()" class="ghost-link full-mt" style="font-size:11px;opacity:.7;">🔧 Diagnostic installation (pour le support)</button>
+        <div id="diagnosticPWAZone" class="codes-box" style="display:none;user-select:text;-webkit-user-select:text;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SE CONNECTER (téléphone + mot de passe) ===== -->
+  <div id="ecranConnexionForm" class="center-screen auth-screen">
+    <div class="wrap">
+      <div class="card">
+        <h1 class="titre">Connexion</h1>
+        <p class="subtitle">Entrez votre numéro de téléphone et votre mot de passe.</p>
+        <label class="field-label">Téléphone</label>
+        <input id="loginTelephone" type="tel" placeholder="Ex : 97000000">
+        <label class="field-label">Mot de passe</label>
+        <input id="loginMotDePasse" type="password" placeholder="Votre mot de passe">
+        <div id="erreurConnexion" class="error" style="display:none;"></div>
+        <button onclick="seConnecter()">Se connecter</button>
+        <button class="ghost-link" onclick="afficherEcran('accueil')">← Retour</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CODE D'ACCÈS INSCRIPTION ===== -->
+  <div id="ecranInscriptionCode" class="center-screen auth-screen">
+    <div class="wrap">
+      <div class="card">
+        <div class="brand-center">
+          <div class="logo-circle-lg">🔐</div>
+        </div>
+        <p class="field-label" style="margin-bottom:14px;">Accès réservé</p>
+        <h1 class="titre">Code d'accès requis</h1>
+        <p class="subtitle">Pour créer un compte, vous devez posséder un code d'accès remis par un administrateur de l'Association.</p>
+        <label class="field-label">Votre code d'accès</label>
+        <input id="codeInscription" type="text" autocomplete="off" placeholder="Ex : ARC-AB12CD34" style="text-transform:uppercase;letter-spacing:1.5px;font-weight:800;text-align:center;">
+        <div id="erreurCodeInscription" class="error" style="display:none;"></div>
+        <button onclick="validerCodeInscription()">Vérifier le code</button>
+        <button class="ghost-link" onclick="afficherEcran('accueil')">← Retour</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CREER UN COMPTE — ETAPE 1 : identité ===== -->
+  <div id="ecranInscriptionEtape1" class="center-screen auth-screen">
+    <div class="wrap">
+      <div class="card">
+        <p class="field-label" style="margin-bottom:14px;">Étape 1 sur 2 — Identité</p>
+        <h1 class="titre left">Faisons connaissance</h1>
+        <p class="subtitle left">Ces informations nous aident à mieux vous connaître et vous accompagner.</p>
+
+        <label class="field-label">Nom</label>
+        <input id="insNom" type="text" placeholder="Nom">
+        <label class="field-label">Prénom</label>
+        <input id="insPrenom" type="text" placeholder="Prénom">
+        <label class="field-label">Nationalité</label>
+        <input id="insNationalite" type="text" placeholder="Ex : Béninoise">
+        <label class="field-label">Date de naissance</label>
+        <input id="insDateNaissance" type="date">
+        <label class="field-label">Département / Province d'origine</label>
+        <input id="insDepartement" type="text" placeholder="Ex : Atlantique">
+        <label class="field-label">Situation matrimoniale</label>
+        <select id="insSituation">
+          <option value="">Sélectionner…</option>
+          <option value="Célibataire">Célibataire</option>
+          <option value="Marié(e)">Marié(e)</option>
+          <option value="Divorcé(e)">Divorcé(e)</option>
+          <option value="Veuf(ve)">Veuf(ve)</option>
+        </select>
+
+        <div id="erreurInscription1" class="error" style="display:none;"></div>
+        <button onclick="allerInscriptionEtape2()">Continuer</button>
+        <button class="ghost-link" onclick="afficherEcran('accueil')">← Retour</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CREER UN COMPTE — ETAPE 2 : église, contact, photo, mot de passe ===== -->
+  <div id="ecranInscriptionEtape2" class="center-screen auth-screen">
+    <div class="wrap">
+      <div class="card">
+        <p class="field-label" style="margin-bottom:14px;">Étape 2 sur 2 — Vie d'église, contact & sécurité</p>
+        <h1 class="titre left">Presque terminé</h1>
+        <p class="subtitle left">Dernières informations avant de finaliser votre inscription.</p>
+
+        <label class="field-label">Ma photo</label>
+        <div class="photo-upload-preview" id="insPhotoPreview">👤</div>
+        <label class="file-btn-label" style="display:block; text-align:center; margin-bottom:14px;">
+          Choisir une photo
+          <input type="file" accept="image/*" onchange="gererUploadPhotoInscription(event)" style="display:none;">
+        </label>
+
+        <label class="field-label">Profession</label>
+        <input id="insProfession" type="text" placeholder="Votre métier">
+        <label class="field-label">Église</label>
+        <input id="insEglise" type="text" placeholder="Nom de votre église">
+        <label class="field-label">Rôle joué dans l'église</label>
+        <input id="insRoleEglise" type="text" list="suggestionsRoles" placeholder="Ex : Choriste, Diacre, Membre simple…">
+        <datalist id="suggestionsRoles">
+          <option value="Membre simple">
+          <option value="Pasteur">
+          <option value="Diacre">
+          <option value="Choriste">
+          <option value="Trésorier(ère)">
+          <option value="Secrétaire">
+          <option value="Responsable de groupe">
+          <option value="Intercesseur(rice)">
+        </datalist>
+        <label class="field-label">Adresse actuelle</label>
+        <input id="insAdresse" type="text" placeholder="Quartier, ville">
+        <label class="field-label">Téléphone</label>
+        <input id="insTelephone" type="tel" placeholder="Ce numéro servira à vous connecter">
+        <label class="field-label">Email (facultatif)</label>
+        <input id="insEmail" type="email" placeholder="Email">
+        <label class="field-label">Créer un mot de passe</label>
+        <input id="insMotDePasse" type="password" placeholder="Au moins 4 caractères">
+        <label class="field-label">Confirmer le mot de passe</label>
+        <input id="insMotDePasseConfirm" type="password" placeholder="Retapez le mot de passe">
+
+        <div id="erreurInscription2" class="error" style="display:none;"></div>
+        <button class="secondary" style="margin-bottom:10px;" onclick="retourInscriptionEtape1()">Retour</button>
+        <button onclick="finaliserInscription()">Créer mon compte</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TABLEAU DE BORD ===== -->
+  <div id="ecranDashboard" class="wrap" style="display:none;">
+    <h1 class="titre left" id="bonjourNom">Bonjour 👋</h1>
+    <div class="card" style="background:linear-gradient(110deg,#082d68,#0757a8 58%,#d71920);color:#fff;overflow:hidden;position:relative;">
+      <div style="position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:.8;font-weight:800;">Espace personnel</div><div style="font-family:Montserrat;font-size:23px;font-weight:800;margin-top:5px;" id="heroMembreNom">Bienvenue</div><div style="font-size:12px;opacity:.85;margin-top:5px;">Votre espace membre de l'Association du Réveil Chrétien</div></div>
+        <div id="heroStatut" style="background:#f4c400;color:#18233a;padding:8px 13px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap;">● ACTIF</div>
+      </div>
+      <div style="position:absolute;width:180px;height:180px;border-radius:50%;right:-70px;top:-80px;background:rgba(255,255,255,.08);"></div>
+    </div>
+
+    <div class="tabs" id="tabsPrincipaux">
+      <div class="tab active" data-tab="groupes" onclick="afficherOnglet('groupes')">Groupes</div>
+      <div class="tab" data-tab="badge" onclick="afficherOnglet('badge')">Mon badge</div>
+      <div class="tab" data-tab="cotisation" onclick="afficherOnglet('cotisation')">Cotisations</div>
+      <div class="tab" data-tab="offrandes" onclick="afficherOnglet('offrandes')">Offrandes</div>
+      <div class="tab" data-tab="archives" onclick="afficherOnglet('archives')">Archives</div>
+      <div class="tab" data-tab="messages" onclick="afficherOnglet('messages')">Messages</div>
+      <div class="tab" data-tab="videos" onclick="afficherOnglet('videos')">Vidéos</div>
+      <div class="tab" data-tab="prieres" onclick="afficherOnglet('prieres')">Prières</div>
+      <div class="tab" data-tab="admin" id="tabAdmin" style="display:none;" onclick="afficherOnglet('admin')">⚙ Admin</div>
+    </div>
+
+    <div class="section active" id="section-groupes">
+      <div class="section-title"><span class="ic">💬</span> Groupes WhatsApp</div>
+      <p class="subtitle left" style="margin-top:-6px;">Certains groupes demandent un code d'accès spécifique fourni par un responsable.</p>
+      <div class="card" id="listeGroupes"><div class="loading">Chargement…</div></div>
+    </div>
+
+    <div class="section" id="section-badge">
+      <div class="section-title"><span class="ic">🪪</span> Mon badge de membre</div>
+      <div id="badgePrintZone">
+        <div class="badge-portrait">
+          <div class="badge-top-band">
+            <div class="badge-mini-logo" id="badgeMiniLogo">🙏</div>
+            <div class="badge-org-name" id="badgeOrgName">Association</div>
+          </div>
+          <div class="badge-photo-wrap" id="badgePhotoWrap">👤</div>
+          <div class="badge-body">
+            <div class="badge-fullname" id="badgeNom">—</div>
+            <div class="badge-role-tag" id="badgeRole">Membre</div>
+            <div class="badge-divider"></div>
+            <div class="badge-info-row"><span class="ic">📞</span><span id="badgeTel">—</span></div>
+            <div class="badge-status-tag" id="badgeStatut">✓ Membre actif</div>
+            <div class="badge-qr-wrap"><img id="badgeQr" width="88" height="88"></div>
+            <div class="badge-code-small" id="badgeCode">—</div>
+          </div>
+        </div>
+      </div>
+      <button class="secondary full-mt" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
+    </div>
+
+    <div class="section" id="section-cotisation">
+      <div class="section-title"><span class="ic">💳</span> Cotisations</div>
+      <p class="subtitle left" style="margin-top:-6px;">Chaque cotisation est une campagne avec un objectif collectif. Vous pouvez y contribuer autant de fois que vous le souhaitez.</p>
+      <div class="card" id="listeTypesCotisation"><div class="loading">Chargement…</div></div>
+      <div id="messagePaiement" style="margin: -6px 0 14px; font-size:13px;"></div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="statTotalPaye">—</div><div class="stat-label">Total payé (FCFA)</div></div>
+        <div class="stat-box"><div class="stat-num" id="statNbPaiements">—</div><div class="stat-label">Paiements</div></div>
+      </div>
+      <div class="card">
+        <p class="field-label" style="margin-bottom:10px;">Historique de mes cotisations</p>
+        <div id="listeMesCotisations"><div class="loading">Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- Offrandes / Dons (montant libre, distinct des cotisations) -->
+    <div class="section" id="section-offrandes">
+      <div class="section-title"><span class="ic">🙌</span> Offrandes & Dons</div>
+      <p class="subtitle left" style="margin-top:-6px;">Faites un don du montant de votre choix, à tout moment, en dehors des cotisations.</p>
+      <div class="card">
+        <label class="field-label">Montant (FCFA)</label>
+        <input id="offrandeMontant" type="number" min="1" placeholder="Ex : 5000">
+        <label class="field-label">Motif (facultatif)</label>
+        <input id="offrandeMotif" type="text" placeholder="Ex : Offrande de reconnaissance">
+        <div id="erreurOffrande" class="error" style="display:none;"></div>
+        <button class="flame" onclick="lancerOffrande()">Faire un don</button>
+        <div id="messageOffrande" style="margin-top:10px; font-size:13px;"></div>
+      </div>
+      <div class="card">
+        <p class="field-label" style="margin-bottom:10px;">Historique de mes dons</p>
+        <div id="listeMesOffrandes"><div class="loading">Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- Archives (audios / PDF en lecture seule) -->
+    <div class="section" id="section-archives">
+      <div class="section-title"><span class="ic">🗂️</span> Archives</div>
+      <p class="subtitle left" style="margin-top:-6px;">Réunions passées, rapports et enseignements — écoute et lecture uniquement.</p>
+      <div class="card" id="listeArchives"><div class="loading">Chargement…</div></div>
+      <div class="card" id="lecteurArchiveZone" style="display:none;"></div>
+    </div>
+
+    <div class="section" id="section-messages">
+      <div class="section-title"><span class="ic">✉️</span> Écrire à l'administration</div>
+      <div class="card">
+        <textarea id="nouveauMessage" rows="3" placeholder="Votre message…"></textarea>
+        <div id="erreurNouveauMessage" class="error" style="display:none;"></div>
+        <button onclick="envoyerMonMessage()">Envoyer</button>
+      </div>
+      <div class="card">
+        <p class="field-label" style="margin-bottom:10px;">Mes échanges</p>
+        <div id="listeMesMessages"><div class="loading">Chargement…</div></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-videos">
+      <div class="card youtube-card">
+        <div class="youtube-icon">▶️</div>
+        <h2 class="titre" style="font-size:18px;">Nos vidéos et enseignements</h2>
+        <p class="subtitle">Retrouvez toutes les prédications, prières et annonces sur notre chaîne YouTube.</p>
+        <button class="flame" onclick="ouvrirYoutube()">Voir la chaîne YouTube</button>
+      </div>
+    </div>
+
+    <div class="section" id="section-prieres">
+      <div class="section-title"><span class="ic">🙏</span> Séances de prière en direct</div>
+      <div class="card" id="listeSeances"><div class="loading">Chargement…</div></div>
+    </div>
+
+    <!-- ===== ADMINISTRATION ===== -->
+    <div class="section" id="section-admin">
+      <div class="admin-subtabs">
+        <div class="admin-subtab active" data-sub="apparence" onclick="afficherSousOnglet('apparence')">Apparence</div>
+        <div class="admin-subtab" data-sub="groupes" onclick="afficherSousOnglet('groupes')">Groupes</div>
+        <div class="admin-subtab" data-sub="seances" onclick="afficherSousOnglet('seances')">Séances</div>
+        <div class="admin-subtab" data-sub="membres" onclick="afficherSousOnglet('membres')">Membres</div>
+        <div class="admin-subtab" data-sub="paiements" onclick="afficherSousOnglet('paiements')">Paiements</div>
+        <div class="admin-subtab" data-sub="messages" onclick="afficherSousOnglet('messages')">Messages</div>
+        <div class="admin-subtab" data-sub="cotisation" onclick="afficherSousOnglet('cotisation')">Cotisations</div>
+        <div class="admin-subtab" data-sub="archives" onclick="afficherSousOnglet('archives')">🗂️ Archives</div>
+        <div class="admin-subtab" data-sub="codes" onclick="afficherSousOnglet('codes')">🔐 Codes d’accès</div>
+      </div>
+
+      <div class="admin-section active" id="admin-apparence">
+        <div class="card">
+          <label class="field-label">Logo de l'association</label>
+          <div class="logo-upload-preview" id="logoPreview">🙏</div>
+          <label class="file-btn-label">
+            Choisir une image
+            <input type="file" accept="image/*" onchange="gererUploadLogo(event)" style="display:none;">
+          </label>
+          <div id="logoStatut" style="margin-top:8px; font-size:12px;"></div>
+        </div>
+        <div class="card">
+          <label class="field-label">Nom de l'association</label>
+          <input id="adminNomAssoc" type="text" placeholder="Nom de l'association">
+          <label class="field-label">Lien de la chaîne YouTube</label>
+          <input id="adminYoutube" type="text" placeholder="https://www.youtube.com/@...">
+          <div id="erreurApparence" class="error" style="display:none;"></div>
+          <button onclick="sauvegarderApparence()">Enregistrer</button>
+        </div>
+      </div>
+
+      <div class="admin-section" id="admin-groupes">
+        <div class="card">
+          <label class="field-label">Ajouter un groupe WhatsApp</label>
+          <input id="ngGroupeNom" type="text" placeholder="Nom du groupe">
+          <input id="ngGroupeDesc" type="text" placeholder="Description courte">
+          <input id="ngGroupeLien" type="text" placeholder="Lien https://chat.whatsapp.com/...">
+          <input id="ngGroupeCode" type="text" placeholder="Code d'accès (facultatif — généré si vide)">
+          <div id="erreurGroupe" class="error" style="display:none;"></div>
+          <button onclick="creerGroupe()">Ajouter le groupe</button>
+        </div>
+        <div class="card" id="adminListeGroupes"><div class="loading">Chargement…</div></div>
+      </div>
+
+      <div class="admin-section" id="admin-seances">
+        <div class="card">
+          <label class="field-label">Ajouter une séance de prière</label>
+          <input id="nsTitre" type="text" placeholder="Titre (ex : Prière du mardi)">
+          <label class="field-label">Date (facultative)</label>
+          <input id="nsDate" type="date">
+          <input id="nsHeure" type="time">
+          <input id="nsLien" type="text" placeholder="Lien Google Meet">
+          <div id="erreurSeance" class="error" style="display:none;"></div>
+          <button onclick="creerSeance()">Ajouter la séance</button>
+        </div>
+        <div class="card" id="adminListeSeances"><div class="loading">Chargement…</div></div>
+      </div>
+
+      <div class="admin-section" id="admin-membres">
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Membres inscrits</div></div>
+          <div class="stat-box"><div class="stat-num" id="statActifs">—</div><div class="stat-label">Comptes actifs</div></div>
+        </div>
+        <div class="card" id="adminListeMembres"><div class="loading">Chargement…</div></div>
+      </div>
+
+      <div class="admin-section" id="admin-paiements">
+        <div class="card">
+          <label class="field-label">Enregistrer un paiement reçu hors application (espèces, virement...)</label>
+          <p class="subtitle left" style="margin-top:-4px;">Ce paiement sera immédiatement marqué "Confirmé" et un reçu sera disponible pour le membre.</p>
+          <input id="pmIdentifiant" type="text" placeholder="Code du membre (MB-...) ou son téléphone">
+          <input id="pmType" type="text" placeholder="Type (ex : Cotisation mensuelle, ou laisser vide pour un don)">
+          <select id="pmCategorie">
+            <option value="Cotisation">Cotisation</option>
+            <option value="Don">Offrande / Don</option>
+          </select>
+          <input id="pmMontant" type="number" placeholder="Montant en FCFA">
+          <div id="erreurPaiementManuel" class="error" style="display:none;"></div>
+          <button onclick="enregistrerPaiementManuelAdmin()">Enregistrer le paiement</button>
+        </div>
+        <div class="card" id="adminListePaiements"><div class="loading">Chargement…</div></div>
+      </div>
+
+      <div class="admin-section" id="admin-messages">
+        <div class="card" id="adminListeMessages"><div class="loading">Chargement…</div></div>
+      </div>
+
+      <div class="admin-section" id="admin-cotisation">
+        <div class="card">
+          <label class="field-label">Créer une campagne de cotisation</label>
+          <input id="ntcNom" type="text" placeholder="Ex : Cotisation mensuelle, Construction du temple…">
+          <label class="field-label">Montant suggéré par personne (FCFA)</label>
+          <input id="ntcMontant" type="number" placeholder="Ex : 2000">
+          <label class="field-label">Objectif collectif de la campagne (FCFA, facultatif)</label>
+          <input id="ntcObjectif" type="number" placeholder="Ex : 500000 — laisser vide si pas d'objectif global">
+          <label class="field-label">Date de début</label>
+          <input id="ntcDateDebut" type="date">
+          <label class="field-label">Date de fin (facultative)</label>
+          <input id="ntcDateFin" type="date">
+          <label class="field-label">Périodicité</label>
+          <select id="ntcPeriodicite">
+            <option value="Mensuelle">Mensuelle</option>
+            <option value="Trimestrielle">Trimestrielle</option>
+            <option value="Semestrielle">Semestrielle</option>
+            <option value="Annuelle">Annuelle</option>
+            <option value="Ponctuelle">Ponctuelle</option>
+          </select>
+          <div id="erreurTypeCotisation" class="error" style="display:none;"></div>
+          <button onclick="creerTypeCotisation()">Créer la campagne</button>
+        </div>
+        <div class="card" id="adminListeTypesCotisation"><div class="loading">Chargement…</div></div>
+      </div>
+
+      <div class="admin-section" id="admin-archives">
+        <div class="card">
+          <label class="field-label">Ajouter un document dans les Archives</label>
+          <input id="arcTitre" type="text" placeholder="Titre (ex : Réunion du 12 juillet 2026)">
+          <input id="arcDescription" type="text" placeholder="Description courte (facultative)">
+          <select id="arcType">
+            <option value="PDF">Document PDF (rapport, enseignement écrit...)</option>
+            <option value="Audio">Fichier audio (enregistrement de réunion...)</option>
+          </select>
+          <input id="arcLienDrive" type="text" placeholder="Lien de partage Google Drive du fichier">
+          <p class="subtitle left" style="margin:-4px 0 10px;font-size:12px;">
+            Uploadez d'abord le fichier sur Google Drive, clic droit > Partager > Copier le lien, et collez-le ci-dessus.
+            <strong>Important</strong> : dans la fenêtre de partage, cliquez sur l'icône ⚙️ et décochez
+            "Les lecteurs et commentateurs peuvent télécharger, imprimer et copier" pour empêcher le téléchargement.
+          </p>
+          <div id="erreurArchive" class="error" style="display:none;"></div>
+          <button onclick="creerArchive()">Ajouter aux Archives</button>
+        </div>
+        <div class="card" id="adminListeArchives"><div class="loading">Chargement…</div></div>
+      </div>
+
+      <div class="admin-section" id="admin-codes">
+        <div class="card">
+          <div class="section-title"><span class="ic">🔐</span> Générer des codes d'inscription</div>
+          <p class="subtitle left" style="margin-bottom:14px;">Chaque code ne peut être utilisé qu'une seule fois. Donnez uniquement les codes aux personnes autorisées à rejoindre la plateforme.</p>
+          <label class="field-label">Nombre de codes</label>
+          <input id="nbCodesInscription" type="number" min="1" max="100" value="10" placeholder="Ex : 10">
+          <label class="field-label">Note interne (facultative)</label>
+          <input id="noteCodesInscription" type="text" placeholder="Ex : Réunion du 26 août 2026">
+          <div id="erreurCodesInscription" class="error" style="display:none;"></div>
+          <button onclick="genererCodesAdmin()">Générer les codes</button>
+          <div id="codesGeneresBox" class="codes-box" style="display:none;"></div>
+          <button id="btnCopierCodes" class="secondary small full-mt" style="display:none;" onclick="copierCodesGeneres()">📋 Copier les codes</button>
+        </div>
+        <div class="card">
+          <div class="section-title"><span class="ic">📋</span> Codes existants</div>
+          <div id="adminListeCodesInscription"><div class="loading">Chargement…</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  let membreCourant = null;
+  let configApp = null;
+  let typeCotisationEnCours = null;
+  let photoInscriptionBase64 = '';
+  let codeInvitationInscription = '';
+  let codesGeneresDerniereFois = [];
+
+  // ==================== ADRESSE DE L'API (backend Apps Script) ====================
+  // Collez ici l'URL de déploiement de votre Apps Script (celle qui se termine par /exec).
+  // C'est la SEULE ligne à modifier après avoir déployé Code.gs comme API.
+  const API_URL = "COLLEZ_ICI_VOTRE_URL_APPS_SCRIPT_SE_TERMINANT_PAR_/exec";
+
+  // ==================== APPEL SERVEUR (via l'API Apps Script) ====================
+  // Remplace l'ancien google.script.run : la page est maintenant hébergée séparément
+  // (GitHub Pages), donc elle appelle le backend Apps Script comme une API classique.
+  // Le corps de la requête est envoyé en texte brut (pas en JSON déclaré) exprès : cela
+  // évite une requête de pré-vérification CORS ("preflight") qu'Apps Script ne sait pas
+  // traiter, et qui ferait échouer silencieusement tous les appels.
+  function appelServeur(nomFonction) {
+    const args = Array.prototype.slice.call(arguments, 1);
+    if (!API_URL || API_URL.indexOf("COLLEZ_ICI") === 0) {
+      return Promise.reject(new Error("L'adresse de l'API (API_URL) n'a pas encore été configurée dans index.html."));
+    }
+    return fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: nomFonction, params: args })
+    }).then(function (res) {
+      if (!res.ok) throw new Error("Erreur réseau (statut " + res.status + ").");
+      return res.json();
+    }).then(function (json) {
+      if (!json.succes) throw new Error(json.erreur || "Erreur inconnue du serveur.");
+      return json.resultat;
+    });
+  }
+
+  function afficherErreurZone(elementId, err) {
+    const msg = (err && err.message) ? err.message : "Une erreur est survenue.";
+    const zone = document.getElementById(elementId);
+    if (zone) zone.innerHTML = '<p class="error" style="margin:0;">⚠️ ' + escapeHtml(msg) + "</p>";
+  }
+
+  window.addEventListener("load", function () {
+    appelServeur("getConfig").then(appliquerBranding).catch(function (err) { console.error(err); });
+  });
+
+  // ==================== INSTALLATION (PWA) ====================
+  let promptInstallDiffere = null;
+
+  function estIOS() {
+    return /iphone|ipad|ipod/i.test(navigator.userAgent);
+  }
+
+  function estDejaInstallee() {
+    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  }
+
+  function afficherBoutonsInstallation() {
+    if (estDejaInstallee()) return;
+    const b1 = document.getElementById("btnInstallerApp");
+    const b2 = document.getElementById("btnInstallerAppAccueil");
+    if (b1) b1.style.display = "inline-flex";
+    if (b2) b2.style.display = "block";
+  }
+
+  // Chrome/Android déclenche cet évènement quand l'app remplit les critères d'installation.
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    promptInstallDiffere = e;
+    afficherBoutonsInstallation();
+  });
+
+  // iOS n'a pas d'invite automatique : on affiche quand même le bouton, avec des instructions.
+  window.addEventListener("load", function () {
+    if (estIOS() && !estDejaInstallee()) afficherBoutonsInstallation();
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(function (err) {
+        console.log("Service worker non enregistré :", err);
+      });
+    }
+  });
+
+  function installerApplication() {
+    if (promptInstallDiffere) {
+      promptInstallDiffere.prompt();
+      promptInstallDiffere.userChoice.then(function () { promptInstallDiffere = null; });
+    } else if (estIOS()) {
+      alert("Pour installer l'application sur iPhone/iPad :\n\n1. Appuyez sur le bouton Partager (le carré avec une flèche vers le haut) en bas de Safari.\n2. Choisissez \"Sur l'écran d'accueil\".\n3. Confirmez en haut à droite.");
+    } else {
+      alert("Pour installer l'application : ouvrez le menu de votre navigateur (⋮ ou ...) et choisissez \"Installer l'application\" ou \"Ajouter à l'écran d'accueil\".");
+    }
+  }
+
+  // Diagnostic PWA — vérifie ce que le navigateur voit réellement (manifest, service
+  // worker, adresse exacte) pour comprendre pourquoi l'installation ne se propose pas.
+  // Le résultat s'affiche à l'écran, prêt à copier-coller.
+  function diagnostiquerPWA() {
+    const lignes = [];
+    lignes.push("URL actuelle : " + window.location.href);
+    lignes.push("Déjà en mode application : " + estDejaInstallee());
+    lignes.push("Proposition d'installation reçue du navigateur : " + (promptInstallDiffere ? "OUI" : "NON"));
+    lignes.push("Adresse API configurée : " + API_URL);
+    lignes.push("");
+
+    const afficherResultat = function () {
+      const zone = document.getElementById("diagnosticPWAZone");
+      zone.style.display = "block";
+      zone.textContent = lignes.join("\n");
+    };
+
+    const testerServiceWorker = function () {
+      if (!("serviceWorker" in navigator)) {
+        lignes.push("Service worker : non supporté par ce navigateur.");
+        afficherResultat();
+        return;
+      }
+      navigator.serviceWorker.getRegistration().then(function (reg) {
+        lignes.push("Service worker enregistré : " + (reg ? ("OUI (scope : " + reg.scope + ")") : "NON"));
+        afficherResultat();
+      }).catch(function (err) {
+        lignes.push("Erreur lecture service worker : " + err.message);
+        afficherResultat();
+      });
+    };
+
+    const testerAPI = function () {
+      appelServeur("getConfig").then(function () {
+        lignes.push("Connexion à l'API : OK (le backend Apps Script répond).");
+        testerServiceWorker();
+      }).catch(function (err) {
+        lignes.push("⚠️ Connexion à l'API échouée : " + err.message);
+        testerServiceWorker();
+      });
+    };
+
+    fetch("manifest.json").then(function (res) {
+      lignes.push("Requête manifest.json : statut HTTP " + res.status + ", type : " + res.headers.get("content-type"));
+      return res.text();
+    }).then(function (texte) {
+      try {
+        const donnees = JSON.parse(texte);
+        lignes.push("JSON valide. start_url = " + donnees.start_url);
+      } catch (err) {
+        lignes.push("⚠️ Le contenu de manifest.json n'est PAS un JSON valide.");
+      }
+      testerAPI();
+    }).catch(function (err) {
+      lignes.push("⚠️ Erreur lors de la récupération de manifest.json : " + err.message);
+      testerAPI();
+    });
+  }
+
+  function appliquerBranding(config) {
+    configApp = config || {};
+    const nom = configApp.NomAssociation || "Association";
+    document.getElementById("topbarNom").textContent = nom;
+    document.getElementById("accueilNomAssoc").textContent = nom;
+    document.getElementById("badgeOrgName").textContent = nom;
+    document.title = nom + " — Espace membres";
+    const initiale = nom.charAt(0).toUpperCase();
+    const logoHtml = configApp.LogoBase64 ? '<img src="data:image/png;base64,' + configApp.LogoBase64 + '">' : initiale;
+    document.getElementById("topbarLogo").innerHTML = logoHtml;
+    document.getElementById("accueilLogo").innerHTML = logoHtml;
+    document.getElementById("badgeMiniLogo").innerHTML = logoHtml;
+  }
+
+  // ==================== NAVIGATION PRE-CONNEXION ====================
+  function afficherEcran(nom) {
+    document.querySelectorAll(".auth-screen").forEach(function (s) { s.classList.remove("active"); });
+    document.getElementById("ecran" + nom.charAt(0).toUpperCase() + nom.slice(1)).classList.add("active");
+  }
+
+  function demarrerInscription() {
+    codeInvitationInscription = '';
+    document.getElementById("codeInscription").value = '';
+    document.getElementById("erreurCodeInscription").style.display = "none";
+    afficherEcran("inscriptionCode");
+  }
+
+  function validerCodeInscription() {
+    const code = document.getElementById("codeInscription").value.trim().toUpperCase();
+    const err = document.getElementById("erreurCodeInscription");
+    err.style.display = "none";
+    if (!code) {
+      err.textContent = "Saisissez votre code d'accès.";
+      err.style.display = "block";
+      return;
+    }
+    appelServeur("verifierCodeInscription", code).then(function(res) {
+      if (!res.succes) {
+        err.textContent = res.message || "Code d'accès invalide.";
+        err.style.display = "block";
+        return;
+      }
+      codeInvitationInscription = code;
+      afficherEcran("inscriptionEtape1");
+    }).catch(function(e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  // ==================== CONNEXION ====================
+  function seConnecter() {
+    const telephone = document.getElementById("loginTelephone").value.trim();
+    const motDePasse = document.getElementById("loginMotDePasse").value;
+    const err = document.getElementById("erreurConnexion");
+    err.style.display = "none";
+    if (!telephone || !motDePasse) return;
+    appelServeur("connexionParTelephone", telephone, motDePasse).then(function (res) {
+      if (!res.succes) {
+        err.textContent = res.message;
+        err.style.display = "block";
+        return;
+      }
+      membreCourant = res.membre;
+      afficherDashboard();
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  // ==================== INSCRIPTION (2 ETAPES) ====================
+  function allerInscriptionEtape2() {
+    const nom = document.getElementById("insNom").value.trim();
+    const prenom = document.getElementById("insPrenom").value.trim();
+    const err = document.getElementById("erreurInscription1");
+    if (!nom || !prenom) {
+      err.textContent = "Nom et prénom sont requis.";
+      err.style.display = "block";
+      return;
+    }
+    err.style.display = "none";
+    afficherEcran("inscriptionEtape2");
+  }
+
+  function retourInscriptionEtape1() {
+    afficherEcran("inscriptionEtape1");
+  }
+
+  function traiterImageCarree(fichier, tailleMax, callback) {
+    const lecteur = new FileReader();
+    lecteur.onload = function (e) {
+      const img = new Image();
+      img.onload = function () {
+        const cote = Math.min(img.width, img.height);
+        const sx = (img.width - cote) / 2;
+        const sy = (img.height - cote) / 2;
+        const taille = Math.min(tailleMax, cote);
+        const canvas = document.createElement("canvas");
+        canvas.width = taille; canvas.height = taille;
+        canvas.getContext("2d").drawImage(img, sx, sy, cote, cote, 0, 0, taille, taille);
+        callback(canvas.toDataURL("image/png").split(",")[1]);
+      };
+      img.src = e.target.result;
+    };
+    lecteur.readAsDataURL(fichier);
+  }
+
+  function gererUploadPhotoInscription(evt) {
+    const fichier = evt.target.files[0];
+    if (!fichier) return;
+    traiterImageCarree(fichier, 320, function (base64) {
+      photoInscriptionBase64 = base64;
+      document.getElementById("insPhotoPreview").innerHTML = '<img src="data:image/png;base64,' + base64 + '">';
+    });
+  }
+
+  function finaliserInscription() {
+    const telephone = document.getElementById("insTelephone").value.trim();
+    const motDePasse = document.getElementById("insMotDePasse").value;
+    const confirmation = document.getElementById("insMotDePasseConfirm").value;
+    const err = document.getElementById("erreurInscription2");
+    err.style.display = "none";
+
+    if (!telephone) { err.textContent = "Le téléphone est requis."; err.style.display = "block"; return; }
+    if (!motDePasse || motDePasse.length < 4) { err.textContent = "Le mot de passe doit contenir au moins 4 caractères."; err.style.display = "block"; return; }
+    if (motDePasse !== confirmation) { err.textContent = "Les mots de passe ne correspondent pas."; err.style.display = "block"; return; }
+
+    const donnees = {
+      nom: document.getElementById("insNom").value.trim(),
+      prenom: document.getElementById("insPrenom").value.trim(),
+      nationalite: document.getElementById("insNationalite").value.trim(),
+      dateNaissance: document.getElementById("insDateNaissance").value,
+      departementOrigine: document.getElementById("insDepartement").value.trim(),
+      situationMatrimoniale: document.getElementById("insSituation").value,
+      profession: document.getElementById("insProfession").value.trim(),
+      eglise: document.getElementById("insEglise").value.trim(),
+      roleEglise: document.getElementById("insRoleEglise").value.trim(),
+      adresseActuelle: document.getElementById("insAdresse").value.trim(),
+      telephone: telephone,
+      email: document.getElementById("insEmail").value.trim(),
+      photoBase64: photoInscriptionBase64,
+      motDePasse: motDePasse,
+      codeAccesInscription: codeInvitationInscription
+    };
+
+    appelServeur("creerCompte", donnees).then(function (res) {
+      if (!res.succes) {
+        err.textContent = res.message;
+        err.style.display = "block";
+        return;
+      }
+      membreCourant = res.membre;
+      afficherDashboard();
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  // ==================== TABLEAU DE BORD ====================
+  function afficherDashboard() {
+    document.querySelectorAll(".auth-screen").forEach(function (s) { s.classList.remove("active"); });
+    document.getElementById("ecranDashboard").style.display = "block";
+    document.getElementById("topbar").style.display = "flex";
+    document.getElementById("bonjourNom").textContent = "Bonjour " + membreCourant.prenom + " 👋";
+    const heroNom=document.getElementById("heroMembreNom"); if(heroNom) heroNom.textContent=(membreCourant.prenom||"")+" "+(membreCourant.nom||"");
+    const heroStatut=document.getElementById("heroStatut"); if(heroStatut) heroStatut.textContent="● "+String(membreCourant.statut||"ACTIF").toUpperCase();
+
+    if (membreCourant.role === "Admin") document.getElementById("tabAdmin").style.display = "block";
+
+    remplirBadge();
+    chargerGroupes();
+    chargerSeances();
+    chargerMesCotisations();
+    chargerTypesCotisationMembre();
+    chargerMesMessages();
+  }
+
+  function remplirBadge() {
+    document.getElementById("badgeNom").textContent = (membreCourant.prenom + " " + membreCourant.nom).trim() || "—";
+    document.getElementById("badgeRole").textContent = membreCourant.roleEglise || "Membre";
+    document.getElementById("badgeTel").textContent = membreCourant.telephone || "—";
+    document.getElementById("badgeCode").textContent = "Code : " + membreCourant.code;
+    const statutEl = document.getElementById("badgeStatut");
+    if (membreCourant.statut === "Actif") {
+      statutEl.textContent = "✓ Membre actif";
+      statutEl.style.color = "";
+      statutEl.style.background = "";
+    } else {
+      statutEl.textContent = membreCourant.statut || "Statut inconnu";
+      statutEl.style.color = "#b8892f";
+      statutEl.style.background = "#fdf1dc";
+    }
+    document.getElementById("badgeQr").src = "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" + encodeURIComponent(membreCourant.code);
+    document.getElementById("badgePhotoWrap").innerHTML = membreCourant.photoBase64 ? '<img src="data:image/png;base64,' + membreCourant.photoBase64 + '">' : "👤";
+  }
+
+  function afficherOnglet(nom) {
+    document.querySelectorAll("#tabsPrincipaux .tab").forEach(function (t) { t.classList.toggle("active", t.dataset.tab === nom); });
+    document.querySelectorAll("#ecranDashboard > .section").forEach(function (s) { s.classList.toggle("active", s.id === "section-" + nom); });
+    // Recharge les données à chaque visite de l'onglet, pour ne jamais afficher
+    // un contenu périmé (ex : une séance ou un message ajouté depuis la dernière visite).
+    if (nom === "groupes") chargerGroupes();
+    else if (nom === "cotisation") { chargerTypesCotisationMembre(); chargerMesCotisations(); }
+    else if (nom === "offrandes") chargerMesOffrandes();
+    else if (nom === "archives") chargerArchives();
+    else if (nom === "messages") chargerMesMessages();
+    else if (nom === "prieres") chargerSeances();
+    else if (nom === "admin") chargerDonneesAdmin();
+  }
+
+  function afficherSousOnglet(nom) {
+    document.querySelectorAll(".admin-subtab").forEach(function (t) { t.classList.toggle("active", t.dataset.sub === nom); });
+    document.querySelectorAll(".admin-section").forEach(function (s) { s.classList.toggle("active", s.id === "admin-" + nom); });
+    // Idem côté admin : chaque sous-onglet recharge ses propres données à chaque clic.
+    if (nom === "groupes") appelServeur("getGroupesAdmin", membreCourant.code).then(afficherGroupesAdmin).catch(function (err) { afficherErreurZone("adminListeGroupes", err); });
+    else if (nom === "seances") appelServeur("getSeances").then(afficherSeancesAdmin).catch(function (err) { afficherErreurZone("adminListeSeances", err); });
+    else if (nom === "membres") appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin).catch(function (err) { afficherErreurZone("adminListeMembres", err); });
+    else if (nom === "paiements") appelServeur("getPaiementsAdmin", membreCourant.code).then(afficherPaiementsAdmin).catch(function (err) { afficherErreurZone("adminListePaiements", err); });
+    else if (nom === "messages") appelServeur("getMessagesAdmin", membreCourant.code).then(afficherMessagesAdmin).catch(function (err) { afficherErreurZone("adminListeMessages", err); });
+    else if (nom === "cotisation") appelServeur("getTypesCotisation").then(afficherTypesCotisationAdmin).catch(function (err) { afficherErreurZone("adminListeTypesCotisation", err); });
+    else if (nom === "archives") appelServeur("getArchives").then(afficherArchivesAdmin).catch(function (err) { afficherErreurZone("adminListeArchives", err); });
+    else if (nom === "codes") appelServeur("getCodesInscriptionAdmin", membreCourant.code).then(afficherCodesInscriptionAdmin).catch(function (err) { afficherErreurZone("adminListeCodesInscription", err); });
+  }
+
+  // ==================== GROUPES ====================
+  function chargerGroupes() {
+    appelServeur("getGroupes").then(afficherGroupes).catch(function (err) { afficherErreurZone("listeGroupes", err); });
+  }
+
+  function afficherGroupes(groupes) {
+    groupes = groupes || [];
+    const zone = document.getElementById("listeGroupes");
+    if (!groupes.length) { zone.innerHTML = '<p class="empty-state">Aucun groupe pour le moment.</p>'; return; }
+    zone.innerHTML = groupes.map(function (g) {
+      return '<div class="item-block">' +
+        '<div class="item-row" style="border:none;padding:0;">' +
+        '<div><div class="item-nom">' + escapeHtml(g.NomGroupe) + '</div>' +
+        '<div class="item-desc">' + escapeHtml(g.Description || "") + '</div></div>' +
+        '<button class="btn-rejoindre" onclick="toggleJoinForm(\'' + g.ID + '\')">Rejoindre</button>' +
+        '</div>' +
+        '<div class="join-form" id="join-' + g.ID + '">' +
+        '<input type="text" id="joincode-' + g.ID + '" placeholder="Code d\u2019accès du groupe">' +
+        '<button class="small" onclick="validerCodeGroupe(\'' + g.ID + '\')">Valider</button>' +
+        '<div class="join-error" id="joinerr-' + g.ID + '" style="display:none;"></div>' +
+        '</div>' +
+        '</div>';
+    }).join("");
+  }
+
+  function toggleJoinForm(id) {
+    document.getElementById("join-" + id).classList.toggle("active");
+  }
+
+  function validerCodeGroupe(id) {
+    const code = document.getElementById("joincode-" + id).value.trim();
+    const errZone = document.getElementById("joinerr-" + id);
+    errZone.style.display = "none";
+    if (!code) return;
+    appelServeur("rejoindreGroupe", id, code).then(function (res) {
+      if (res.succes) {
+        window.open(res.lien, "_blank");
+        document.getElementById("join-" + id).classList.remove("active");
+      } else {
+        errZone.textContent = res.message;
+        errZone.style.display = "block";
+      }
+    }).catch(function (err) {
+      errZone.textContent = err.message;
+      errZone.style.display = "block";
+    });
+  }
+
+  // ==================== SEANCES ====================
+  function chargerSeances() {
+    appelServeur("getSeances").then(afficherSeances).catch(function (err) { afficherErreurZone("listeSeances", err); });
+  }
+
+  function afficherSeances(seances) {
+    seances = seances || [];
+    const zone = document.getElementById("listeSeances");
+    if (!seances.length) { zone.innerHTML = '<p class="empty-state">Aucune séance programmée.</p>'; return; }
+    zone.innerHTML = seances.map(function (s) {
+      const date = s.Date ? new Date(s.Date).toLocaleDateString("fr-FR") : "Date à confirmer";
+      const heure = s.Heure ? " à " + escapeHtml(s.Heure) : "";
+      return '<div class="item-row">' +
+        '<div><div class="item-nom">' + escapeHtml(s.Titre) + '</div>' +
+        '<div class="item-desc">' + date + heure + '</div></div>' +
+        '<button class="btn-meet" onclick="window.open(\'' + s.LienMeet + '\', \'_blank\')">Rejoindre</button>' +
+        '</div>';
+    }).join("");
+  }
+
+  // ==================== COTISATIONS ====================
+  function chargerTypesCotisationMembre() {
+    appelServeur("getTypesCotisation").then(afficherTypesCotisationMembre).catch(function (err) { afficherErreurZone("listeTypesCotisation", err); });
+  }
+
+  function afficherTypesCotisationMembre(types) {
+    types = types || [];
+    const zone = document.getElementById("listeTypesCotisation");
+    if (!types.length) { zone.innerHTML = '<p class="empty-state">Aucune campagne de cotisation configurée pour le moment.</p>'; return; }
+    zone.innerHTML = types.map(function (t) {
+      const nomEchappe = escapeHtml(t.Nom).replace(/'/g, "&#39;");
+      const aObjectif = Number(t.MontantObjectif) > 0;
+      const pourcentage = aObjectif ? t.Pourcentage : null;
+      const barre = aObjectif
+        ? '<div class="cotisation-progress-track"><div class="cotisation-progress-fill" style="width:' + pourcentage + '%;"></div></div>' +
+          '<div class="cotisation-montants-row"><span>Collecté : <strong>' + Number(t.MontantCollecte).toLocaleString("fr-FR") + ' F</strong> (' + pourcentage + '%)</span>' +
+          '<span>Reste : <strong>' + Number(t.Reste).toLocaleString("fr-FR") + ' F</strong></span></div>'
+        : '';
+      const dates = (t.DateDebut || t.DateFin)
+        ? '<div class="cotisation-dates">' + (t.DateDebut ? "Du " + new Date(t.DateDebut).toLocaleDateString("fr-FR") : "") +
+          (t.DateFin ? " au " + new Date(t.DateFin).toLocaleDateString("fr-FR") : "") + '</div>'
+        : '';
+      return '<div class="cotisation-type-card" style="flex-direction:column;align-items:stretch;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+        '<div><div class="cotisation-type-nom">' + escapeHtml(t.Nom) + '</div>' +
+        '<div class="cotisation-type-periode">' + escapeHtml(t.Periodicite) + '</div>' + dates + '</div>' +
+        '<div class="cotisation-type-montant">Suggéré : ' + Number(t.Montant).toLocaleString("fr-FR") + ' F</div>' +
+        '</div>' +
+        barre +
+        '<div class="cotisation-pay-row">' +
+        '<input type="number" min="1" id="montant-' + t.ID + '" value="' + Number(t.Montant) + '">' +
+        '<button class="flame small" onclick="lancerPaiement(\'' + t.ID + '\',\'' + nomEchappe + '\',\'' + t.Periodicite + '\')">Payer</button>' +
+        '</div></div>';
+    }).join("");
+  }
+
+  function chargerMesCotisations() {
+    appelServeur("getMesCotisations", membreCourant.code).then(function (data) {
+      afficherMesCotisations(data, false);
+    }).catch(function (err) { afficherErreurZone("listeMesCotisations", err); });
+  }
+
+  function afficherMesCotisations(data, estOffrande) {
+    data = data || { paiements: [], totalPaye: 0 };
+    const paiementsTous = data.paiements || [];
+    const paiements = paiementsTous.filter(function (p) { return estOffrande ? (p.Categorie === "Don") : (p.Categorie !== "Don"); });
+
+    if (estOffrande) {
+      document.getElementById("listeMesOffrandes").innerHTML = construireTableauPaiements(paiements, true);
+    } else {
+      const totalPaye = paiements.filter(function (p) { return p.Statut === "Confirmé"; }).reduce(function (a, p) { return a + Number(p.Montant || 0); }, 0);
+      document.getElementById("statTotalPaye").textContent = totalPaye.toLocaleString("fr-FR");
+      document.getElementById("statNbPaiements").textContent = paiements.length;
+      document.getElementById("listeMesCotisations").innerHTML = construireTableauPaiements(paiements, false);
+    }
+  }
+
+  function construireTableauPaiements(paiements, estOffrande) {
+    if (!paiements.length) return '<p class="empty-state">' + (estOffrande ? "Aucun don pour le moment." : "Aucun paiement pour le moment.") + '</p>';
+    return '<table class="mini-table"><tr><th>Date</th><th>' + (estOffrande ? "Motif" : "Type") + '</th><th>Montant</th><th>Statut</th><th>Reçu</th></tr>' +
+      paiements.map(function (p) {
+        const date = p.Date ? new Date(p.Date).toLocaleDateString("fr-FR") : "";
+        const okClass = p.Statut === "Confirmé" ? "success-text" : "error";
+        const recu = p.Statut === "Confirmé"
+          ? '<button class="small secondary" onclick="voirRecu(\'' + p.TransactionID + '\')">Voir</button>'
+          : '—';
+        return "<tr><td>" + date + "</td><td>" + escapeHtml(p.TypeCotisation || "—") + "</td><td>" + Number(p.Montant).toLocaleString("fr-FR") + " F</td>" +
+          '<td class="' + okClass + '">' + escapeHtml(p.Statut) + "</td><td>" + recu + "</td></tr>";
+      }).join("") + "</table>";
+  }
+
+  function lancerPaiement(id, nom, periodicite) {
+    const inputMontant = document.getElementById("montant-" + id);
+    const montant = Number(inputMontant ? inputMontant.value : 0);
+    if (!montant || montant <= 0) {
+      document.getElementById("messagePaiement").innerHTML = '<span class="error">Indiquez un montant valide.</span>';
+      return;
+    }
+    if (!configApp || !configApp.kkiapayPublicKey) {
+      document.getElementById("messagePaiement").innerHTML = '<span class="error">Le paiement n\u2019est pas encore configuré. Contactez un responsable.</span>';
+      return;
+    }
+    typeCotisationEnCours = { nom: nom, montant: montant, periodicite: periodicite, categorie: "Cotisation" };
+    openKkiapayWidget({ amount: montant, api_key: configApp.kkiapayPublicKey, sandbox: false, data: membreCourant.code });
+  }
+
+  addKkiapayListener("success", function (response) {
+    const transactionId = response.transactionId || (response.detail && response.detail.transactionId);
+    const info = typeCotisationEnCours || { nom: "", montant: 0, periodicite: "", categorie: "Cotisation" };
+    const estOffrande = info.categorie === "Don";
+    const zoneMessage = document.getElementById(estOffrande ? "messageOffrande" : "messagePaiement");
+    zoneMessage.textContent = "Vérification du paiement…";
+    appelServeur("verifierEtEnregistrerPaiement", membreCourant.code, transactionId, info.montant, "Kkiapay", info.nom, info.periodicite, info.categorie)
+      .then(function (res) {
+        if (res.succes) {
+          zoneMessage.className = "success-text";
+          zoneMessage.textContent = estOffrande ? "✓ Don confirmé. Merci pour votre générosité !" : "✓ Paiement confirmé pour \"" + info.nom + "\". Merci !";
+          if (estOffrande) chargerMesOffrandes(); else chargerMesCotisations();
+        } else {
+          zoneMessage.className = "error";
+          zoneMessage.textContent = "Le paiement n'a pas pu être vérifié. Contactez un responsable.";
+        }
+      }).catch(function (err) {
+        zoneMessage.innerHTML = '<span class="error">Erreur : ' + escapeHtml(err.message) + "</span>";
+      });
+  });
+
+  // ==================== OFFRANDES / DONS ====================
+  function chargerMesOffrandes() {
+    appelServeur("getMesCotisations", membreCourant.code).then(function (data) {
+      afficherMesCotisations(data, true);
+    }).catch(function (err) { afficherErreurZone("listeMesOffrandes", err); });
+  }
+
+  function lancerOffrande() {
+    const montant = Number(document.getElementById("offrandeMontant").value);
+    const motif = document.getElementById("offrandeMotif").value.trim();
+    const err = document.getElementById("erreurOffrande");
+    err.style.display = "none";
+    if (!montant || montant <= 0) { err.textContent = "Indiquez un montant valide."; err.style.display = "block"; return; }
+    if (!configApp || !configApp.kkiapayPublicKey) { err.textContent = "Le paiement n'est pas encore configuré. Contactez un responsable."; err.style.display = "block"; return; }
+    typeCotisationEnCours = { nom: motif || "Offrande / Don", montant: montant, periodicite: "", categorie: "Don" };
+    openKkiapayWidget({ amount: montant, api_key: configApp.kkiapayPublicKey, sandbox: false, data: membreCourant.code });
+  }
+
+  // ==================== REÇU DE PAIEMENT ====================
+  function voirRecu(transactionId) {
+    appelServeur("getRecuPaiement", membreCourant.code, transactionId).then(function (res) {
+      if (!res.succes) { alert(res.message || "Reçu indisponible."); return; }
+      document.getElementById("recuOrgName").textContent = res.nomAssociation;
+      document.getElementById("recuLogo").innerHTML = document.getElementById("topbarLogo").innerHTML;
+      document.getElementById("recuNomMembre").textContent = res.nomMembre;
+      document.getElementById("recuCodeMembre").textContent = res.code;
+      document.getElementById("recuType").textContent = res.type;
+      document.getElementById("recuMethode").textContent = res.methode;
+      document.getElementById("recuDate").textContent = res.date;
+      document.getElementById("recuTransactionId").textContent = res.transactionId;
+      document.getElementById("recuMontant").textContent = Number(res.montant).toLocaleString("fr-FR") + " FCFA";
+      window.print();
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  // ==================== ARCHIVES ====================
+  function chargerArchives() {
+    appelServeur("getArchives").then(afficherArchives).catch(function (err) { afficherErreurZone("listeArchives", err); });
+  }
+
+  function afficherArchives(archives) {
+    archives = archives || [];
+    const zone = document.getElementById("listeArchives");
+    if (!archives.length) { zone.innerHTML = '<p class="empty-state">Aucune archive disponible pour le moment.</p>'; return; }
+    zone.innerHTML = archives.map(function (a) {
+      const icone = a.Type === "Audio" ? "🎧" : "📄";
+      return '<div class="archive-item">' +
+        '<div class="item-nom"><span class="archive-icon">' + icone + '</span>' + escapeHtml(a.Titre) + '</div>' +
+        (a.Description ? '<div class="item-desc">' + escapeHtml(a.Description) + '</div>' : '') +
+        '<div class="item-desc">Ajouté le ' + escapeHtml(a.DateAjout) + '</div>' +
+        '<button class="secondary small full-mt" onclick="ouvrirArchive(\'' + a.DriveFileId + '\',\'' + a.Type + '\',\'' + escapeHtml(a.Titre).replace(/'/g, "&#39;") + '\')">' +
+        (a.Type === "Audio" ? "▶ Écouter" : "📖 Lire") + '</button>' +
+        '</div>';
+    }).join("");
+  }
+
+  function ouvrirArchive(driveFileId, type, titre) {
+    const zone = document.getElementById("lecteurArchiveZone");
+    const src = "https://drive.google.com/file/d/" + driveFileId + "/preview";
+    const frameClass = type === "Audio" ? "archive-audio-frame" : "archive-viewer-frame";
+    zone.innerHTML = '<p class="field-label" style="margin-bottom:10px;">' + escapeHtml(titre) + '</p>' +
+      '<iframe class="' + frameClass + '" src="' + src + '" allow="autoplay" oncontextmenu="return false;"></iframe>' +
+      '<p class="archive-protect-note">🔒 Contenu protégé — lecture seule, téléchargement désactivé.</p>';
+    zone.style.display = "block";
+    zone.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // ==================== MESSAGERIE ====================
+  function chargerMesMessages() {
+    appelServeur("getMesMessages", membreCourant.code).then(afficherMesMessages).catch(function (err) { afficherErreurZone("listeMesMessages", err); });
+  }
+
+  function envoyerMonMessage() {
+    const zone = document.getElementById("nouveauMessage");
+    const err = document.getElementById("erreurNouveauMessage");
+    const texte = zone.value.trim();
+    err.style.display = "none";
+    if (!texte) return;
+    appelServeur("envoyerMessage", membreCourant.code, texte).then(function (res) {
+      if (res.succes) {
+        zone.value = "";
+        chargerMesMessages();
+      } else {
+        err.textContent = "Le message n'a pas pu être envoyé.";
+        err.style.display = "block";
+      }
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function afficherMesMessages(messages) {
+    messages = messages || [];
+    const zone = document.getElementById("listeMesMessages");
+    if (!messages.length) { zone.innerHTML = '<p class="empty-state">Vous n\u2019avez pas encore écrit à l\u2019administration.</p>'; return; }
+    zone.innerHTML = messages.map(function (m) {
+      const date = m.Date ? new Date(m.Date).toLocaleDateString("fr-FR") : "";
+      let html = '<div class="message-bulle">' + escapeHtml(m.Message) + '<div class="message-date">' + date + "</div></div>";
+      if (m.Reponse) {
+        html += '<div class="message-reponse"><strong>Réponse :</strong> ' + escapeHtml(m.Reponse) + "</div>";
+      } else {
+        html += '<div class="message-attente">En attente de réponse…</div>';
+      }
+      return html;
+    }).join("");
+  }
+
+  // ==================== YOUTUBE ====================
+  function ouvrirYoutube() {
+    const lien = (configApp && configApp.LienYoutube) || "https://www.youtube.com/@REVEILCOMMUNICATION";
+    window.open(lien, "_blank");
+  }
+
+  // ==================== ADMINISTRATION ====================
+  function chargerDonneesAdmin() {
+    document.getElementById("adminNomAssoc").value = (configApp && configApp.NomAssociation) || "";
+    document.getElementById("adminYoutube").value = (configApp && configApp.LienYoutube) || "";
+    if (configApp && configApp.LogoBase64) {
+      document.getElementById("logoPreview").innerHTML = '<img src="data:image/png;base64,' + configApp.LogoBase64 + '">';
+    }
+    appelServeur("getGroupesAdmin", membreCourant.code).then(afficherGroupesAdmin).catch(function (err) { afficherErreurZone("adminListeGroupes", err); });
+    appelServeur("getSeances").then(afficherSeancesAdmin).catch(function (err) { afficherErreurZone("adminListeSeances", err); });
+    appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin).catch(function (err) { afficherErreurZone("adminListeMembres", err); });
+    appelServeur("getPaiementsAdmin", membreCourant.code).then(afficherPaiementsAdmin).catch(function (err) { afficherErreurZone("adminListePaiements", err); });
+    appelServeur("getMessagesAdmin", membreCourant.code).then(afficherMessagesAdmin).catch(function (err) { afficherErreurZone("adminListeMessages", err); });
+    appelServeur("getTypesCotisation").then(afficherTypesCotisationAdmin).catch(function (err) { afficherErreurZone("adminListeTypesCotisation", err); });
+    appelServeur("getArchives").then(afficherArchivesAdmin).catch(function (err) { afficherErreurZone("adminListeArchives", err); });
+    appelServeur("getCodesInscriptionAdmin", membreCourant.code).then(afficherCodesInscriptionAdmin).catch(function (err) { afficherErreurZone("adminListeCodesInscription", err); });
+  }
+
+  function gererUploadLogo(evt) {
+    const fichier = evt.target.files[0];
+    if (!fichier) return;
+    const statut = document.getElementById("logoStatut");
+    statut.textContent = "Traitement de l'image…";
+    traiterImageCarree(fichier, 240, function (base64) {
+      document.getElementById("logoPreview").innerHTML = '<img src="data:image/png;base64,' + base64 + '">';
+      statut.textContent = "Envoi en cours…";
+      appelServeur("televerserLogo", membreCourant.code, base64).then(function () {
+        statut.textContent = "✓ Logo mis à jour.";
+        configApp.LogoBase64 = base64;
+        appliquerBranding(configApp);
+      }).catch(function (err) { statut.textContent = "Erreur : " + err.message; });
+    });
+  }
+
+  function sauvegarderApparence() {
+    const nom = document.getElementById("adminNomAssoc").value.trim();
+    const youtube = document.getElementById("adminYoutube").value.trim();
+    const err = document.getElementById("erreurApparence");
+    err.style.display = "none";
+    Promise.all([
+      nom ? appelServeur("mettreAJourConfig", membreCourant.code, "NomAssociation", nom) : Promise.resolve(),
+      youtube ? appelServeur("mettreAJourConfig", membreCourant.code, "LienYoutube", youtube) : Promise.resolve()
+    ]).then(function () {
+      if (nom) { configApp.NomAssociation = nom; appliquerBranding(configApp); }
+      if (youtube) configApp.LienYoutube = youtube;
+      alert("Informations enregistrées.");
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function afficherGroupesAdmin(groupes) {
+    groupes = groupes || [];
+    const zone = document.getElementById("adminListeGroupes");
+    if (!groupes.length) { zone.innerHTML = '<p class="empty-state">Aucun groupe.</p>'; return; }
+    zone.innerHTML = groupes.map(function (g) {
+      return '<div class="item-row">' +
+        '<div><div class="item-nom">' + escapeHtml(g.NomGroupe) + '</div>' +
+        '<div class="item-desc">' + escapeHtml(g.Description || "") + " · Code : <strong>" + escapeHtml(g.CodeAcces) + '</strong></div></div>' +
+        '<button class="danger-outline small" onclick="supprimerGroupeAdmin(\'' + g.ID + '\')">Supprimer</button>' +
+        '</div>';
+    }).join("");
+  }
+
+  function creerGroupe() {
+    const nom = document.getElementById("ngGroupeNom").value.trim();
+    const desc = document.getElementById("ngGroupeDesc").value.trim();
+    const lien = document.getElementById("ngGroupeLien").value.trim();
+    const code = document.getElementById("ngGroupeCode").value.trim();
+    const err = document.getElementById("erreurGroupe");
+    err.style.display = "none";
+    if (!nom || !lien) { err.textContent = "Nom et lien sont requis."; err.style.display = "block"; return; }
+    appelServeur("ajouterGroupe", membreCourant.code, nom, desc, lien, code).then(function (res) {
+      document.getElementById("ngGroupeNom").value = "";
+      document.getElementById("ngGroupeDesc").value = "";
+      document.getElementById("ngGroupeLien").value = "";
+      document.getElementById("ngGroupeCode").value = "";
+      alert("Groupe ajouté. Code d'accès à communiquer aux membres autorisés : " + res.codeGenere);
+      appelServeur("getGroupesAdmin", membreCourant.code).then(afficherGroupesAdmin);
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function supprimerGroupeAdmin(id) {
+    if (!confirm("Supprimer ce groupe ?")) return;
+    appelServeur("supprimerGroupe", membreCourant.code, id).then(function () {
+      appelServeur("getGroupesAdmin", membreCourant.code).then(afficherGroupesAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function afficherSeancesAdmin(seances) {
+    seances = seances || [];
+    const zone = document.getElementById("adminListeSeances");
+    if (!seances.length) { zone.innerHTML = '<p class="empty-state">Aucune séance.</p>'; return; }
+    zone.innerHTML = seances.map(function (s) {
+      const date = s.Date ? new Date(s.Date).toLocaleDateString("fr-FR") : "Date à confirmer";
+      return '<div class="item-row">' +
+        '<div><div class="item-nom">' + escapeHtml(s.Titre) + '</div>' +
+        '<div class="item-desc">' + date + (s.Heure ? " à " + escapeHtml(s.Heure) : "") + '</div></div>' +
+        '<button class="danger-outline small" onclick="supprimerSeanceAdmin(\'' + s.ID + '\')">Supprimer</button>' +
+        '</div>';
+    }).join("");
+  }
+
+  function creerSeance() {
+    const titre = document.getElementById("nsTitre").value.trim();
+    const date = document.getElementById("nsDate").value;
+    const heure = document.getElementById("nsHeure").value;
+    const lien = document.getElementById("nsLien").value.trim();
+    const err = document.getElementById("erreurSeance");
+    err.style.display = "none";
+    if (!titre || !lien) { err.textContent = "Titre et lien sont requis (la date est facultative)."; err.style.display = "block"; return; }
+    appelServeur("ajouterSeance", membreCourant.code, titre, date, heure, lien).then(function () {
+      document.getElementById("nsTitre").value = "";
+      document.getElementById("nsDate").value = "";
+      document.getElementById("nsHeure").value = "";
+      document.getElementById("nsLien").value = "";
+      appelServeur("getSeances").then(afficherSeancesAdmin);
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function supprimerSeanceAdmin(id) {
+    if (!confirm("Supprimer cette séance ?")) return;
+    appelServeur("supprimerSeance", membreCourant.code, id).then(function () {
+      appelServeur("getSeances").then(afficherSeancesAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function afficherMembresAdmin(data) {
+    data = data || { total: 0, actifs: 0, liste: [] };
+    document.getElementById("statTotal").textContent = data.total;
+    document.getElementById("statActifs").textContent = data.actifs;
+    const liste = data.liste || [];
+    const zone = document.getElementById("adminListeMembres");
+    if (!liste.length) { zone.innerHTML = '<p class="empty-state">Aucun membre.</p>'; return; }
+    zone.innerHTML = liste.slice(0, 100).map(function (m) {
+      const nomAff = (m.prenom || m.nom) ? (m.prenom + " " + m.nom) : m.telephone;
+      const pillClass = m.role === "Admin" ? "role-admin" : "role-membre";
+      const codeEchappe = m.code.replace(/'/g, "&#39;");
+      const actionRole = m.role === "Admin"
+        ? '<button class="danger-outline small" onclick="changerRole(\'' + codeEchappe + '\',\'Membre\')">Retirer admin</button>'
+        : '<button class="secondary small" onclick="changerRole(\'' + codeEchappe + '\',\'Admin\')">Rendre admin</button>';
+      return '<div class="item-row">' +
+        '<div><div class="item-nom">' + escapeHtml(nomAff) + '</div>' +
+        '<div class="item-desc">' + escapeHtml(m.telephone || "") + " · " + escapeHtml(m.statut) + '</div></div>' +
+        '<div style="display:flex; align-items:center; gap:8px;">' +
+        '<span class="role-pill ' + pillClass + '">' + escapeHtml(m.role) + "</span>" + actionRole +
+        '</div></div>';
+    }).join("");
+  }
+
+  function changerRole(code, nouveauRole) {
+    appelServeur("definirRoleMembre", membreCourant.code, code, nouveauRole).then(function () {
+      appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function afficherPaiementsAdmin(paiements) {
+    paiements = paiements || [];
+    const zone = document.getElementById("adminListePaiements");
+    if (!paiements.length) { zone.innerHTML = '<p class="empty-state">Aucun paiement enregistré.</p>'; return; }
+    zone.innerHTML = '<table class="mini-table"><tr><th>Date</th><th>Membre</th><th>Catégorie</th><th>Type</th><th>Montant</th><th>Statut</th><th>Action</th></tr>' +
+      paiements.map(function (p) {
+        const date = p.Date ? new Date(p.Date).toLocaleDateString("fr-FR") : "";
+        const okClass = p.Statut === "Confirmé" ? "success-text" : "error";
+        const action = p.Statut === "Confirmé"
+          ? "✓"
+          : '<button class="small secondary" onclick="validerPaiementAdminClick(\'' + p.TransactionID + '\')">Valider</button>';
+        return "<tr><td>" + date + "</td><td>" + escapeHtml(p.Nom || p.CodeAffiche) + "</td>" +
+          "<td>" + escapeHtml(p.Categorie || "Cotisation") + "</td>" +
+          "<td>" + escapeHtml(p.TypeCotisation || "—") + "</td>" +
+          "<td>" + Number(p.Montant).toLocaleString("fr-FR") + "</td>" +
+          '<td class="' + okClass + '">' + escapeHtml(p.Statut) + "</td><td>" + action + "</td></tr>";
+      }).join("") + "</table>";
+  }
+
+  function validerPaiementAdminClick(transactionId) {
+    if (!confirm("Confirmer que ce paiement a bien été reçu ?")) return;
+    appelServeur("validerPaiementAdmin", membreCourant.code, transactionId).then(function () {
+      appelServeur("getPaiementsAdmin", membreCourant.code).then(afficherPaiementsAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function enregistrerPaiementManuelAdmin() {
+    const identifiant = document.getElementById("pmIdentifiant").value.trim();
+    const type = document.getElementById("pmType").value.trim();
+    const categorie = document.getElementById("pmCategorie").value;
+    const montant = document.getElementById("pmMontant").value;
+    const err = document.getElementById("erreurPaiementManuel");
+    err.style.display = "none";
+    if (!identifiant || !montant) { err.textContent = "Le membre et le montant sont requis."; err.style.display = "block"; return; }
+    appelServeur("enregistrerPaiementManuel", membreCourant.code, identifiant, type, montant, categorie).then(function (res) {
+      if (!res.succes) { err.textContent = res.message || "Impossible d'enregistrer ce paiement."; err.style.display = "block"; return; }
+      document.getElementById("pmIdentifiant").value = "";
+      document.getElementById("pmType").value = "";
+      document.getElementById("pmMontant").value = "";
+      appelServeur("getPaiementsAdmin", membreCourant.code).then(afficherPaiementsAdmin);
+      alert("Paiement enregistré et confirmé.");
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function afficherMessagesAdmin(messages) {
+    messages = messages || [];
+    const zone = document.getElementById("adminListeMessages");
+    if (!messages.length) { zone.innerHTML = '<p class="empty-state">Aucun message reçu.</p>'; return; }
+    zone.innerHTML = messages.map(function (m) {
+      const date = m.Date ? new Date(m.Date).toLocaleDateString("fr-FR") : "";
+      const pillClass = m.Statut === "Traité" ? "statut-traite" : "statut-nouveau";
+      const reponseExistante = m.Reponse ? escapeHtml(m.Reponse) : "";
+      return '<div class="admin-message-card">' +
+        '<div class="item-row" style="padding-top:0;">' +
+        '<div><div class="item-nom">' + escapeHtml(m.NomMembre) + '</div><div class="item-desc">' + date + "</div></div>" +
+        '<span class="statut-pill ' + pillClass + '">' + escapeHtml(m.Statut) + "</span>" +
+        "</div>" +
+        '<p style="font-size:14px; margin:8px 0;">' + escapeHtml(m.Message) + "</p>" +
+        '<textarea id="reponse-' + m.ID + '" rows="2" placeholder="Votre réponse…">' + reponseExistante + "</textarea>" +
+        '<button class="small secondary" onclick="envoyerReponse(\'' + m.ID + '\')">Répondre</button>' +
+        "</div>";
+    }).join("");
+  }
+
+  function envoyerReponse(idMessage) {
+    const texte = document.getElementById("reponse-" + idMessage).value.trim();
+    if (!texte) return;
+    appelServeur("repondreMessage", membreCourant.code, idMessage, texte).then(function () {
+      appelServeur("getMessagesAdmin", membreCourant.code).then(afficherMessagesAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function afficherTypesCotisationAdmin(types) {
+    types = types || [];
+    const zone = document.getElementById("adminListeTypesCotisation");
+    if (!types.length) { zone.innerHTML = '<p class="empty-state">Aucune campagne de cotisation.</p>'; return; }
+    zone.innerHTML = types.map(function (t) {
+      const aObjectif = Number(t.MontantObjectif) > 0;
+      const barre = aObjectif
+        ? '<div class="cotisation-progress-track"><div class="cotisation-progress-fill" style="width:' + t.Pourcentage + '%;"></div></div>' +
+          '<div class="cotisation-montants-row"><span>' + Number(t.MontantCollecte).toLocaleString("fr-FR") + ' F collectés (' + t.Pourcentage + '%)</span>' +
+          '<span>Objectif : ' + Number(t.MontantObjectif).toLocaleString("fr-FR") + ' F</span></div>'
+        : '';
+      const dates = (t.DateDebut || t.DateFin)
+        ? '<div class="cotisation-dates">' + (t.DateDebut ? "Du " + new Date(t.DateDebut).toLocaleDateString("fr-FR") : "") +
+          (t.DateFin ? " au " + new Date(t.DateFin).toLocaleDateString("fr-FR") : "") + '</div>'
+        : '';
+      return '<div class="item-block">' +
+        '<div class="item-row" style="border:none;padding:0;">' +
+        '<div><div class="item-nom">' + escapeHtml(t.Nom) + '</div>' +
+        '<div class="item-desc">Suggéré : ' + Number(t.Montant).toLocaleString("fr-FR") + " FCFA · " + escapeHtml(t.Periodicite) + '</div>' + dates + '</div>' +
+        '<button class="danger-outline small" onclick="supprimerTypeCotisationAdmin(\'' + t.ID + '\')">Supprimer</button>' +
+        '</div>' + barre +
+        '</div>';
+    }).join("");
+  }
+
+  function creerTypeCotisation() {
+    const nom = document.getElementById("ntcNom").value.trim();
+    const montant = document.getElementById("ntcMontant").value;
+    const objectif = document.getElementById("ntcObjectif").value;
+    const dateDebut = document.getElementById("ntcDateDebut").value;
+    const dateFin = document.getElementById("ntcDateFin").value;
+    const periodicite = document.getElementById("ntcPeriodicite").value;
+    const err = document.getElementById("erreurTypeCotisation");
+    err.style.display = "none";
+    if (!nom || !montant) { err.textContent = "Le nom et le montant suggéré sont requis."; err.style.display = "block"; return; }
+    appelServeur("ajouterTypeCotisation", membreCourant.code, nom, montant, objectif, dateDebut, dateFin, periodicite).then(function () {
+      document.getElementById("ntcNom").value = "";
+      document.getElementById("ntcMontant").value = "";
+      document.getElementById("ntcObjectif").value = "";
+      document.getElementById("ntcDateDebut").value = "";
+      document.getElementById("ntcDateFin").value = "";
+      appelServeur("getTypesCotisation").then(afficherTypesCotisationAdmin);
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function supprimerTypeCotisationAdmin(id) {
+    if (!confirm("Supprimer cette campagne de cotisation ?")) return;
+    appelServeur("supprimerTypeCotisation", membreCourant.code, id).then(function () {
+      appelServeur("getTypesCotisation").then(afficherTypesCotisationAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  // ==================== ARCHIVES (admin) ====================
+  function afficherArchivesAdmin(archives) {
+    archives = archives || [];
+    const zone = document.getElementById("adminListeArchives");
+    if (!archives.length) { zone.innerHTML = '<p class="empty-state">Aucune archive.</p>'; return; }
+    zone.innerHTML = archives.map(function (a) {
+      const icone = a.Type === "Audio" ? "🎧" : "📄";
+      return '<div class="item-row">' +
+        '<div><div class="item-nom">' + icone + ' ' + escapeHtml(a.Titre) + '</div>' +
+        '<div class="item-desc">' + escapeHtml(a.Description || "") + " · Ajouté le " + escapeHtml(a.DateAjout) + '</div></div>' +
+        '<button class="danger-outline small" onclick="supprimerArchiveAdmin(\'' + a.ID + '\')">Supprimer</button>' +
+        '</div>';
+    }).join("");
+  }
+
+  function creerArchive() {
+    const titre = document.getElementById("arcTitre").value.trim();
+    const description = document.getElementById("arcDescription").value.trim();
+    const type = document.getElementById("arcType").value;
+    const lien = document.getElementById("arcLienDrive").value.trim();
+    const err = document.getElementById("erreurArchive");
+    err.style.display = "none";
+    if (!titre || !lien) { err.textContent = "Le titre et le lien Google Drive sont requis."; err.style.display = "block"; return; }
+    appelServeur("ajouterArchive", membreCourant.code, titre, description, type, lien).then(function () {
+      document.getElementById("arcTitre").value = "";
+      document.getElementById("arcDescription").value = "";
+      document.getElementById("arcLienDrive").value = "";
+      appelServeur("getArchives").then(afficherArchivesAdmin);
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function supprimerArchiveAdmin(id) {
+    if (!confirm("Supprimer cette archive ?")) return;
+    appelServeur("supprimerArchive", membreCourant.code, id).then(function () {
+      appelServeur("getArchives").then(afficherArchivesAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+
+  // ==================== CODES D'INSCRIPTION ====================
+  function genererCodesAdmin() {
+    const quantite = Number(document.getElementById("nbCodesInscription").value || 1);
+    const note = document.getElementById("noteCodesInscription").value.trim();
+    const err = document.getElementById("erreurCodesInscription");
+    const box = document.getElementById("codesGeneresBox");
+    const btn = document.getElementById("btnCopierCodes");
+    err.style.display = "none";
+    box.style.display = "none";
+    btn.style.display = "none";
+    if (quantite < 1 || quantite > 100) {
+      err.textContent = "Le nombre doit être compris entre 1 et 100.";
+      err.style.display = "block";
+      return;
+    }
+    appelServeur("genererCodesInscription", membreCourant.code, quantite, note).then(function(res) {
+      codesGeneresDerniereFois = res.codes || [];
+      box.textContent = codesGeneresDerniereFois.join("\n");
+      box.style.display = "block";
+      btn.style.display = "inline-block";
+      appelServeur("getCodesInscriptionAdmin", membreCourant.code).then(afficherCodesInscriptionAdmin);
+    }).catch(function(e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function copierCodesGeneres() {
+    if (!codesGeneresDerniereFois.length) return;
+    const texte = codesGeneresDerniereFois.join("\n");
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texte).then(function() { alert("Codes copiés dans le presse-papiers."); });
+    } else {
+      const zone = document.createElement("textarea");
+      zone.value = texte; document.body.appendChild(zone); zone.select();
+      document.execCommand("copy"); zone.remove();
+      alert("Codes copiés dans le presse-papiers.");
+    }
+  }
+
+  function afficherCodesInscriptionAdmin(codes) {
+    codes = codes || [];
+    const zone = document.getElementById("adminListeCodesInscription");
+    if (!codes.length) { zone.innerHTML = '<p class="empty-state">Aucun code généré.</p>'; return; }
+    zone.innerHTML = '<table class="mini-table"><tr><th>Code</th><th>Statut</th><th>Créé le</th><th>Utilisé par</th><th>Action</th></tr>' +
+      codes.map(function(c) {
+        const statut = String(c.statut || "");
+        const classe = statut.toLowerCase() === "disponible" ? "success-text" : (statut.toLowerCase() === "utilisé" ? "error" : "");
+        const action = statut.toLowerCase() === "disponible" ? '<button class="danger-outline small" onclick="desactiverCodeAdmin(\'' + escapeHtml(c.code).replace(/'/g, "&#39;") + '\')">Désactiver</button>' : '—';
+        return '<tr><td><strong>' + escapeHtml(c.code) + '</strong></td><td class="' + classe + '">' + escapeHtml(statut) + '</td><td>' + escapeHtml(c.dateCreation) + '</td><td>' + escapeHtml(c.utilisePar) + '</td><td>' + action + '</td></tr>';
+      }).join("") + '</table>';
+  }
+
+  function desactiverCodeAdmin(code) {
+    if (!confirm("Désactiver le code " + code + " ?")) return;
+    appelServeur("desactiverCodeInscription", membreCourant.code, code).then(function(res) {
+      if (!res.succes) { alert(res.message || "Impossible de désactiver le code."); return; }
+      appelServeur("getCodesInscriptionAdmin", membreCourant.code).then(afficherCodesInscriptionAdmin);
+    }).catch(function(e) { alert("Erreur : " + e.message); });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str || "";
+    return div.innerHTML;
+  }
+</script>
+</body>
+</html>
