@@ -1,6 +1,6 @@
 {
-  "name": "Association du Réveil Chrétien",
-  "short_name": "Espace Membres",
+  "name": "ARC",
+  "short_name": "ARC",
   "description": "Espace membres de l'Association du Réveil Chrétien",
   "start_url": "./index.html",
   "scope": "./",
