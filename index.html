@@ -1550,13 +1550,18 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }).join("");
   }
 
-  // --- Enregistrement vocal (façon WhatsApp) ---
+  // --- Enregistrement vocal (façon WhatsApp) — réutilisé pour le membre ET la réponse admin ---
   let enregistreurAudio = null;
   let morceauxAudio = [];
   let chronoInterval = null;
   let secondesEcoulees = 0;
+  let cibleReponseAudioAdmin = null; // null = message du membre, sinon ID du message auquel l'admin répond
 
-  function toggleEnregistrementAudio() {
+  function toggleEnregistrementAudio(idMessageAdmin) {
+    cibleReponseAudioAdmin = idMessageAdmin || null;
+    const idBouton = idMessageAdmin ? "btnMicroReponse-" + idMessageAdmin : "btnMicroMessage";
+    const idChrono = idMessageAdmin ? "chronoReponse-" + idMessageAdmin : "chronoAudio";
+
     if (enregistreurAudio && enregistreurAudio.state === "recording") {
       enregistreurAudio.stop();
       return;
@@ -1572,29 +1577,38 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       enregistreurAudio.onstop = function () {
         flux.getTracks().forEach(function (t) { t.stop(); });
         clearInterval(chronoInterval);
-        document.getElementById("chronoAudio").style.display = "none";
-        document.getElementById("btnMicroMessage").classList.remove("enregistrement");
-        document.getElementById("btnMicroMessage").textContent = "🎙️ Message vocal";
+        const chronoEl = document.getElementById(idChrono);
+        const boutonEl = document.getElementById(idBouton);
+        if (chronoEl) chronoEl.style.display = "none";
+        if (boutonEl) { boutonEl.classList.remove("enregistrement"); boutonEl.textContent = idMessageAdmin ? "🎙️" : "🎙️ Message vocal"; }
         const blob = new Blob(morceauxAudio, { type: "audio/webm" });
         const lecteur = new FileReader();
         lecteur.onload = function () {
           const base64 = lecteur.result.split(",")[1];
-          appelServeur("envoyerMessageAudio", membreCourant.code, base64).then(function () {
-            chargerMesMessages();
-          }).catch(function (err) { alert("Erreur envoi audio : " + err.message); });
+          if (cibleReponseAudioAdmin) {
+            appelServeur("repondreMessageAudio", membreCourant.code, cibleReponseAudioAdmin, base64).then(function () {
+              appelServeur("getMessagesAdmin", membreCourant.code).then(afficherMessagesAdmin);
+            }).catch(function (err) { alert("Erreur envoi audio : " + err.message); });
+          } else {
+            appelServeur("envoyerMessageAudio", membreCourant.code, base64).then(function () {
+              chargerMesMessages();
+            }).catch(function (err) { alert("Erreur envoi audio : " + err.message); });
+          }
         };
         lecteur.readAsDataURL(blob);
       };
       enregistreurAudio.start();
       secondesEcoulees = 0;
-      document.getElementById("chronoAudio").style.display = "inline";
-      document.getElementById("btnMicroMessage").classList.add("enregistrement");
-      document.getElementById("btnMicroMessage").textContent = "⏹️ Arrêter";
+      const chronoEl = document.getElementById(idChrono);
+      const boutonEl = document.getElementById(idBouton);
+      if (chronoEl) chronoEl.style.display = "inline";
+      if (boutonEl) { boutonEl.classList.add("enregistrement"); boutonEl.textContent = "⏹️"; }
       chronoInterval = setInterval(function () {
         secondesEcoulees++;
         const m = String(Math.floor(secondesEcoulees / 60)).padStart(2, "0");
         const s = String(secondesEcoulees % 60).padStart(2, "0");
-        document.getElementById("chronoAudio").textContent = m + ":" + s;
+        const chronoEl2 = document.getElementById(idChrono);
+        if (chronoEl2) chronoEl2.textContent = m + ":" + s;
       }, 1000);
     }).catch(function () {
       alert("Impossible d'accéder au microphone. Vérifiez les autorisations de l'application.");
@@ -1958,15 +1972,26 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     zone.innerHTML = messages.map(function (m) {
       const date = m.Date ? new Date(m.Date).toLocaleDateString("fr-FR") : "";
       const pillClass = m.Statut === "Traité" ? "statut-traite" : "statut-nouveau";
-      const reponseExistante = m.Reponse ? escapeHtml(m.Reponse) : "";
+      const contenuMessage = m.TypeMessage === "Audio"
+        ? '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + m.Message + '/preview" allow="autoplay"></iframe>'
+        : '<p style="font-size:14px; margin:8px 0;">' + escapeHtml(m.Message) + "</p>";
+      const reponseExistante = (m.Reponse && m.ReponseType !== "Audio") ? escapeHtml(m.Reponse) : "";
+      const reponseAudioExistante = (m.Reponse && m.ReponseType === "Audio")
+        ? '<div class="item-desc" style="margin-bottom:6px;">Réponse vocale déjà envoyée :</div><iframe class="audio-frame" src="https://drive.google.com/file/d/' + m.Reponse + '/preview" allow="autoplay"></iframe>'
+        : "";
       return '<div class="admin-message-card">' +
         '<div class="item-row" style="padding-top:0;">' +
         '<div><div class="item-nom">' + escapeHtml(m.NomMembre) + '</div><div class="item-desc">' + date + "</div></div>" +
         '<span class="statut-pill ' + pillClass + '">' + escapeHtml(m.Statut) + "</span>" +
         "</div>" +
-        '<p style="font-size:14px; margin:8px 0;">' + escapeHtml(m.Message) + "</p>" +
-        '<textarea id="reponse-' + m.ID + '" rows="2" placeholder="Votre réponse…">' + reponseExistante + "</textarea>" +
-        '<button class="small secondary" onclick="envoyerReponse(\'' + m.ID + '\')">Répondre</button>' +
+        contenuMessage +
+        reponseAudioExistante +
+        '<textarea id="reponse-' + m.ID + '" rows="2" placeholder="Votre réponse écrite…">' + reponseExistante + "</textarea>" +
+        '<div style="display:flex;gap:8px;align-items:center;">' +
+        '<button class="small secondary" onclick="envoyerReponse(\'' + m.ID + '\')">Répondre par écrit</button>' +
+        '<button class="small btn-micro" id="btnMicroReponse-' + m.ID + '" style="width:auto;flex-shrink:0;" onclick="toggleEnregistrementAudio(\'' + m.ID + '\')">🎙️</button>' +
+        '<span class="chrono-enregistrement" id="chronoReponse-' + m.ID + '" style="display:none;font-size:11px;">00:00</span>' +
+        "</div>" +
         "</div>";
     }).join("");
   }
