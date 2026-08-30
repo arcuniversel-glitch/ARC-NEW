@@ -14,14 +14,16 @@
   <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap');
 :root{--blue:#0757a8;--blue2:#0b2f68;--red:#d71920;--red2:#a90812;--yellow:#f4c400;--ink:#17233c;--muted:#69758a;--bg:#f4f7fb;--card:#fff;--line:#e4e9f2;--green:#168653;--danger:#c62828;--shadow:0 12px 35px rgba(12,47,104,.09)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#f7f9fd,#eef3f9);color:var(--ink);font-family:Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased}h1,h2,.display{font-family:Montserrat,Arial,sans-serif}.wrap{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:28px 0 70px}.center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 10% 10%,rgba(7,87,168,.13),transparent 35%),radial-gradient(circle at 90% 90%,rgba(215,25,32,.13),transparent 35%)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#f7f9fd,#eef3f9);color:var(--ink);font-family:Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased;top:0 !important;position:static !important}.goog-te-banner-frame,.goog-te-gadget-icon,body>.skiptranslate{display:none !important}#google_translate_element{display:none !important}h1,h2,.display{font-family:Montserrat,Arial,sans-serif}.wrap{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:28px 0 70px}.center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 10% 10%,rgba(7,87,168,.13),transparent 35%),radial-gradient(circle at 90% 90%,rgba(215,25,32,.13),transparent 35%)}
 .topbar{background:linear-gradient(110deg,var(--blue2),var(--blue) 55%,var(--red));padding:13px max(22px,calc((100% - 1180px)/2));color:#fff;display:none;align-items:center;gap:13px;position:sticky;top:0;z-index:100;box-shadow:0 8px 25px rgba(7,47,104,.22);min-height:72px}.topbar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--yellow)}.logo-circle{width:46px;height:46px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--blue2);font-weight:800;overflow:hidden;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.15)}.logo-circle img,.logo-circle-lg img,.badge-mini-logo img{width:100%;height:100%;object-fit:cover}.topbar-nom{font-size:16px;font-weight:800;line-height:1.25}.topbar-sub{font-size:11px;opacity:.78;margin-top:2px}
 .brand-center{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:24px}.logo-circle-lg{width:92px;height:92px;border-radius:24px;background:#fff;box-shadow:0 14px 35px rgba(7,47,104,.18);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:30px;color:var(--blue2);overflow:hidden;border:4px solid #fff;margin-bottom:14px;position:relative}.logo-circle-lg:after{content:"";position:absolute;inset:-4px;border-radius:27px;padding:4px;background:linear-gradient(135deg,var(--blue),var(--red),var(--yellow));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}.brand-nom{font-family:Montserrat;font-weight:800;font-size:20px;color:var(--blue2);line-height:1.3}.card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow);margin-bottom:18px}.auth-screen .wrap{width:min(520px,calc(100% - 30px))}.auth-screen .card{position:relative;overflow:hidden}.auth-screen .card:before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,var(--blue),var(--red),var(--yellow))}
 h1.titre{font-size:25px;margin:0 0 7px;color:var(--blue2);text-align:center;font-weight:800}.subtitle{color:var(--muted);font-size:14px;margin:0 0 20px;line-height:1.6;text-align:center}.subtitle.left,h1.titre.left{text-align:left}.section-title{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;color:var(--blue2);margin:8px 0 14px}.section-title .ic{font-size:20px}
 input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;margin-bottom:13px;font-family:inherit;background:#fbfcfe;transition:.2s}input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(7,87,168,.09);background:#fff}label.field-label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.55px;margin-bottom:7px;display:block}button{width:100%;padding:13px 16px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:transform .15s,box-shadow .15s,opacity .15s;box-shadow:0 7px 16px rgba(7,87,168,.18)}button:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(7,87,168,.22)}button.secondary{background:#edf3fb;color:var(--blue2);box-shadow:none}button.flame{background:linear-gradient(135deg,var(--red2),var(--red),#ee4a24);box-shadow:0 7px 16px rgba(215,25,32,.18)}button.danger-outline{background:#fff0f0;color:var(--danger);box-shadow:none}button.small{width:auto;padding:9px 14px;font-size:12px}button.full-mt{margin-top:10px}button.ghost-link{background:transparent;color:var(--blue);box-shadow:none;text-decoration:none}button.ghost-link:hover{box-shadow:none}.error{color:var(--danger);font-size:13px;margin:-5px 0 12px}.success-text{color:var(--green);font-size:13px}
 #ecranDashboard{display:none}
-#afficheZone{width:100%;max-width:720px;margin:0 auto;aspect-ratio:3/1;overflow:hidden}
-#afficheZone img{width:100%;height:100%;object-fit:cover;display:block}
+#sliderAfficheZone{width:100%;max-width:720px;margin:0 auto;aspect-ratio:3/1;overflow:hidden;position:relative}
+.slide-affiche{position:absolute;inset:0;opacity:0;transition:opacity .7s ease;}
+.slide-affiche.active{opacity:1;}
+.slide-affiche img{width:100%;height:100%;object-fit:cover;display:block}
 .tabs{display:flex;gap:8px;margin:0 0 22px;overflow-x:auto;padding:5px 2px 8px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{padding:11px 16px;border-radius:12px;background:#fff;color:var(--blue2);font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;border:1px solid var(--line);box-shadow:0 4px 12px rgba(12,47,104,.05);position:relative}.tab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(7,87,168,.2)}.badge-nouveau{position:absolute;top:4px;right:5px;width:9px;height:9px;background:var(--red);border-radius:50%;box-shadow:0 0 0 2px #fff}.section,.auth-screen{display:none}.section.active,.auth-screen.active{display:block}.item-row{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);gap:14px}.item-row:last-child{border-bottom:0}.item-block{border-bottom:1px solid var(--line);padding:15px 0}.item-block:last-child{border-bottom:0}.item-nom{font-weight:800;font-size:14px}.item-desc{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}.btn-rejoindre{width:auto;padding:9px 14px;font-size:12px;background:#1fbe68;box-shadow:none}.btn-meet{background:linear-gradient(135deg,var(--blue2),var(--blue));width:auto;padding:9px 14px;font-size:12px}.join-form{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}.join-form.active{display:flex;gap:8px;flex-wrap:wrap}.join-form input{flex:1;min-width:160px;margin:0}.join-form button{width:auto}.join-error{width:100%;color:var(--danger);font-size:12px}
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}.stat-box{background:linear-gradient(145deg,#fff,#f7faff);border:1px solid var(--line);border-radius:16px;padding:18px;text-align:center;position:relative;overflow:hidden}.stat-box:after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--red),var(--yellow))}.stat-num{font-size:25px;font-weight:800;color:var(--blue2);font-family:Montserrat}.stat-label{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600}
 .badge-portrait{width:330px;max-width:100%;margin:0 auto;border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 18px 45px rgba(7,47,104,.24);position:relative;border:1px solid #e7eaf1}.badge-top-band{background:linear-gradient(135deg,var(--blue2),var(--blue) 55%,var(--red));padding:20px 16px 48px;text-align:center;color:#fff;position:relative}.badge-top-band:after{content:"";position:absolute;bottom:0;left:0;right:0;height:7px;background:var(--yellow)}.badge-mini-logo{width:46px;height:46px;border-radius:13px;background:#fff;margin:0 auto 9px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.75);font-weight:800;color:var(--blue2)}.badge-org-name{font-weight:800;font-size:11px;letter-spacing:.8px;text-transform:uppercase;line-height:1.4}.badge-photo-wrap{width:106px;height:106px;border-radius:50%;background:#eef3f9;border:5px solid white;box-shadow:0 7px 18px rgba(0,0,0,.2);margin:-43px auto 0;overflow:hidden;position:relative;z-index:2;display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--muted)}.badge-photo-wrap img{width:100%;height:100%;object-fit:cover}.badge-body{padding:13px 24px 26px;text-align:center}.badge-fullname{font-family:Montserrat;font-weight:800;font-size:19px;color:var(--ink);margin-top:8px}.badge-role-tag{display:inline-block;margin-top:7px;font-size:10px;font-weight:800;color:#9b0f17;background:#fff0f0;padding:5px 12px;border-radius:999px}.badge-divider{height:1px;background:var(--line);margin:17px 0 13px}.badge-info-row{display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;color:var(--ink);margin-bottom:9px}.badge-status-tag{display:inline-block;margin-top:4px;font-size:10px;font-weight:800;color:var(--green);background:#e7f7ef;padding:5px 12px;border-radius:999px}.badge-qr-wrap{margin-top:18px;display:flex;justify-content:center}.badge-qr-wrap img{border-radius:10px;padding:6px;background:white;border:1px solid var(--line)}.badge-code-small{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.6px}
@@ -45,6 +47,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 .contenu-item{border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px;background:#fff}
 .contenu-item .vis-pill{font-size:9px;font-weight:800;padding:3px 8px;border-radius:999px;background:#edf3fb;color:var(--blue2);margin-left:6px;vertical-align:middle}
 .audio-frame{width:100%;height:64px;border:none;border-radius:10px;margin-top:8px}
+.lecteur-entete{display:flex;gap:12px;align-items:center;padding:12px 14px}
+.lecteur-cover{width:56px;height:56px;border-radius:12px;object-fit:cover;background:#eef3f9;flex-shrink:0}
+.lecteur-controles{display:flex;gap:8px;justify-content:center;padding:0 14px 14px;}
+.lecteur-controles button{width:auto;padding:9px 14px;font-size:16px;background:#edf3fb;color:var(--blue2);box-shadow:none}
+.lecteur-controles button.actif{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff}
 .doc-frame{width:100%;height:70vh;border:none;border-radius:12px;background:#eef3f9}
 /* Playlists */
 .playlist-tuile{background:linear-gradient(145deg,#fff,#f7faff);border:1px solid var(--line);border-radius:16px;padding:18px 10px;text-align:center;cursor:pointer}
@@ -106,12 +113,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     </div>
   </div>
 
-  <!-- Affiche publicitaire (bandeau paysage, visible sur toutes les pages) -->
-  <div id="afficheZone" style="display:none;">
-    <a id="afficheLien" href="#" target="_blank" style="display:block;">
-      <img id="afficheImg" src="" alt="Affiche">
-    </a>
-  </div>
+  <!-- Slider d'affiches publicitaires (visible partout SAUF la page de connexion) -->
+  <div id="sliderAfficheZone" style="display:none;"></div>
 
   <div class="topbar" id="topbar">
     <button id="btnPrecedent" onclick="boutonPrecedent()" class="btn-topbar-mini" style="display:none;">◀ Précédent</button>
@@ -137,6 +140,17 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <button onclick="afficherEcran('connexionForm')">Se connecter</button>
         <button class="secondary full-mt" onclick="demarrerInscription()">Créer un compte</button>
         <button id="btnInstallerAppAccueil" onclick="installerApplication()" class="ghost-link full-mt" style="display:none;">📲 Installer l'application sur mon téléphone</button>
+        <select id="selecteurTraduction" onchange="traduireVers(this.value)" style="margin-top:10px;">
+          <option value="">🌐 Traduire l'application…</option>
+          <option value="fr">Français (original)</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="pt">Português</option>
+          <option value="ar">العربية</option>
+          <option value="de">Deutsch</option>
+          <option value="sw">Kiswahili</option>
+        </select>
+        <div id="google_translate_element" style="display:none;"></div>
         <button onclick="diagnostiquerPWA()" class="ghost-link full-mt" style="font-size:11px;opacity:.7;">🔧 Diagnostic installation (pour le support)</button>
         <div id="diagnosticPWAZone" class="codes-box" style="display:none;user-select:text;-webkit-user-select:text;"></div>
       </div>
@@ -365,6 +379,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <select id="bibleLivre" onchange="chargerChapitreBible()"></select>
           <select id="bibleChapitre" onchange="chargerChapitreBible()" style="max-width:90px;"></select>
         </div>
+        <div class="bible-selecteurs" style="margin-top:8px;">
+          <button class="secondary small" onclick="chapitreBiblePrecedent()">◀ Précédent</button>
+          <button class="secondary small" onclick="chapitreBibleSuivant()">Suivant ▶</button>
+        </div>
       </div>
       <div class="card" id="bibleContenuZone"><div class="empty-state">Choisissez un livre pour commencer la lecture.</div></div>
     </div>
@@ -415,10 +433,43 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     <!-- Audios (playlists par catégorie, Google Drive) -->
     <div class="section" id="section-audios">
       <div class="section-title"><span class="ic">🎧</span> Audios</div>
-      <p class="subtitle left" style="margin-top:-6px;">Réunions et enseignements audio — écoute uniquement.</p>
+      <p class="subtitle left" style="margin-top:-6px;">Réunions et enseignements audio — gratuits ou payants.</p>
       <input type="text" id="rechercheAudios" placeholder="🔎 Rechercher un audio…" oninput="filtrerAudios()">
+      <div class="card" id="lecteurAudioZone" style="display:none;"></div>
       <div id="listeCategoriesAudio"><div class="loading">Chargement…</div></div>
       <div class="card" id="listeAudiosCategorie" style="display:none;"></div>
+    </div>
+
+    <!-- Soumission de contenu (membres ayant le statut Auteur uniquement) -->
+    <div class="section" id="section-soumissions">
+      <div class="section-title"><span class="ic">✍️</span> Soumettre du contenu</div>
+      <div class="card">
+        <p class="subtitle left">Vous avez le statut Auteur : vous pouvez soumettre un document, un audio ou une vidéo dont vous êtes l'auteur. Après vérification, l'administration valide ou rejette votre soumission ; si validée, des frais de publication de <strong>2000 FCFA</strong> vous seront demandés avant la mise en ligne.</p>
+        <label class="field-label">Type de contenu</label>
+        <select id="subType">
+          <option value="Document">Document</option>
+          <option value="Audio">Audio</option>
+          <option value="Video">Vidéo</option>
+        </select>
+        <label class="field-label">Titre</label>
+        <input id="subTitre" type="text" placeholder="Titre de votre œuvre">
+        <label class="field-label">Description (200 mots maximum)</label>
+        <textarea id="subDescription" rows="4" placeholder="Décrivez votre contenu…" oninput="compterMotsSoumission()"></textarea>
+        <div id="compteurMotsSoumission" class="item-desc" style="text-align:right;margin-top:-6px;">0 / 200 mots</div>
+        <label class="field-label">Prix de vente souhaité (FCFA — laissez 0 pour un contenu gratuit)</label>
+        <input id="subPrix" type="number" min="0" value="0">
+        <label class="field-label">Votre e-mail</label>
+        <input id="subEmail" type="email" placeholder="Pour être notifié à chaque achat">
+        <label class="field-label">Fichier (depuis votre téléphone ou ordinateur)</label>
+        <input type="file" id="subFichier">
+        <label class="field-label">Couverture (facultative)</label>
+        <div id="subCoverPreviewZone" style="display:none;margin-bottom:10px;"><img id="subCoverPreviewImg" style="width:100px;height:60px;object-fit:cover;border-radius:10px;"></div>
+        <label class="file-btn-label">🖼️ Choisir une image<input type="file" id="subCoverFichier" accept="image/*" style="display:none;" onchange="previsualiserCoverGenerique(event,'subCoverPreviewImg','subCoverPreviewZone','soumission')"></label>
+        <div id="erreurSoumission" class="error" style="display:none;margin-top:10px;"></div>
+        <button class="flame full-mt" onclick="envoyerSoumissionClick()">Soumettre pour vérification</button>
+      </div>
+      <p class="field-label" style="margin-bottom:8px;">Mes soumissions</p>
+      <div class="card" id="listeMesSoumissions"><div class="loading">Chargement…</div></div>
     </div>
 
     <div class="section" id="section-messages">
@@ -450,6 +501,12 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div id="listePlaylists"><div class="loading">Chargement…</div></div>
       <div class="card" id="listeVideosPlaylist" style="display:none;"></div>
       <button class="secondary" onclick="ouvrirYoutube()">Voir toute la chaîne YouTube</button>
+
+      <div class="section-title" style="margin-top:26px;"><span class="ic">🎬</span> Vidéos de la plateforme</div>
+      <p class="subtitle left" style="margin-top:-6px;">Ajoutées par l'administration ou publiées par nos auteurs — gratuites ou payantes.</p>
+      <input type="text" id="rechercheVideosPlateforme" placeholder="🔎 Rechercher une vidéo…" oninput="filtrerVideosPlateforme()">
+      <div class="card" id="lecteurVideoPlateformeZone" style="display:none;"></div>
+      <div class="card" id="listeVideosPlateforme"><div class="loading">Chargement…</div></div>
     </div>
 
     <div class="section" id="section-prieres">
@@ -599,6 +656,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <div class="card" id="adminListeDemandesPriere"><div class="loading">Chargement…</div></div>
       </div>
 
+      <div class="admin-section" id="admin-soumissions">
+        <div class="card" id="adminListeSoumissions"><div class="loading">Chargement…</div></div>
+      </div>
+
       <div class="admin-section" id="admin-cotisation">
         <div class="card">
           <label class="field-label">Créer une campagne de cotisation</label>
@@ -627,8 +688,18 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
       <div class="admin-section" id="admin-audios">
         <div class="card">
+          <label class="field-label">Catégories (playlists audio)</label>
+          <div id="adminListeCategoriesAudio"><div class="loading">Chargement…</div></div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <input id="nouvelleCategorieAudio" type="text" placeholder="Nouvelle catégorie" style="margin:0;">
+            <button class="secondary small" style="width:auto;" onclick="creerCategorieAudioClick()">Ajouter</button>
+          </div>
+        </div>
+        <div class="card">
           <label class="field-label">Ajouter un audio</label>
           <input id="recTitre" type="text" placeholder="Titre (ex : Réunion du 12 juillet 2026)">
+          <input id="recAuteur" type="text" placeholder="Auteur">
+          <input id="recEmailAuteur" type="email" placeholder="E-mail de l'auteur (pour notification d'achat)">
           <input id="recDescription" type="text" placeholder="Description courte (facultative)">
           <input id="recLienDrive" type="text" placeholder="Lien de partage Google Drive du fichier audio">
           <label class="field-label">Catégorie</label>
@@ -638,6 +709,18 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
             <option value="Public">Tout le monde (y compris visiteurs)</option>
             <option value="Membres">Membres inscrits uniquement</option>
           </select>
+          <label class="field-label">Type</label>
+          <select id="recType" onchange="document.getElementById('recPrixZone').style.display = this.value === 'Payant' ? 'block' : 'none';">
+            <option value="Gratuit">Gratuit</option>
+            <option value="Payant">Payant</option>
+          </select>
+          <div id="recPrixZone" style="display:none;">
+            <label class="field-label">Prix (FCFA)</label>
+            <input id="recPrix" type="number" min="1" placeholder="Ex : 500">
+          </div>
+          <label class="field-label">Couverture (facultative)</label>
+          <div id="recCoverPreviewZone" style="display:none;margin-bottom:10px;"><img id="recCoverPreviewImg" style="width:80px;height:80px;object-fit:cover;border-radius:10px;"></div>
+          <label class="file-btn-label">🖼️ Choisir une image<input type="file" id="recCoverFichier" accept="image/*" style="display:none;" onchange="previsualiserCoverGenerique(event,'recCoverPreviewImg','recCoverPreviewZone','recCoverBase64')"></label>
           <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">
             Uploadez d'abord le fichier sur Google Drive, clic droit > Partager > Copier le lien.
             <strong>Important</strong> : décochez "Les lecteurs peuvent télécharger, imprimer et copier" dans les options de partage.
@@ -670,7 +753,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
             <label class="field-label">Prix (FCFA)</label>
             <input id="docPrix" type="number" min="1" placeholder="Ex : 1000">
           </div>
-          <div id="erreurDocument" class="error" style="display:none;"></div>
+          <label class="field-label">Couverture (facultative)</label>
+          <div id="docCoverPreviewZone" style="display:none;margin-bottom:10px;"><img id="docCoverPreviewImg" style="width:100px;height:60px;object-fit:cover;border-radius:10px;"></div>
+          <label class="file-btn-label">🖼️ Choisir une image<input type="file" id="docCoverFichier" accept="image/*" style="display:none;" onchange="previsualiserCoverGenerique(event,'docCoverPreviewImg','docCoverPreviewZone','document')"></label>
+          <div id="erreurDocument" class="error" style="display:none;margin-top:10px;"></div>
           <button onclick="creerDocumentAdmin()">Ajouter</button>
         </div>
         <div class="card" id="adminListeDocuments"><div class="loading">Chargement…</div></div>
@@ -691,10 +777,37 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         </div>
       </div>
 
+      <div class="admin-section" id="admin-videosPlateforme">
+        <div class="card">
+          <label class="field-label">Ajouter une vidéo (fichier sur Google Drive)</label>
+          <input id="vidTitre" type="text" placeholder="Titre">
+          <input id="vidAuteur" type="text" placeholder="Auteur">
+          <input id="vidEmailAuteur" type="email" placeholder="E-mail de l'auteur (pour notification d'achat)">
+          <input id="vidDescription" type="text" placeholder="Description courte (facultative)">
+          <input id="vidLienDrive" type="text" placeholder="Lien de partage Google Drive du fichier vidéo">
+          <label class="field-label">Type</label>
+          <select id="vidType" onchange="document.getElementById('vidPrixZone').style.display = this.value === 'Payant' ? 'block' : 'none';">
+            <option value="Gratuit">Gratuit</option>
+            <option value="Payant">Payant</option>
+          </select>
+          <div id="vidPrixZone" style="display:none;">
+            <label class="field-label">Prix (FCFA)</label>
+            <input id="vidPrix" type="number" min="1" placeholder="Ex : 1000">
+          </div>
+          <label class="field-label">Couverture (facultative)</label>
+          <div id="vidCoverPreviewZone" style="display:none;margin-bottom:10px;"><img id="vidCoverPreviewImg" style="width:100px;height:60px;object-fit:cover;border-radius:10px;"></div>
+          <label class="file-btn-label">🖼️ Choisir une image<input type="file" id="vidCoverFichier" accept="image/*" style="display:none;" onchange="previsualiserCoverGenerique(event,'vidCoverPreviewImg','vidCoverPreviewZone','video')"></label>
+          <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">Comme les Audios : n'activez pas la restriction "empêcher le téléchargement" sur ce fichier dans Google Drive.</p>
+          <div id="erreurVideoPlateforme" class="error" style="display:none;"></div>
+          <button onclick="creerVideoPlateformeAdmin()">Ajouter</button>
+        </div>
+        <div class="card" id="adminListeVideosPlateforme"><div class="loading">Chargement…</div></div>
+      </div>
+
       <div class="admin-section" id="admin-affiche">
         <div class="card">
-          <label class="field-label">Affiche publicitaire (bandeau paysage, visible sur toutes les pages)</label>
-          <p class="subtitle left" style="margin-top:-4px;">Format paysage recommandé (ex : 1200 × 400 px). L'image sera automatiquement redimensionnée.</p>
+          <label class="field-label">Ajouter une affiche au slider</label>
+          <p class="subtitle left" style="margin-top:-4px;">Format paysage recommandé (ex : 1200 × 400 px). Plusieurs affiches défilent automatiquement, sur toutes les pages sauf la connexion.</p>
           <div id="affichePreviewZone" style="display:none;margin-bottom:12px;border-radius:12px;overflow:hidden;aspect-ratio:3/1;background:#eef3f9;">
             <img id="affichePreviewImg" style="width:100%;height:100%;object-fit:cover;display:block;">
           </div>
@@ -705,9 +818,9 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <label class="field-label" style="margin-top:14px;">Lien au clic (facultatif)</label>
           <input id="afficheLienInput" type="text" placeholder="https://... (ex : événement, groupe WhatsApp)">
           <div id="erreurAffiche" class="error" style="display:none;margin-top:10px;"></div>
-          <button class="flame full-mt" onclick="enregistrerAffiche()">Publier l'affiche</button>
-          <button class="danger-outline small full-mt" onclick="retirerAfficheClick()">Retirer l'affiche actuelle</button>
+          <button class="flame full-mt" onclick="ajouterAfficheClick()">Ajouter au slider</button>
         </div>
+        <div class="card" id="adminListeAffiches"><div class="loading">Chargement…</div></div>
       </div>
 
       <div class="admin-section" id="admin-codes">
@@ -742,7 +855,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // ==================== ADRESSE DE L'API (backend Apps Script) ====================
   // Collez ici l'URL de déploiement de votre Apps Script (celle qui se termine par /exec).
   // C'est la SEULE ligne à modifier après avoir déployé Code.gs comme API.
-  const API_URL = "https://script.google.com/macros/s/AKfycbzUoECvVWaLH4icqZixOMHS8VbG9XhkmkE19JXLK1YbZS4_TVVCJedFzkqIVrzbrgOQ/exec";
+  const API_URL = "COLLEZ_ICI_VOTRE_URL_APPS_SCRIPT_SE_TERMINANT_PAR_/exec";
 
   // ==================== APPEL SERVEUR (via l'API Apps Script) ====================
   // Remplace l'ancien google.script.run : la page est maintenant hébergée séparément
@@ -895,21 +1008,45 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("topbarLogo").innerHTML = logoHtml;
     document.getElementById("accueilLogo").innerHTML = logoHtml;
     document.getElementById("badgeMiniLogo").innerHTML = logoHtml;
-    afficherAffichePub();
   }
 
   // Affiche publicitaire (bandeau paysage visible sur toutes les pages).
-  function afficherAffichePub() {
-    const zone = document.getElementById("afficheZone");
-    if (configApp && configApp.AfficheBase64) {
-      document.getElementById("afficheImg").src = "data:image/png;base64," + configApp.AfficheBase64;
-      const lien = document.getElementById("afficheLien");
-      if (configApp.AfficheLien) { lien.href = configApp.AfficheLien; lien.style.cursor = "pointer"; }
-      else { lien.removeAttribute("href"); lien.style.cursor = "default"; }
-      zone.style.display = "block";
-    } else {
-      zone.style.display = "none";
+  // ==================== SLIDER D'AFFICHES (visible partout sauf la connexion) ====================
+  let affichesCache = [];
+  let indexAfficheActuelle = 0;
+  let intervalAffiche = null;
+
+  function chargerEtAfficherSlider() {
+    appelServeur("getAffiches").then(function (affiches) {
+      affichesCache = affiches || [];
+      construireSliderAffiches();
+    }).catch(function () { /* pas grave, le slider reste simplement masqué */ });
+  }
+
+  function construireSliderAffiches() {
+    const zone = document.getElementById("sliderAfficheZone");
+    clearInterval(intervalAffiche);
+    if (!affichesCache.length) { zone.style.display = "none"; zone.innerHTML = ""; return; }
+    zone.style.display = "block";
+    zone.innerHTML = affichesCache.map(function (a, i) {
+      const img = '<img src="data:image/png;base64,' + a.ImageBase64 + '" alt="Affiche">';
+      const contenu = a.Lien ? '<a href="' + a.Lien.replace(/"/g, "&quot;") + '" target="_blank">' + img + '</a>' : img;
+      return '<div class="slide-affiche' + (i === 0 ? " active" : "") + '">' + contenu + '</div>';
+    }).join("");
+    indexAfficheActuelle = 0;
+    if (affichesCache.length > 1) {
+      intervalAffiche = setInterval(function () {
+        const slides = zone.querySelectorAll(".slide-affiche");
+        slides[indexAfficheActuelle].classList.remove("active");
+        indexAfficheActuelle = (indexAfficheActuelle + 1) % slides.length;
+        slides[indexAfficheActuelle].classList.add("active");
+      }, 5000);
     }
+  }
+
+  function masquerSliderAffiches() {
+    clearInterval(intervalAffiche);
+    document.getElementById("sliderAfficheZone").style.display = "none";
   }
 
   // ==================== NAVIGATION PRE-CONNEXION ====================
@@ -1096,6 +1233,9 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         { id: "videos", label: "▶️ Vidéos" },
         { id: "messages", label: "Messages" }
       ];
+      if (membreCourant && membreCourant.estAuteur) {
+        onglets.push({ id: "soumissions", label: "✍️ Soumissions" });
+      }
       if (membreCourant && PERMISSIONS_CLIENT[membreCourant.role]) {
         onglets.push({ id: "admin", label: "⚙ Admin" });
       }
@@ -1114,7 +1254,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("topbarSub").textContent = "Espace membres";
     document.getElementById("btnDeconnexion").style.display = "inline-flex";
     document.getElementById("btnDeconnexion").textContent = "Se déconnecter";
-    document.getElementById("bonjourNom").textContent = "Bonjour " + membreCourant.prenom + " 👋";
+    document.getElementById("bonjourNom").textContent = "Bienvenue " + membreCourant.prenom + " — " + (membreCourant.statut || "Actif") + " 👋";
     const heroNom = document.getElementById("heroMembreNom"); if (heroNom) heroNom.textContent = (membreCourant.prenom || "") + " " + (membreCourant.nom || "");
     const heroStatut = document.getElementById("heroStatut"); if (heroStatut) { heroStatut.style.display = ""; heroStatut.textContent = "● " + String(membreCourant.statut || "ACTIF").toUpperCase(); }
 
@@ -1123,6 +1263,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     ongletActuel = null;
     afficherOnglet("groupes");
     chargerCompteursEtBadges();
+    chargerEtAfficherSlider();
   }
 
   function entrerModeVisiteur(ongletInitial) {
@@ -1142,6 +1283,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     ongletActuel = null;
     afficherOnglet(ongletInitial || "prieres");
     chargerCompteursEtBadges();
+    chargerEtAfficherSlider();
   }
 
   // ==================== NOTIFICATIONS "NOUVEAU" (points rouges sur les onglets) ====================
@@ -1222,7 +1364,25 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     ongletActuel = null;
     document.getElementById("ecranDashboard").style.display = "none";
     document.getElementById("topbar").style.display = "none";
+    masquerSliderAffiches();
     afficherEcran("accueil");
+  }
+
+  // ==================== TRADUCTION (widget Google Translate gratuit) ====================
+  function traduireVers(langue) {
+    if (!langue) return;
+    const essai = function (tentatives) {
+      const select = document.querySelector("#google_translate_element select.goog-te-combo");
+      if (select) {
+        select.value = langue;
+        select.dispatchEvent(new Event("change"));
+      } else if (tentatives > 0) {
+        setTimeout(function () { essai(tentatives - 1); }, 400);
+      } else {
+        alert("La traduction n'a pas pu se charger. Vérifiez votre connexion et réessayez.");
+      }
+    };
+    essai(10);
   }
 
   function boutonPrecedent() {
@@ -1277,8 +1437,9 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     else if (nom === "documents") chargerDocuments();
     else if (nom === "bible") chargerLivresBible();
     else if (nom === "messages") { chargerMesMessages(); chargerMesAnnonces(); }
-    else if (nom === "videos") chargerPlaylists();
+    else if (nom === "videos") { chargerPlaylists(); chargerVideosPlateforme(); }
     else if (nom === "prieres") chargerSeances();
+    else if (nom === "soumissions") chargerMesSoumissions();
     else if (nom === "admin") chargerDonneesAdmin();
     marquerOngletVu_(nom);
   }
@@ -1293,12 +1454,14 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       { id: "audios", label: "🎧 Audios", permission: "contenus" },
       { id: "documents", label: "📄 Documents", permission: "contenus" },
       { id: "playlists", label: "▶️ Playlists", permission: "contenus" },
+      { id: "videosPlateforme", label: "🎬 Vidéos", permission: "contenus" },
       { id: "affiche", label: "🖼️ Affiche", permission: "contenus" },
       { id: "membres", label: "Membres", permission: "systeme" },
       { id: "annonces", label: "📢 Annonces", permission: "systeme" },
       { id: "paiements", label: "Paiements", permission: "finances" },
       { id: "cotisation", label: "Cotisations", permission: "finances" },
       { id: "demandesPriere", label: "Demandes de prière", permission: "demandesPriere" },
+      { id: "soumissions", label: "✍️ Soumissions", permission: "contenus" },
       { id: "messages", label: "Messages", permission: "systeme" },
       { id: "codes", label: "🔐 Codes d'accès", permission: "systeme" }
     ];
@@ -1333,8 +1496,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }).catch(function (err) { afficherErreurZone("adminListeEnregistrements", err); });
     else if (nom === "documents") appelServeur("getDocuments").then(afficherDocumentsAdmin).catch(function (err) { afficherErreurZone("adminListeDocuments", err); });
     else if (nom === "playlists") appelServeur("getPlaylists").then(afficherPlaylistsAdmin).catch(function (err) { afficherErreurZone("adminListePlaylists", err); });
+    else if (nom === "videosPlateforme") appelServeur("getVideos").then(afficherVideosPlateformeAdmin).catch(function (err) { afficherErreurZone("adminListeVideosPlateforme", err); });
     else if (nom === "affiche") chargerAfficheAdmin();
     else if (nom === "demandesPriere") appelServeur("getDemandesPriereAdmin", membreCourant.code).then(afficherDemandesPriereAdmin).catch(function (err) { afficherErreurZone("adminListeDemandesPriere", err); });
+    else if (nom === "soumissions") appelServeur("getSoumissionsAdmin", membreCourant.code).then(afficherSoumissionsAdmin).catch(function (err) { afficherErreurZone("adminListeSoumissions", err); });
     else if (nom === "codes") appelServeur("getCodesInscriptionAdmin", membreCourant.code).then(afficherCodesInscriptionAdmin).catch(function (err) { afficherErreurZone("adminListeCodesInscription", err); });
   }
 
@@ -1523,6 +1688,36 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       return;
     }
 
+    if (info.categorie === "Audio") {
+      const zone = document.getElementById("lecteurAudioZone");
+      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "Kkiapay", info.nom, null, "Audio")
+        .then(function (res) {
+          if (!res.succes) { alert("Le paiement n'a pas pu être vérifié."); return; }
+          audiosDeverrouilles[info.nom] = true;
+          if (indexAudioActuel >= 0) jouerAudio(indexAudioActuel);
+        }).catch(function (err) { alert("Erreur : " + err.message); });
+      return;
+    }
+
+    if (info.categorie === "Video") {
+      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "Kkiapay", info.nom, null, "Video")
+        .then(function (res) {
+          if (!res.succes) { alert("Le paiement n'a pas pu être vérifié."); return; }
+          videosDeverrouillees[info.nom] = true;
+          if (indexVideoActuel >= 0) jouerVideoPlateforme(indexVideoActuel);
+        }).catch(function (err) { alert("Erreur : " + err.message); });
+      return;
+    }
+
+    if (info.categorie === "Publication") {
+      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "Kkiapay", info.nom, null, "Publication")
+        .then(function (res) {
+          alert(res.succes ? "✓ Paiement confirmé — votre contenu est maintenant publié !" : "Le paiement n'a pas pu être vérifié.");
+          chargerMesSoumissions();
+        }).catch(function (err) { alert("Erreur : " + err.message); });
+      return;
+    }
+
     const estOffrande = info.categorie === "Don";
     const zoneMessage = document.getElementById(estOffrande ? "messageOffrande" : "messagePaiement");
     zoneMessage.textContent = "Vérification du paiement…";
@@ -1585,9 +1780,14 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   let audiosCache = [];
   const CATEGORIES_AUDIO_DEFAUT = ["Séances live", "Prédications & Prières", "Adorations & Louanges", "Témoignages", "Annonces"];
   let categoriesAudioCache = null;
+  let listeAudioActuelle = [];
+  let indexAudioActuel = -1;
+  let repeterAudioActif = false;
+  const audiosDeverrouilles = {};
 
   function chargerAudios() {
     document.getElementById("rechercheAudios").value = "";
+    document.getElementById("lecteurAudioZone").style.display = "none";
     const fonction = modeVisiteur ? "getEnregistrementsPublic" : "getEnregistrements";
     Promise.all([
       appelServeur(fonction),
@@ -1618,18 +1818,22 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function afficherListeAudios(audios, titreZone) {
+    listeAudioActuelle = audios;
     const zone = document.getElementById("listeAudiosCategorie");
     let html = '<button class="secondary small" style="margin-bottom:10px;" onclick="afficherCategoriesAudio()">← Toutes les catégories</button>';
     if (titreZone) html += '<p class="field-label">' + escapeHtml(titreZone) + '</p>';
     if (!audios.length) { zone.innerHTML = html + '<p class="empty-state">Aucun audio ici pour le moment.</p>'; return; }
-    html += audios.map(function (a) {
+    html += audios.map(function (a, i) {
       const pillVisibilite = a.Visibilite === "Membres" ? '<span class="vis-pill">Membres</span>' : '';
-      return '<div class="contenu-item">' +
-        '<div class="item-nom">🎧 ' + escapeHtml(a.Titre) + pillVisibilite + '</div>' +
-        (a.Description ? '<div class="item-desc">' + escapeHtml(a.Description) + '</div>' : '') +
-        '<div class="item-desc">Ajouté le ' + escapeHtml(a.DateAjout) + '</div>' +
-        '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + a.DriveFileId + '/preview" allow="autoplay" oncontextmenu="return false;"></iframe>' +
-        '</div>';
+      const pillPrix = a.Type === "Payant" ? '<span class="vis-pill" style="background:#fff0f0;color:#b00f18;">' + Number(a.Prix).toLocaleString("fr-FR") + ' F</span>' : '';
+      const cover = a.CoverBase64 ? '<img class="lecteur-cover" src="data:image/jpeg;base64,' + a.CoverBase64 + '">' : '<div class="lecteur-cover" style="display:flex;align-items:center;justify-content:center;">🎧</div>';
+      return '<div class="contenu-item" style="display:flex;gap:12px;align-items:center;cursor:pointer;" onclick="jouerAudio(' + i + ')">' +
+        cover +
+        '<div style="flex:1;">' +
+        '<div class="item-nom">' + escapeHtml(a.Titre) + pillVisibilite + pillPrix + '</div>' +
+        (a.Auteur ? '<div class="item-desc">Par ' + escapeHtml(a.Auteur) + '</div>' : '') +
+        '<div class="item-desc">' + escapeHtml(a.DateAjout) + '</div>' +
+        '</div></div>';
     }).join("");
     zone.innerHTML = html;
   }
@@ -1643,6 +1847,245 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       return (a.Titre || "").toLowerCase().indexOf(requete) !== -1 || (a.Description || "").toLowerCase().indexOf(requete) !== -1;
     });
     afficherListeAudios(resultats, "Résultats pour \"" + document.getElementById("rechercheAudios").value.trim() + "\"");
+  }
+
+  // --- Lecteur audio : précédent / suivant / répétition / achat des payants ---
+  function jouerAudio(index) {
+    indexAudioActuel = index;
+    const audio = listeAudioActuelle[index];
+    if (!audio) return;
+    const zone = document.getElementById("lecteurAudioZone");
+    zone.style.display = "block";
+    zone.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    const cover = audio.CoverBase64 ? '<img class="lecteur-cover" src="data:image/jpeg;base64,' + audio.CoverBase64 + '">' : '<div class="lecteur-cover" style="display:flex;align-items:center;justify-content:center;">🎧</div>';
+    const entete = '<div class="lecteur-entete">' + cover +
+      '<div><div class="item-nom">' + escapeHtml(audio.Titre) + '</div>' +
+      (audio.Auteur ? '<div class="item-desc">Par ' + escapeHtml(audio.Auteur) + '</div>' : '') + '</div></div>';
+
+    if (audio.Type === "Payant" && !audiosDeverrouilles[audio.ID]) {
+      zone.innerHTML = entete + '<div style="padding:0 14px 14px;">' +
+        '<p class="item-desc">Contenu payant — ' + Number(audio.Prix).toLocaleString("fr-FR") + ' FCFA</p>' +
+        '<button class="flame" onclick="acheterAudio(\'' + audio.ID + '\',' + Number(audio.Prix) + ')">💳 Acheter et écouter</button>' +
+        '</div>';
+      return;
+    }
+
+    zone.innerHTML = entete + '<div class="loading" style="padding:0 14px 14px;">Chargement…</div>';
+    appelServeur("getLienAudio", codeActuel(), audio.ID, null).then(function (res) {
+      if (!res.succes) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">' + escapeHtml(res.message) + '</p>'; return; }
+      audiosDeverrouilles[audio.ID] = true;
+      afficherLecteurActif(entete, res);
+    }).catch(function (err) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">Erreur : ' + escapeHtml(err.message) + '</p>'; });
+  }
+
+  function afficherLecteurActif(entete, res) {
+    const zone = document.getElementById("lecteurAudioZone");
+    zone.innerHTML = entete +
+      '<iframe class="audio-frame" style="margin:0 14px;width:calc(100% - 28px);" src="' + res.apercu + '" allow="autoplay"></iframe>' +
+      '<div class="lecteur-controles">' +
+      '<button onclick="audioPrecedent()">⏮️</button>' +
+      '<button id="btnRepeterAudio" class="' + (repeterAudioActif ? "actif" : "") + '" onclick="toggleRepeterAudio()">🔁</button>' +
+      '<button onclick="audioSuivant()">⏭️</button>' +
+      '</div>' +
+      '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + res.lien + '" target="_blank">⬇️ Télécharger</a></div>';
+  }
+
+  function audioPrecedent() {
+    if (indexAudioActuel > 0) jouerAudio(indexAudioActuel - 1);
+  }
+
+  function audioSuivant() {
+    if (indexAudioActuel < listeAudioActuelle.length - 1) jouerAudio(indexAudioActuel + 1);
+    else if (repeterAudioActif) jouerAudio(0);
+  }
+
+  function toggleRepeterAudio() {
+    repeterAudioActif = !repeterAudioActif;
+    const bouton = document.getElementById("btnRepeterAudio");
+    if (bouton) bouton.classList.toggle("actif", repeterAudioActif);
+  }
+
+  function acheterAudio(audioId, prix) {
+    if (!configApp || !configApp.kkiapayPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    typeCotisationEnCours = { nom: audioId, montant: prix, periodicite: "", categorie: "Audio" };
+    openKkiapayWidget({ amount: prix, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
+  }
+
+  // ==================== VIDÉOS DE LA PLATEFORME (uploadées, distinctes des playlists YouTube) ====================
+  let videosPlateformeCache = [];
+  let listeVideoPlateformeActuelle = [];
+  let indexVideoActuel = -1;
+  let repeterVideoActif = false;
+  const videosDeverrouillees = {};
+
+  function chargerVideosPlateforme() {
+    document.getElementById("rechercheVideosPlateforme").value = "";
+    document.getElementById("lecteurVideoPlateformeZone").style.display = "none";
+    appelServeur("getVideos").then(function (videos) {
+      videosPlateformeCache = videos || [];
+      afficherVideosPlateforme(videosPlateformeCache);
+    }).catch(function (err) { afficherErreurZone("listeVideosPlateforme", err); });
+  }
+
+  function filtrerVideosPlateforme() {
+    const requete = document.getElementById("rechercheVideosPlateforme").value.trim().toLowerCase();
+    if (!requete) { afficherVideosPlateforme(videosPlateformeCache); return; }
+    afficherVideosPlateforme(videosPlateformeCache.filter(function (v) {
+      return (v.Titre || "").toLowerCase().indexOf(requete) !== -1 || (v.Description || "").toLowerCase().indexOf(requete) !== -1;
+    }));
+  }
+
+  function afficherVideosPlateforme(videos) {
+    listeVideoPlateformeActuelle = videos || [];
+    const zone = document.getElementById("listeVideosPlateforme");
+    if (!listeVideoPlateformeActuelle.length) { zone.innerHTML = '<p class="empty-state">Aucune vidéo pour le moment.</p>'; return; }
+    zone.innerHTML = listeVideoPlateformeActuelle.map(function (v, i) {
+      const pillPrix = v.Type === "Payant" ? '<span class="vis-pill" style="background:#fff0f0;color:#b00f18;">' + Number(v.Prix).toLocaleString("fr-FR") + ' F</span>' : '<span class="vis-pill">Gratuit</span>';
+      const cover = v.CoverBase64 ? '<img class="lecteur-cover" src="data:image/jpeg;base64,' + v.CoverBase64 + '" style="width:72px;height:56px;border-radius:10px;">' : '<div class="lecteur-cover" style="width:72px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;">🎬</div>';
+      return '<div class="contenu-item" style="display:flex;gap:12px;align-items:center;cursor:pointer;" onclick="jouerVideoPlateforme(' + i + ')">' +
+        cover +
+        '<div style="flex:1;">' +
+        '<div class="item-nom">' + escapeHtml(v.Titre) + " " + pillPrix + '</div>' +
+        (v.Auteur ? '<div class="item-desc">Par ' + escapeHtml(v.Auteur) + '</div>' : '') +
+        '<div class="item-desc">' + escapeHtml(v.DateAjout) + '</div>' +
+        '</div></div>';
+    }).join("");
+  }
+
+  function jouerVideoPlateforme(index) {
+    indexVideoActuel = index;
+    const video = listeVideoPlateformeActuelle[index];
+    if (!video) return;
+    const zone = document.getElementById("lecteurVideoPlateformeZone");
+    zone.style.display = "block";
+    zone.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    const entete = '<div class="lecteur-entete"><div><div class="item-nom">' + escapeHtml(video.Titre) + '</div>' +
+      (video.Auteur ? '<div class="item-desc">Par ' + escapeHtml(video.Auteur) + '</div>' : '') + '</div></div>';
+
+    if (video.Type === "Payant" && !videosDeverrouillees[video.ID]) {
+      zone.innerHTML = entete + '<div style="padding:0 14px 14px;">' +
+        '<p class="item-desc">Contenu payant — ' + Number(video.Prix).toLocaleString("fr-FR") + ' FCFA</p>' +
+        '<button class="flame" onclick="acheterVideo(\'' + video.ID + '\',' + Number(video.Prix) + ')">💳 Acheter et regarder</button>' +
+        '</div>';
+      return;
+    }
+
+    zone.innerHTML = entete + '<div class="loading" style="padding:0 14px 14px;">Chargement…</div>';
+    appelServeur("getLienVideo", codeActuel(), video.ID, null).then(function (res) {
+      if (!res.succes) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">' + escapeHtml(res.message) + '</p>'; return; }
+      videosDeverrouillees[video.ID] = true;
+      zone.innerHTML = entete +
+        '<iframe class="video-player-frame" src="' + res.apercu + '" allow="autoplay" allowfullscreen></iframe>' +
+        '<div class="lecteur-controles">' +
+        '<button onclick="videoPrecedente()">⏮️</button>' +
+        '<button id="btnRepeterVideo" class="' + (repeterVideoActif ? "actif" : "") + '" onclick="toggleRepeterVideo()">🔁</button>' +
+        '<button onclick="videoSuivante()">⏭️</button>' +
+        '</div>' +
+        '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + res.lien + '" target="_blank">⬇️ Télécharger</a></div>';
+    }).catch(function (err) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">Erreur : ' + escapeHtml(err.message) + '</p>'; });
+  }
+
+  function videoPrecedente() {
+    if (indexVideoActuel > 0) jouerVideoPlateforme(indexVideoActuel - 1);
+  }
+
+  function videoSuivante() {
+    if (indexVideoActuel < listeVideoPlateformeActuelle.length - 1) jouerVideoPlateforme(indexVideoActuel + 1);
+    else if (repeterVideoActif) jouerVideoPlateforme(0);
+  }
+
+  function toggleRepeterVideo() {
+    repeterVideoActif = !repeterVideoActif;
+    const bouton = document.getElementById("btnRepeterVideo");
+    if (bouton) bouton.classList.toggle("actif", repeterVideoActif);
+  }
+
+  function acheterVideo(videoId, prix) {
+    if (!configApp || !configApp.kkiapayPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    typeCotisationEnCours = { nom: videoId, montant: prix, periodicite: "", categorie: "Video" };
+    openKkiapayWidget({ amount: prix, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
+  }
+
+  // ==================== SOUMISSIONS DE CONTENU (membres Auteur) ====================
+  const LIBELLES_STATUT_SOUMISSION = { EnAttente: "En attente", Validé: "Validé", Rejeté: "Rejeté", Publié: "Publié" };
+  const LIBELLES_TYPE_SOUMISSION = { Document: "📄 Document", Audio: "🎧 Audio", Video: "🎬 Vidéo" };
+
+  function compterMotsSoumission() {
+    const texte = document.getElementById("subDescription").value.trim();
+    const nbMots = texte ? texte.split(/\s+/).filter(Boolean).length : 0;
+    const compteur = document.getElementById("compteurMotsSoumission");
+    compteur.textContent = nbMots + " / 200 mots";
+    compteur.style.color = nbMots > 200 ? "#d71920" : "";
+  }
+
+  function envoyerSoumissionClick() {
+    const err = document.getElementById("erreurSoumission");
+    err.style.display = "none";
+    const type = document.getElementById("subType").value;
+    const titre = document.getElementById("subTitre").value.trim();
+    const description = document.getElementById("subDescription").value.trim();
+    const nbMots = description ? description.split(/\s+/).filter(Boolean).length : 0;
+    const prix = document.getElementById("subPrix").value || 0;
+    const email = document.getElementById("subEmail").value.trim();
+    const fichier = document.getElementById("subFichier").files[0];
+
+    if (!titre) { err.textContent = "Le titre est obligatoire."; err.style.display = "block"; return; }
+    if (nbMots > 200) { err.textContent = "La description dépasse 200 mots."; err.style.display = "block"; return; }
+    if (!email) { err.textContent = "Votre e-mail est obligatoire."; err.style.display = "block"; return; }
+    if (!fichier) { err.textContent = "Choisissez un fichier à soumettre."; err.style.display = "block"; return; }
+
+    const lecteur = new FileReader();
+    lecteur.onload = function () {
+      const base64 = lecteur.result.split(",")[1];
+      appelServeur("soumettreContenu", membreCourant.code, type, titre, description, prix, email, base64, fichier.name, fichier.type || "application/octet-stream", couverturesEnCours.soumission || "")
+        .then(function () {
+          alert("✓ Votre soumission a été envoyée pour vérification.");
+          document.getElementById("subTitre").value = "";
+          document.getElementById("subDescription").value = "";
+          document.getElementById("subPrix").value = "0";
+          document.getElementById("subEmail").value = "";
+          document.getElementById("subFichier").value = "";
+          document.getElementById("subCoverPreviewZone").style.display = "none";
+          document.getElementById("subCoverFichier").value = "";
+          delete couverturesEnCours.soumission;
+          compterMotsSoumission();
+          chargerMesSoumissions();
+        }).catch(function (e) {
+          err.textContent = "Erreur : " + e.message;
+          err.style.display = "block";
+        });
+    };
+    lecteur.readAsDataURL(fichier);
+  }
+
+  function chargerMesSoumissions() {
+    appelServeur("getMesSoumissions", membreCourant.code).then(afficherMesSoumissions).catch(function (err) { afficherErreurZone("listeMesSoumissions", err); });
+  }
+
+  function afficherMesSoumissions(soumissions) {
+    soumissions = soumissions || [];
+    const zone = document.getElementById("listeMesSoumissions");
+    if (!soumissions.length) { zone.innerHTML = '<p class="empty-state">Vous n\u2019avez pas encore soumis de contenu.</p>'; return; }
+    zone.innerHTML = soumissions.map(function (s) {
+      const pillClass = s.Statut === "Publié" ? "role-membre" : s.Statut === "Rejeté" ? "role-admin" : "vis-pill";
+      const actionPaiement = s.Statut === "Validé"
+        ? '<button class="flame small full-mt" onclick="payerPublicationClick(\'' + s.ID + '\')">💳 Payer 2000 FCFA pour publier</button>'
+        : "";
+      return '<div class="item-row">' +
+        '<div><div class="item-nom">' + (LIBELLES_TYPE_SOUMISSION[s.TypeContenu] || s.TypeContenu) + " " + escapeHtml(s.Titre) + '</div>' +
+        '<div class="item-desc">' + escapeHtml(s.Date) + (Number(s.Prix) > 0 ? " · Prix prévu : " + Number(s.Prix).toLocaleString("fr-FR") + " F" : " · Gratuit") + '</div>' +
+        actionPaiement + '</div>' +
+        '<span class="role-pill ' + pillClass + '">' + (LIBELLES_STATUT_SOUMISSION[s.Statut] || s.Statut) + "</span>" +
+        '</div>';
+    }).join("");
+  }
+
+  function payerPublicationClick(idSoumission) {
+    if (!configApp || !configApp.kkiapayPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    typeCotisationEnCours = { nom: idSoumission, montant: 2000, periodicite: "", categorie: "Publication" };
+    openKkiapayWidget({ amount: 2000, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
   }
 
   // ==================== NOS ÉCRITS (documents) ====================
@@ -1677,9 +2120,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const gratuits = documents.filter(function (d) { return d.Type !== "Payant"; });
     const payants = documents.filter(function (d) { return d.Type === "Payant"; });
 
+    function coverHtml(d) {
+      return d.CoverBase64 ? '<img src="data:image/jpeg;base64,' + d.CoverBase64 + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:10px;margin-bottom:8px;">' : '';
+    }
+
     const zoneGratuits = document.getElementById("listeDocumentsGratuits");
     zoneGratuits.innerHTML = gratuits.length ? gratuits.map(function (d) {
-      return '<div class="contenu-item">' +
+      return '<div class="contenu-item">' + coverHtml(d) +
         '<div class="item-nom">📄 ' + escapeHtml(d.Titre) + '</div>' +
         (d.Auteur ? '<div class="item-desc">Par ' + escapeHtml(d.Auteur) + '</div>' : '') +
         (d.Description ? '<div class="item-desc">' + escapeHtml(d.Description) + '</div>' : '') +
@@ -1691,7 +2138,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const zonePayants = document.getElementById("listeDocumentsPayants");
     zonePayants.innerHTML = payants.length ? payants.map(function (d) {
       const titreEchappe = escapeHtml(d.Titre).replace(/'/g, "&#39;");
-      return '<div class="contenu-item">' +
+      return '<div class="contenu-item">' + coverHtml(d) +
         '<div class="item-nom">📄 ' + escapeHtml(d.Titre) + ' <span class="vis-pill">' + Number(d.Prix).toLocaleString("fr-FR") + ' F</span></div>' +
         (d.Auteur ? '<div class="item-desc">Par ' + escapeHtml(d.Auteur) + '</div>' : '') +
         (d.Description ? '<div class="item-desc">' + escapeHtml(d.Description) + '</div>' : '') +
@@ -1764,11 +2211,42 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const zone = document.getElementById("bibleContenuZone");
     zone.innerHTML = '<div class="loading">Chargement…</div>';
     appelServeur("getChapitreBiblique", Number(livreId), Number(chapitre), langueBibleActuelle).then(function (res) {
-      if (!res.succes) { afficherErreurZone("bibleContenuZone", { message: res.message }); return; }
+      if (!res.succes) {
+        // "Suivant" a dépassé le dernier chapitre du livre : on passe au livre suivant, chapitre 1.
+        if (window._bibleAllerLivreSuivant) { window._bibleAllerLivreSuivant = false; changerLivreBible(1); return; }
+        afficherErreurZone("bibleContenuZone", { message: res.message });
+        return;
+      }
       zone.innerHTML = res.versets.map(function (v) {
         return '<div class="bible-verset"><span class="num">' + v.numero + '</span>' + escapeHtml(v.texte) + '</div>';
       }).join("");
     }).catch(function (err) { afficherErreurZone("bibleContenuZone", err); });
+  }
+
+  function chapitreBibleSuivant() {
+    const chapitre = Number(document.getElementById("bibleChapitre").value) || 1;
+    document.getElementById("bibleChapitre").value = chapitre + 1;
+    window._bibleAllerLivreSuivant = true;
+    chargerChapitreBible();
+  }
+
+  function chapitreBiblePrecedent() {
+    const chapitre = Number(document.getElementById("bibleChapitre").value) || 1;
+    if (chapitre > 1) {
+      document.getElementById("bibleChapitre").value = chapitre - 1;
+      chargerChapitreBible();
+    } else {
+      changerLivreBible(-1);
+    }
+  }
+
+  function changerLivreBible(direction) {
+    const selectLivre = document.getElementById("bibleLivre");
+    const nouvelIndex = selectLivre.selectedIndex + direction;
+    if (nouvelIndex < 0 || nouvelIndex >= selectLivre.options.length) return;
+    selectLivre.selectedIndex = nouvelIndex;
+    document.getElementById("bibleChapitre").value = 1;
+    chargerChapitreBible();
   }
 
   // ==================== MESSAGERIE (texte + audio) ====================
@@ -2195,16 +2673,19 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         ? '<button class="secondary small" onclick="reactiverMembreClick(\'' + codeEchappe + '\')">Réactiver</button>'
         : '<input type="number" min="1" value="7" id="joursSuspension-' + m.code + '" style="width:56px;margin:0;padding:6px;font-size:11px;" title="Nombre de jours">' +
           '<button class="secondary small" onclick="suspendreMembreClick(\'' + codeEchappe + '\')">Suspendre</button>';
+      const boutonAuteur = m.estAuteur
+        ? '<button class="danger-outline small" onclick="toggleAuteurClick(\'' + codeEchappe + '\', false)">Retirer Auteur</button>'
+        : '<button class="secondary small" onclick="toggleAuteurClick(\'' + codeEchappe + '\', true)">✍️ Rendre Auteur</button>';
       return '<div class="item-block">' +
         '<div class="item-row" style="border:none;padding-bottom:8px;">' +
-        '<div><div class="item-nom">' + escapeHtml(nomAff) + '</div>' +
+        '<div><div class="item-nom">' + escapeHtml(nomAff) + (m.estAuteur ? ' <span class="vis-pill">Auteur</span>' : '') + '</div>' +
         '<div class="item-desc">' + escapeHtml(m.telephone || "") + " · " + escapeHtml(statutAffiche) + '</div></div>' +
         '<div style="display:flex; align-items:center; gap:8px;">' +
         '<span class="role-pill ' + pillClass + '">' + escapeHtml(LIBELLES_ROLES[m.role] || m.role) + "</span>" +
         '<select style="width:auto;margin:0;padding:6px 8px;font-size:11px;" onchange="changerRole(\'' + codeEchappe + '\', this.value)">' + options + '</select>' +
         '</div></div>' +
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
-        actionsCompte +
+        actionsCompte + boutonAuteur +
         '<button class="danger-outline small" onclick="supprimerMembreClick(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">Retirer</button>' +
         '</div></div>';
     }).join("");
@@ -2234,6 +2715,12 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function supprimerMembreClick(code, nom) {
     if (!confirm('Retirer définitivement "' + nom + '" de la plateforme ? Cette action est irréversible (son historique de paiements est conservé pour la comptabilité).')) return;
     appelServeur("supprimerMembre", membreCourant.code, code).then(function () {
+      appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function toggleAuteurClick(code, estAuteur) {
+    appelServeur("definirStatutAuteur", membreCourant.code, code, estAuteur).then(function () {
       appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
@@ -2507,9 +2994,34 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   // ==================== AUDIOS (admin) ====================
+  let couverturesEnCours = {};
+
+  function previsualiserCoverGenerique(event, imgId, zoneId, cle) {
+    const fichier = event.target.files[0];
+    if (!fichier) return;
+    const image = new Image();
+    const url = URL.createObjectURL(fichier);
+    image.onload = function () {
+      const maxDim = 500;
+      let w = image.width, h = image.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; } else { w = Math.round(w * maxDim / h); h = maxDim; }
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(image, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+      couverturesEnCours[cle] = dataUrl.split(",")[1];
+      document.getElementById(imgId).src = dataUrl;
+      document.getElementById(zoneId).style.display = "block";
+      URL.revokeObjectURL(url);
+    };
+    image.src = url;
+  }
+
   function remplirSelecteurCategoriesAudio() {
     const select = document.getElementById("recCategorie");
-    if (select.options.length) return;
+    select.innerHTML = "";
     (categoriesAudioCache || CATEGORIES_AUDIO_DEFAUT).forEach(function (cat) {
       const option = document.createElement("option");
       option.value = cat; option.textContent = cat;
@@ -2517,15 +3029,60 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     });
   }
 
-  function afficherEnregistrementsAdmin(enregistrements) {
+  function chargerCategoriesAudioAdmin() {
+    appelServeur("getCategoriesAudioAdmin").then(afficherCategoriesAudioAdmin).catch(function (err) { afficherErreurZone("adminListeCategoriesAudio", err); });
+  }
+
+  function afficherCategoriesAudioAdmin(categories) {
+    categories = categories || [];
+    categoriesAudioCache = categories.map(function (c) { return c.Nom; });
     remplirSelecteurCategoriesAudio();
+    const zone = document.getElementById("adminListeCategoriesAudio");
+    if (!categories.length) { zone.innerHTML = '<p class="empty-state">Aucune catégorie.</p>'; return; }
+    zone.innerHTML = categories.map(function (c) {
+      return '<div class="item-row" style="padding:8px 0;">' +
+        '<input type="text" value="' + escapeHtml(c.Nom) + '" id="catAudio-' + c.ID + '" style="margin:0;">' +
+        '<div style="display:flex;gap:6px;">' +
+        '<button class="secondary small" style="width:auto;" onclick="modifierCategorieAudioClick(\'' + c.ID + '\')">💾</button>' +
+        '<button class="danger-outline small" style="width:auto;" onclick="supprimerCategorieAudioClick(\'' + c.ID + '\')">🗑️</button>' +
+        '</div></div>';
+    }).join("");
+  }
+
+  function creerCategorieAudioClick() {
+    const nom = document.getElementById("nouvelleCategorieAudio").value.trim();
+    if (!nom) return;
+    appelServeur("ajouterCategorieAudio", membreCourant.code, nom).then(function () {
+      document.getElementById("nouvelleCategorieAudio").value = "";
+      chargerCategoriesAudioAdmin();
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function modifierCategorieAudioClick(id) {
+    const nouveauNom = document.getElementById("catAudio-" + id).value.trim();
+    if (!nouveauNom) return;
+    appelServeur("modifierCategorieAudio", membreCourant.code, id, nouveauNom).then(function () {
+      chargerCategoriesAudioAdmin();
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function supprimerCategorieAudioClick(id) {
+    if (!confirm("Supprimer cette catégorie ?")) return;
+    appelServeur("supprimerCategorieAudio", membreCourant.code, id).then(function () {
+      chargerCategoriesAudioAdmin();
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function afficherEnregistrementsAdmin(enregistrements) {
+    if (!categoriesAudioCache) { chargerCategoriesAudioAdmin(); } else { remplirSelecteurCategoriesAudio(); }
     enregistrements = enregistrements || [];
     const zone = document.getElementById("adminListeEnregistrements");
     if (!enregistrements.length) { zone.innerHTML = '<p class="empty-state">Aucun audio.</p>'; return; }
     zone.innerHTML = enregistrements.map(function (a) {
+      const libellePrix = a.Type === "Payant" ? Number(a.Prix).toLocaleString("fr-FR") + " FCFA" : "Gratuit";
       return '<div class="item-row">' +
-        '<div><div class="item-nom">🎧 ' + escapeHtml(a.Titre) + '</div>' +
-        '<div class="item-desc">' + escapeHtml(a.Categorie) + " · " + escapeHtml(a.Visibilite) + " · Ajouté le " + escapeHtml(a.DateAjout) + '</div></div>' +
+        '<div><div class="item-nom">🎧 ' + escapeHtml(a.Titre) + ' <span class="role-pill ' + (a.Type === "Payant" ? "role-admin" : "role-membre") + '">' + libellePrix + '</span></div>' +
+        '<div class="item-desc">' + (a.Auteur ? "Par " + escapeHtml(a.Auteur) + " · " : "") + escapeHtml(a.Categorie) + " · " + escapeHtml(a.Visibilite) + " · Ajouté le " + escapeHtml(a.DateAjout) + '</div></div>' +
         '<button class="danger-outline small" onclick="supprimerEnregistrementAdmin(\'' + a.ID + '\')">Supprimer</button>' +
         '</div>';
     }).join("");
@@ -2533,17 +3090,28 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function creerEnregistrementAdmin() {
     const titre = document.getElementById("recTitre").value.trim();
+    const auteur = document.getElementById("recAuteur").value.trim();
+    const emailAuteur = document.getElementById("recEmailAuteur").value.trim();
     const description = document.getElementById("recDescription").value.trim();
     const lien = document.getElementById("recLienDrive").value.trim();
     const categorie = document.getElementById("recCategorie").value;
     const visibilite = document.getElementById("recVisibilite").value;
+    const type = document.getElementById("recType").value;
+    const prix = document.getElementById("recPrix").value;
     const err = document.getElementById("erreurEnregistrement");
     err.style.display = "none";
     if (!titre || !lien) { err.textContent = "Le titre et le lien Google Drive sont requis."; err.style.display = "block"; return; }
-    appelServeur("ajouterEnregistrement", membreCourant.code, titre, description, lien, visibilite, categorie).then(function () {
+    if (type === "Payant" && (!prix || Number(prix) <= 0)) { err.textContent = "Indiquez un prix pour un audio payant."; err.style.display = "block"; return; }
+    appelServeur("ajouterEnregistrement", membreCourant.code, titre, description, lien, visibilite, categorie, type, prix, auteur, emailAuteur, couverturesEnCours.audio || "").then(function () {
       document.getElementById("recTitre").value = "";
+      document.getElementById("recAuteur").value = "";
+      document.getElementById("recEmailAuteur").value = "";
       document.getElementById("recDescription").value = "";
       document.getElementById("recLienDrive").value = "";
+      document.getElementById("recPrix").value = "";
+      document.getElementById("recCoverPreviewZone").style.display = "none";
+      document.getElementById("recCoverFichier").value = "";
+      delete couverturesEnCours.audio;
       appelServeur("getEnregistrements").then(afficherEnregistrementsAdmin);
     }).catch(function (e) {
       err.textContent = "Erreur : " + e.message;
@@ -2586,13 +3154,16 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     err.style.display = "none";
     if (!titre || !lien) { err.textContent = "Le titre et le lien Google Drive sont requis."; err.style.display = "block"; return; }
     if (type === "Payant" && (!prix || Number(prix) <= 0)) { err.textContent = "Indiquez un prix pour un document payant."; err.style.display = "block"; return; }
-    appelServeur("ajouterDocument", membreCourant.code, titre, description, lien, type, prix, auteur, emailAuteur).then(function () {
+    appelServeur("ajouterDocument", membreCourant.code, titre, description, lien, type, prix, auteur, emailAuteur, couverturesEnCours.document || "").then(function () {
       document.getElementById("docTitre").value = "";
       document.getElementById("docAuteur").value = "";
       document.getElementById("docEmailAuteur").value = "";
       document.getElementById("docDescription").value = "";
       document.getElementById("docLienDrive").value = "";
       document.getElementById("docPrix").value = "";
+      document.getElementById("docCoverPreviewZone").style.display = "none";
+      document.getElementById("docCoverFichier").value = "";
+      delete couverturesEnCours.document;
       appelServeur("getDocuments").then(afficherDocumentsAdmin);
     }).catch(function (e) {
       err.textContent = "Erreur : " + e.message;
@@ -2656,19 +3227,79 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
+  // --- Vidéos de la plateforme (admin) ---
+  function afficherVideosPlateformeAdmin(videos) {
+    videos = videos || [];
+    const zone = document.getElementById("adminListeVideosPlateforme");
+    if (!videos.length) { zone.innerHTML = '<p class="empty-state">Aucune vidéo.</p>'; return; }
+    zone.innerHTML = videos.map(function (v) {
+      const libellePrix = v.Type === "Payant" ? Number(v.Prix).toLocaleString("fr-FR") + " FCFA" : "Gratuit";
+      return '<div class="item-row">' +
+        '<div><div class="item-nom">🎬 ' + escapeHtml(v.Titre) + ' <span class="role-pill ' + (v.Type === "Payant" ? "role-admin" : "role-membre") + '">' + libellePrix + '</span></div>' +
+        '<div class="item-desc">' + (v.Auteur ? "Par " + escapeHtml(v.Auteur) + " · " : "") + "Ajouté le " + escapeHtml(v.DateAjout) + '</div></div>' +
+        '<button class="danger-outline small" onclick="supprimerVideoPlateformeAdmin(\'' + v.ID + '\')">Supprimer</button>' +
+        '</div>';
+    }).join("");
+  }
+
+  function creerVideoPlateformeAdmin() {
+    const titre = document.getElementById("vidTitre").value.trim();
+    const auteur = document.getElementById("vidAuteur").value.trim();
+    const emailAuteur = document.getElementById("vidEmailAuteur").value.trim();
+    const description = document.getElementById("vidDescription").value.trim();
+    const lien = document.getElementById("vidLienDrive").value.trim();
+    const type = document.getElementById("vidType").value;
+    const prix = document.getElementById("vidPrix").value;
+    const err = document.getElementById("erreurVideoPlateforme");
+    err.style.display = "none";
+    if (!titre || !lien) { err.textContent = "Le titre et le lien Google Drive sont requis."; err.style.display = "block"; return; }
+    if (type === "Payant" && (!prix || Number(prix) <= 0)) { err.textContent = "Indiquez un prix pour une vidéo payante."; err.style.display = "block"; return; }
+    appelServeur("ajouterVideo", membreCourant.code, titre, description, lien, type, prix, auteur, emailAuteur, couverturesEnCours.video || "").then(function () {
+      document.getElementById("vidTitre").value = "";
+      document.getElementById("vidAuteur").value = "";
+      document.getElementById("vidEmailAuteur").value = "";
+      document.getElementById("vidDescription").value = "";
+      document.getElementById("vidLienDrive").value = "";
+      document.getElementById("vidPrix").value = "";
+      document.getElementById("vidCoverPreviewZone").style.display = "none";
+      document.getElementById("vidCoverFichier").value = "";
+      delete couverturesEnCours.video;
+      appelServeur("getVideos").then(afficherVideosPlateformeAdmin);
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function supprimerVideoPlateformeAdmin(id) {
+    if (!confirm("Supprimer cette vidéo ?")) return;
+    appelServeur("supprimerVideo", membreCourant.code, id).then(function () {
+      appelServeur("getVideos").then(afficherVideosPlateformeAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
   // --- Affiche publicitaire (admin) ---
   let afficheBase64EnCours = null;
 
   function chargerAfficheAdmin() {
     afficheBase64EnCours = null;
     document.getElementById("erreurAffiche").style.display = "none";
-    document.getElementById("afficheLienInput").value = (configApp && configApp.AfficheLien) || "";
-    if (configApp && configApp.AfficheBase64) {
-      document.getElementById("affichePreviewImg").src = "data:image/png;base64," + configApp.AfficheBase64;
-      document.getElementById("affichePreviewZone").style.display = "block";
-    } else {
-      document.getElementById("affichePreviewZone").style.display = "none";
-    }
+    document.getElementById("afficheLienInput").value = "";
+    document.getElementById("affichePreviewZone").style.display = "none";
+    document.getElementById("fichierAffiche").value = "";
+    appelServeur("getAffiches").then(afficherAffichesAdmin).catch(function (err) { afficherErreurZone("adminListeAffiches", err); });
+  }
+
+  function afficherAffichesAdmin(affiches) {
+    affiches = affiches || [];
+    const zone = document.getElementById("adminListeAffiches");
+    if (!affiches.length) { zone.innerHTML = '<p class="empty-state">Aucune affiche pour le moment.</p>'; return; }
+    zone.innerHTML = affiches.map(function (a) {
+      return '<div class="item-row">' +
+        '<img src="data:image/png;base64,' + a.ImageBase64 + '" style="width:90px;height:30px;object-fit:cover;border-radius:6px;">' +
+        '<button class="danger-outline small" onclick="supprimerAfficheClick(\'' + a.ID + '\')">Supprimer</button>' +
+        '</div>';
+    }).join("");
   }
 
   function previsualiserAffiche(event) {
@@ -2697,32 +3328,27 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     image.src = lecteurUrl;
   }
 
-  function enregistrerAffiche() {
+  function ajouterAfficheClick() {
     const err = document.getElementById("erreurAffiche");
     err.style.display = "none";
     if (!afficheBase64EnCours) { err.textContent = "Choisissez d'abord une image."; err.style.display = "block"; return; }
     const lien = document.getElementById("afficheLienInput").value.trim();
-    appelServeur("mettreAJourAffiche", membreCourant.code, afficheBase64EnCours, lien).then(function () {
-      configApp.AfficheBase64 = afficheBase64EnCours;
-      configApp.AfficheLien = lien;
-      afficherAffichePub();
-      alert("Affiche publiée.");
+    appelServeur("ajouterAffiche", membreCourant.code, afficheBase64EnCours, lien).then(function () {
+      afficheBase64EnCours = null;
+      document.getElementById("affichePreviewZone").style.display = "none";
+      document.getElementById("fichierAffiche").value = "";
+      document.getElementById("afficheLienInput").value = "";
+      appelServeur("getAffiches").then(afficherAffichesAdmin);
     }).catch(function (e) {
       err.textContent = "Erreur : " + e.message;
       err.style.display = "block";
     });
   }
 
-  function retirerAfficheClick() {
-    if (!confirm("Retirer l'affiche actuellement publiée ?")) return;
-    appelServeur("retirerAffiche", membreCourant.code).then(function () {
-      configApp.AfficheBase64 = "";
-      configApp.AfficheLien = "";
-      afficheBase64EnCours = null;
-      document.getElementById("affichePreviewZone").style.display = "none";
-      document.getElementById("fichierAffiche").value = "";
-      document.getElementById("afficheLienInput").value = "";
-      afficherAffichePub();
+  function supprimerAfficheClick(id) {
+    if (!confirm("Supprimer cette affiche du slider ?")) return;
+    appelServeur("supprimerAffiche", membreCourant.code, id).then(function () {
+      appelServeur("getAffiches").then(afficherAffichesAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
@@ -2756,6 +3382,51 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
+  // --- Soumissions de contenu (admin) ---
+  function afficherSoumissionsAdmin(soumissions) {
+    soumissions = soumissions || [];
+    const zone = document.getElementById("adminListeSoumissions");
+    if (!soumissions.length) { zone.innerHTML = '<p class="empty-state">Aucune soumission.</p>'; return; }
+    zone.innerHTML = soumissions.map(function (s) {
+      const pillClass = s.Statut === "Publié" ? "statut-traite" : s.Statut === "Rejeté" ? "role-admin" : "statut-nouveau";
+      const actions = s.Statut === "EnAttente"
+        ? '<button class="secondary small" onclick="validerSoumissionClick(\'' + s.ID + '\')">✓ Valider</button>' +
+          '<button class="danger-outline small" onclick="rejeterSoumissionClick(\'' + s.ID + '\')">✗ Rejeter</button>'
+        : "";
+      return '<div class="admin-message-card">' +
+        '<div class="item-row" style="padding-top:0;">' +
+        '<div><div class="item-nom">' + (LIBELLES_TYPE_SOUMISSION[s.TypeContenu] || s.TypeContenu) + " " + escapeHtml(s.Titre) + '</div>' +
+        '<div class="item-desc">Par ' + escapeHtml(s.NomAuteur) + " (" + escapeHtml(s.EmailAuteur) + ") · " + (s.Date ? new Date(s.Date).toLocaleDateString("fr-FR") : "") + '</div></div>' +
+        '<span class="statut-pill ' + pillClass + '">' + (LIBELLES_STATUT_SOUMISSION[s.Statut] || s.Statut) + "</span>" +
+        "</div>" +
+        (s.Description ? '<p style="font-size:13px;margin:8px 0;">' + escapeHtml(s.Description) + "</p>" : "") +
+        '<div class="item-desc" style="margin-bottom:8px;">Prix prévu : ' + (Number(s.Prix) > 0 ? Number(s.Prix).toLocaleString("fr-FR") + " FCFA" : "Gratuit") + '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+        '<button class="secondary small" onclick="telechargerSoumissionAdmin(\'' + s.ID + '\')">⬇️ Télécharger pour vérification</button>' +
+        actions +
+        "</div></div>";
+    }).join("");
+  }
+
+  function telechargerSoumissionAdmin(id) {
+    appelServeur("getLienSoumission", membreCourant.code, id).then(function (res) {
+      if (!res.succes) { alert(res.message || "Téléchargement impossible."); return; }
+      window.open(res.lien, "_blank");
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function validerSoumissionClick(id) {
+    appelServeur("validerSoumission", membreCourant.code, id).then(function () {
+      appelServeur("getSoumissionsAdmin", membreCourant.code).then(afficherSoumissionsAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function rejeterSoumissionClick(id) {
+    if (!confirm("Rejeter cette soumission ?")) return;
+    appelServeur("rejeterSoumission", membreCourant.code, id).then(function () {
+      appelServeur("getSoumissionsAdmin", membreCourant.code).then(afficherSoumissionsAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
 
   // ==================== CODES D'INSCRIPTION ====================
   function genererCodesAdmin() {
@@ -2824,5 +3495,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     return div.innerHTML;
   }
 </script>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'fr',
+        includedLanguages: 'en,es,pt,ar,de,sw,fr',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
