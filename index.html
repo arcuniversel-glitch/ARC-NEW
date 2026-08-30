@@ -19,10 +19,13 @@
 .brand-center{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:24px}.logo-circle-lg{width:92px;height:92px;border-radius:24px;background:#fff;box-shadow:0 14px 35px rgba(7,47,104,.18);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:30px;color:var(--blue2);overflow:hidden;border:4px solid #fff;margin-bottom:14px;position:relative}.logo-circle-lg:after{content:"";position:absolute;inset:-4px;border-radius:27px;padding:4px;background:linear-gradient(135deg,var(--blue),var(--red),var(--yellow));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}.brand-nom{font-family:Montserrat;font-weight:800;font-size:20px;color:var(--blue2);line-height:1.3}.card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow);margin-bottom:18px}.auth-screen .wrap{width:min(520px,calc(100% - 30px))}.auth-screen .card{position:relative;overflow:hidden}.auth-screen .card:before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,var(--blue),var(--red),var(--yellow))}
 h1.titre{font-size:25px;margin:0 0 7px;color:var(--blue2);text-align:center;font-weight:800}.subtitle{color:var(--muted);font-size:14px;margin:0 0 20px;line-height:1.6;text-align:center}.subtitle.left,h1.titre.left{text-align:left}.section-title{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;color:var(--blue2);margin:8px 0 14px}.section-title .ic{font-size:20px}
 input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;margin-bottom:13px;font-family:inherit;background:#fbfcfe;transition:.2s}input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(7,87,168,.09);background:#fff}label.field-label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.55px;margin-bottom:7px;display:block}button{width:100%;padding:13px 16px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:transform .15s,box-shadow .15s,opacity .15s;box-shadow:0 7px 16px rgba(7,87,168,.18)}button:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(7,87,168,.22)}button.secondary{background:#edf3fb;color:var(--blue2);box-shadow:none}button.flame{background:linear-gradient(135deg,var(--red2),var(--red),#ee4a24);box-shadow:0 7px 16px rgba(215,25,32,.18)}button.danger-outline{background:#fff0f0;color:var(--danger);box-shadow:none}button.small{width:auto;padding:9px 14px;font-size:12px}button.full-mt{margin-top:10px}button.ghost-link{background:transparent;color:var(--blue);box-shadow:none;text-decoration:none}button.ghost-link:hover{box-shadow:none}.error{color:var(--danger);font-size:13px;margin:-5px 0 12px}.success-text{color:var(--green);font-size:13px}
-#ecranDashboard{display:none}.tabs{display:flex;gap:8px;margin:0 0 22px;overflow-x:auto;padding:5px 2px 8px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{padding:11px 16px;border-radius:12px;background:#fff;color:var(--blue2);font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;border:1px solid var(--line);box-shadow:0 4px 12px rgba(12,47,104,.05)}.tab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(7,87,168,.2)}.section,.auth-screen{display:none}.section.active,.auth-screen.active{display:block}.item-row{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);gap:14px}.item-row:last-child{border-bottom:0}.item-block{border-bottom:1px solid var(--line);padding:15px 0}.item-block:last-child{border-bottom:0}.item-nom{font-weight:800;font-size:14px}.item-desc{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}.btn-rejoindre{width:auto;padding:9px 14px;font-size:12px;background:#1fbe68;box-shadow:none}.btn-meet{background:linear-gradient(135deg,var(--blue2),var(--blue));width:auto;padding:9px 14px;font-size:12px}.join-form{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}.join-form.active{display:flex;gap:8px;flex-wrap:wrap}.join-form input{flex:1;min-width:160px;margin:0}.join-form button{width:auto}.join-error{width:100%;color:var(--danger);font-size:12px}
+#ecranDashboard{display:none}
+#afficheZone{width:100%;max-width:720px;margin:0 auto;aspect-ratio:3/1;overflow:hidden}
+#afficheZone img{width:100%;height:100%;object-fit:cover;display:block}
+.tabs{display:flex;gap:8px;margin:0 0 22px;overflow-x:auto;padding:5px 2px 8px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{padding:11px 16px;border-radius:12px;background:#fff;color:var(--blue2);font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;border:1px solid var(--line);box-shadow:0 4px 12px rgba(12,47,104,.05);position:relative}.tab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(7,87,168,.2)}.badge-nouveau{position:absolute;top:4px;right:5px;width:9px;height:9px;background:var(--red);border-radius:50%;box-shadow:0 0 0 2px #fff}.section,.auth-screen{display:none}.section.active,.auth-screen.active{display:block}.item-row{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);gap:14px}.item-row:last-child{border-bottom:0}.item-block{border-bottom:1px solid var(--line);padding:15px 0}.item-block:last-child{border-bottom:0}.item-nom{font-weight:800;font-size:14px}.item-desc{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}.btn-rejoindre{width:auto;padding:9px 14px;font-size:12px;background:#1fbe68;box-shadow:none}.btn-meet{background:linear-gradient(135deg,var(--blue2),var(--blue));width:auto;padding:9px 14px;font-size:12px}.join-form{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}.join-form.active{display:flex;gap:8px;flex-wrap:wrap}.join-form input{flex:1;min-width:160px;margin:0}.join-form button{width:auto}.join-error{width:100%;color:var(--danger);font-size:12px}
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}.stat-box{background:linear-gradient(145deg,#fff,#f7faff);border:1px solid var(--line);border-radius:16px;padding:18px;text-align:center;position:relative;overflow:hidden}.stat-box:after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--red),var(--yellow))}.stat-num{font-size:25px;font-weight:800;color:var(--blue2);font-family:Montserrat}.stat-label{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600}
 .badge-portrait{width:330px;max-width:100%;margin:0 auto;border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 18px 45px rgba(7,47,104,.24);position:relative;border:1px solid #e7eaf1}.badge-top-band{background:linear-gradient(135deg,var(--blue2),var(--blue) 55%,var(--red));padding:20px 16px 48px;text-align:center;color:#fff;position:relative}.badge-top-band:after{content:"";position:absolute;bottom:0;left:0;right:0;height:7px;background:var(--yellow)}.badge-mini-logo{width:46px;height:46px;border-radius:13px;background:#fff;margin:0 auto 9px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.75);font-weight:800;color:var(--blue2)}.badge-org-name{font-weight:800;font-size:11px;letter-spacing:.8px;text-transform:uppercase;line-height:1.4}.badge-photo-wrap{width:106px;height:106px;border-radius:50%;background:#eef3f9;border:5px solid white;box-shadow:0 7px 18px rgba(0,0,0,.2);margin:-43px auto 0;overflow:hidden;position:relative;z-index:2;display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--muted)}.badge-photo-wrap img{width:100%;height:100%;object-fit:cover}.badge-body{padding:13px 24px 26px;text-align:center}.badge-fullname{font-family:Montserrat;font-weight:800;font-size:19px;color:var(--ink);margin-top:8px}.badge-role-tag{display:inline-block;margin-top:7px;font-size:10px;font-weight:800;color:#9b0f17;background:#fff0f0;padding:5px 12px;border-radius:999px}.badge-divider{height:1px;background:var(--line);margin:17px 0 13px}.badge-info-row{display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;color:var(--ink);margin-bottom:9px}.badge-status-tag{display:inline-block;margin-top:4px;font-size:10px;font-weight:800;color:var(--green);background:#e7f7ef;padding:5px 12px;border-radius:999px}.badge-qr-wrap{margin-top:18px;display:flex;justify-content:center}.badge-qr-wrap img{border-radius:10px;padding:6px;background:white;border:1px solid var(--line)}.badge-code-small{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.6px}
-.photo-upload-preview,.logo-upload-preview{width:88px;height:88px;border-radius:18px;background:#eef3f9;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 13px;border:2px dashed #cbd5e5;font-size:30px;color:var(--muted)}.photo-upload-preview img,.logo-upload-preview img{width:100%;height:100%;object-fit:cover}.file-btn-label{display:inline-block;padding:10px 15px;background:#edf3fb;color:var(--blue2);border-radius:11px;font-size:12px;font-weight:800;cursor:pointer}.loading{text-align:center;color:var(--muted);padding:28px;font-size:13px}.empty-state{text-align:center;color:var(--muted);padding:24px 10px;font-size:13px}.admin-subtabs{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}.admin-subtab{padding:9px 13px;border-radius:10px;background:#edf3fb;color:var(--blue2);font-size:11px;font-weight:800;cursor:pointer}.admin-subtab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff}.admin-section{display:none}.admin-section.active{display:block}.codes-box{background:#f6f8fc;border:1px dashed #cfd7e5;border-radius:10px;padding:12px;font-family:monospace;font-size:11px;max-height:160px;overflow-y:auto;white-space:pre-wrap;margin-top:10px}.role-pill,.statut-pill{font-size:10px;font-weight:800;padding:5px 9px;border-radius:999px}.role-admin{background:#fff0f0;color:#b00f18}.role-membre{background:#edf3fb;color:var(--muted)}.statut-nouveau{background:#fff0f0;color:#b00f18}.statut-traite{background:#e7f7ef;color:var(--green)}table.mini-table{width:100%;border-collapse:collapse;font-size:12px;display:block;overflow-x:auto;white-space:nowrap}table.mini-table th{text-align:left;color:var(--muted);font-weight:800;padding:9px 7px;border-bottom:2px solid var(--line);font-size:10px;text-transform:uppercase}table.mini-table td{padding:10px 7px;border-bottom:1px solid var(--line)}.message-bulle{background:#edf3fb;border-radius:15px;padding:13px 15px;margin-bottom:7px;font-size:13px}.message-reponse{background:#fff2f1;border-left:4px solid var(--red);border-radius:0 13px 13px 0;padding:11px 14px;margin:7px 0 16px 14px;font-size:12px}.message-date{font-size:10px;color:var(--muted);margin-top:5px}.message-attente{font-style:italic;color:var(--muted);font-size:11px;margin:4px 0 16px 14px}.admin-message-card{border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;background:#fff}.youtube-card{text-align:center;padding:38px 24px}.youtube-icon{font-size:45px;margin-bottom:10px}.video-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}.video-item:last-child{border-bottom:0}.video-thumb{width:110px;height:62px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#eef3f9}.video-titre{font-weight:700;font-size:13px;line-height:1.35}.video-date{font-size:11px;color:var(--muted);margin-top:3px}.video-player-frame{width:100%;aspect-ratio:16/9;border:none;display:block;background:#000}.cotisation-type-card{border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:linear-gradient(145deg,#fff,#fafcff)}.cotisation-type-nom{font-weight:800;font-size:14px}.cotisation-type-periode{color:var(--muted);font-size:11px;margin-top:3px}.cotisation-type-montant{font-family:Montserrat;font-weight:800;color:var(--blue2);font-size:16px;white-space:nowrap}
+.photo-upload-preview,.logo-upload-preview{width:88px;height:88px;border-radius:18px;background:#eef3f9;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 13px;border:2px dashed #cbd5e5;font-size:30px;color:var(--muted)}.photo-upload-preview img,.logo-upload-preview img{width:100%;height:100%;object-fit:cover}.file-btn-label{display:inline-block;padding:10px 15px;background:#edf3fb;color:var(--blue2);border-radius:11px;font-size:12px;font-weight:800;cursor:pointer}.loading{text-align:center;color:var(--muted);padding:28px;font-size:13px}.empty-state{text-align:center;color:var(--muted);padding:24px 10px;font-size:13px}.admin-subtabs{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}.admin-subtab{padding:9px 13px;border-radius:10px;background:#edf3fb;color:var(--blue2);font-size:11px;font-weight:800;cursor:pointer;position:relative}.admin-subtab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff}.badge-compteur{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px;box-shadow:0 0 0 2px #fff}.admin-section{display:none}.admin-section.active{display:block}.codes-box{background:#f6f8fc;border:1px dashed #cfd7e5;border-radius:10px;padding:12px;font-family:monospace;font-size:11px;max-height:160px;overflow-y:auto;white-space:pre-wrap;margin-top:10px}.role-pill,.statut-pill{font-size:10px;font-weight:800;padding:5px 9px;border-radius:999px}.role-admin{background:#fff0f0;color:#b00f18}.role-membre{background:#edf3fb;color:var(--muted)}.statut-nouveau{background:#fff0f0;color:#b00f18}.statut-traite{background:#e7f7ef;color:var(--green)}table.mini-table{width:100%;border-collapse:collapse;font-size:12px;display:block;overflow-x:auto;white-space:nowrap}table.mini-table th{text-align:left;color:var(--muted);font-weight:800;padding:9px 7px;border-bottom:2px solid var(--line);font-size:10px;text-transform:uppercase}table.mini-table td{padding:10px 7px;border-bottom:1px solid var(--line)}.message-bulle{background:#edf3fb;border-radius:15px;padding:13px 15px;margin-bottom:7px;font-size:13px}.message-reponse{background:#fff2f1;border-left:4px solid var(--red);border-radius:0 13px 13px 0;padding:11px 14px;margin:7px 0 16px 14px;font-size:12px}.message-date{font-size:10px;color:var(--muted);margin-top:5px}.message-attente{font-style:italic;color:var(--muted);font-size:11px;margin:4px 0 16px 14px}.admin-message-card{border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;background:#fff}.youtube-card{text-align:center;padding:38px 24px}.youtube-icon{font-size:45px;margin-bottom:10px}.video-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}.video-item:last-child{border-bottom:0}.video-thumb{width:110px;height:62px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#eef3f9}.video-titre{font-weight:700;font-size:13px;line-height:1.35}.video-date{font-size:11px;color:var(--muted);margin-top:3px}.video-player-frame{width:100%;aspect-ratio:16/9;border:none;display:block;background:#000}.cotisation-type-card{border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:linear-gradient(145deg,#fff,#fafcff)}.cotisation-type-nom{font-weight:800;font-size:14px}.cotisation-type-periode{color:var(--muted);font-size:11px;margin-top:3px}.cotisation-type-montant{font-family:Montserrat;font-weight:800;color:var(--blue2);font-size:16px;white-space:nowrap}
 /* Visiteur & navigation */
 .btn-topbar-mini{width:auto;padding:8px 12px;font-size:11px;background:rgba(255,255,255,.18);color:#fff;box-shadow:none;white-space:nowrap}
 .tuiles-visiteur{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}
@@ -103,6 +106,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     </div>
   </div>
 
+  <!-- Affiche publicitaire (bandeau paysage, visible sur toutes les pages) -->
+  <div id="afficheZone" style="display:none;">
+    <a id="afficheLien" href="#" target="_blank" style="display:block;">
+      <img id="afficheImg" src="" alt="Affiche">
+    </a>
+  </div>
+
   <div class="topbar" id="topbar">
     <button id="btnPrecedent" onclick="boutonPrecedent()" class="btn-topbar-mini" style="display:none;">◀ Précédent</button>
     <div class="logo-circle" id="topbarLogo">🙏</div>
@@ -137,7 +147,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <div class="tuile-visiteur" onclick="ouvrirGroupePriereVisiteur()"><span class="ic">💬</span><span class="lib">Groupe de prière</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('bible')"><span class="ic">📖</span><span class="lib">Bible</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('prieres')"><span class="ic">🙏</span><span class="lib">Séances directes</span></div>
-          <div class="tuile-visiteur" onclick="entrerModeVisiteur('enregistrements')"><span class="ic">🎧</span><span class="lib">Enregistrements</span></div>
+          <div class="tuile-visiteur" onclick="entrerModeVisiteur('audios')"><span class="ic">🎧</span><span class="lib">Audios</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('documents')"><span class="ic">📄</span><span class="lib">Documents</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('videos')"><span class="ic">▶️</span><span class="lib">Vidéos</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('offrandes')"><span class="ic">🙌</span><span class="lib">Offrandes & Dons</span></div>
@@ -363,6 +373,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     <div class="section" id="section-documents">
       <div class="section-title"><span class="ic">📄</span> Documents</div>
       <p class="subtitle left" style="margin-top:-6px;">Rapports et enseignements écrits — téléchargeables.</p>
+      <input type="text" id="rechercheDocuments" placeholder="🔎 Rechercher un document…" oninput="filtrerDocuments()">
       <p class="field-label" style="margin-bottom:8px;">🆓 Gratuits</p>
       <div class="card" id="listeDocumentsGratuits"><div class="loading">Chargement…</div></div>
       <p class="field-label" style="margin-bottom:8px;">💳 Payants</p>
@@ -401,11 +412,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       </div>
     </div>
 
-    <!-- Enregistrements (audio uniquement, Google Drive) -->
-    <div class="section" id="section-enregistrements">
-      <div class="section-title"><span class="ic">🎧</span> Enregistrements</div>
+    <!-- Audios (playlists par catégorie, Google Drive) -->
+    <div class="section" id="section-audios">
+      <div class="section-title"><span class="ic">🎧</span> Audios</div>
       <p class="subtitle left" style="margin-top:-6px;">Réunions et enseignements audio — écoute uniquement.</p>
-      <div class="card" id="listeEnregistrements"><div class="loading">Chargement…</div></div>
+      <input type="text" id="rechercheAudios" placeholder="🔎 Rechercher un audio…" oninput="filtrerAudios()">
+      <div id="listeCategoriesAudio"><div class="loading">Chargement…</div></div>
+      <div class="card" id="listeAudiosCategorie" style="display:none;"></div>
     </div>
 
     <div class="section" id="section-messages">
@@ -424,6 +437,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       </div>
       <div class="card">
         <p class="field-label" style="margin-bottom:10px;">Mes échanges</p>
+        <input type="text" id="rechercheMesMessages" placeholder="🔎 Rechercher dans mes messages…" oninput="filtrerMesMessages()">
         <div id="listeMesMessages"><div class="loading">Chargement…</div></div>
       </div>
     </div>
@@ -431,6 +445,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     <div class="section" id="section-videos">
       <div class="section-title"><span class="ic">▶️</span> Vidéos — Playlists</div>
       <p class="subtitle left" style="margin-top:-6px;">Choisissez une catégorie pour voir les vidéos correspondantes.</p>
+      <input type="text" id="rechercheVideos" placeholder="🔎 Rechercher une vidéo dans la playlist ouverte…" oninput="filtrerVideosPlaylist()">
       <div class="card" id="lecteurVideoZone" style="display:none;padding:0;overflow:hidden;"></div>
       <div id="listePlaylists"><div class="loading">Chargement…</div></div>
       <div class="card" id="listeVideosPlaylist" style="display:none;"></div>
@@ -521,11 +536,40 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div class="admin-section" id="admin-annonces">
         <div class="card">
           <label class="field-label">Annonce groupée</label>
-          <p class="subtitle left" style="margin-top:-4px;">Cochez les membres destinataires, puis rédigez votre message.</p>
+          <p class="subtitle left" style="margin-top:-4px;">Cochez les membres destinataires, puis rédigez votre message ou joignez un fichier.</p>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:var(--blue2);margin-bottom:8px;">
+            <input type="checkbox" id="caseToutCocher" onchange="toggleToutCocherMembres()" style="width:auto;margin:0;"> Tout sélectionner
+          </label>
           <div id="listeMembresAnnonce" class="codes-box" style="max-height:220px;"><div class="loading">Chargement…</div></div>
-          <textarea id="texteAnnonce" rows="3" placeholder="Votre message à envoyer…" style="margin-top:10px;"></textarea>
-          <div id="erreurAnnonce" class="error" style="display:none;"></div>
-          <button class="flame" onclick="envoyerAnnonceClick()">Envoyer à la sélection</button>
+
+          <label class="field-label">Type d'annonce</label>
+          <select id="typeAnnonce" onchange="basculerTypeAnnonce()">
+            <option value="Texte">Texte</option>
+            <option value="Audio">Message vocal</option>
+            <option value="Document">Document (PDF, image...)</option>
+          </select>
+
+          <div id="zoneAnnonceTexte">
+            <textarea id="texteAnnonce" rows="3" placeholder="Votre message à envoyer…" style="margin-top:10px;"></textarea>
+          </div>
+
+          <div id="zoneAnnonceAudio" style="display:none;margin-top:10px;">
+            <textarea id="texteAnnonceAudio" rows="2" placeholder="Légende facultative…"></textarea>
+            <div class="msg-audio-controles">
+              <button class="btn-micro" id="btnMicroAnnonce" style="width:auto;" onclick="toggleEnregistrementAnnonce()">🎙️ Enregistrer le message vocal</button>
+              <span class="chrono-enregistrement" id="chronoAnnonceAudio" style="display:none;">00:00</span>
+            </div>
+            <div id="messageAudioAnnonceEnregistre" class="item-desc"></div>
+          </div>
+
+          <div id="zoneAnnonceDocument" style="display:none;margin-top:10px;">
+            <textarea id="texteAnnonceDocument" rows="2" placeholder="Légende facultative…"></textarea>
+            <label class="field-label">Fichier à joindre</label>
+            <input type="file" id="fichierAnnonceDocument">
+          </div>
+
+          <div id="erreurAnnonce" class="error" style="display:none;margin-top:10px;"></div>
+          <button class="flame full-mt" onclick="envoyerAnnonceClick()">Envoyer à la sélection</button>
         </div>
       </div>
 
@@ -547,6 +591,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       </div>
 
       <div class="admin-section" id="admin-messages">
+        <input type="text" id="rechercheMessagesAdmin" placeholder="🔎 Rechercher par nom de membre ou contenu…" oninput="filtrerMessagesAdmin()">
         <div class="card" id="adminListeMessages"><div class="loading">Chargement…</div></div>
       </div>
 
@@ -580,12 +625,14 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <div class="card" id="adminListeTypesCotisation"><div class="loading">Chargement…</div></div>
       </div>
 
-      <div class="admin-section" id="admin-enregistrements">
+      <div class="admin-section" id="admin-audios">
         <div class="card">
-          <label class="field-label">Ajouter un enregistrement audio</label>
+          <label class="field-label">Ajouter un audio</label>
           <input id="recTitre" type="text" placeholder="Titre (ex : Réunion du 12 juillet 2026)">
           <input id="recDescription" type="text" placeholder="Description courte (facultative)">
           <input id="recLienDrive" type="text" placeholder="Lien de partage Google Drive du fichier audio">
+          <label class="field-label">Catégorie</label>
+          <select id="recCategorie"></select>
           <label class="field-label">Visible par</label>
           <select id="recVisibilite">
             <option value="Public">Tout le monde (y compris visiteurs)</option>
@@ -644,6 +691,25 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         </div>
       </div>
 
+      <div class="admin-section" id="admin-affiche">
+        <div class="card">
+          <label class="field-label">Affiche publicitaire (bandeau paysage, visible sur toutes les pages)</label>
+          <p class="subtitle left" style="margin-top:-4px;">Format paysage recommandé (ex : 1200 × 400 px). L'image sera automatiquement redimensionnée.</p>
+          <div id="affichePreviewZone" style="display:none;margin-bottom:12px;border-radius:12px;overflow:hidden;aspect-ratio:3/1;background:#eef3f9;">
+            <img id="affichePreviewImg" style="width:100%;height:100%;object-fit:cover;display:block;">
+          </div>
+          <label class="file-btn-label">
+            📷 Choisir une image
+            <input type="file" id="fichierAffiche" accept="image/*" style="display:none;" onchange="previsualiserAffiche(event)">
+          </label>
+          <label class="field-label" style="margin-top:14px;">Lien au clic (facultatif)</label>
+          <input id="afficheLienInput" type="text" placeholder="https://... (ex : événement, groupe WhatsApp)">
+          <div id="erreurAffiche" class="error" style="display:none;margin-top:10px;"></div>
+          <button class="flame full-mt" onclick="enregistrerAffiche()">Publier l'affiche</button>
+          <button class="danger-outline small full-mt" onclick="retirerAfficheClick()">Retirer l'affiche actuelle</button>
+        </div>
+      </div>
+
       <div class="admin-section" id="admin-codes">
         <div class="card">
           <div class="section-title"><span class="ic">🔐</span> Générer des codes d'inscription</div>
@@ -676,7 +742,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // ==================== ADRESSE DE L'API (backend Apps Script) ====================
   // Collez ici l'URL de déploiement de votre Apps Script (celle qui se termine par /exec).
   // C'est la SEULE ligne à modifier après avoir déployé Code.gs comme API.
-  const API_URL = "https://script.google.com/macros/s/AKfycbwSApeGcanRqHmbg7rPnqtxNLoxtOxasCiRcKicA_DAyzEdl3OZAYg6RTLBCXsBdmeh/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbzUoECvVWaLH4icqZixOMHS8VbG9XhkmkE19JXLK1YbZS4_TVVCJedFzkqIVrzbrgOQ/exec";
 
   // ==================== APPEL SERVEUR (via l'API Apps Script) ====================
   // Remplace l'ancien google.script.run : la page est maintenant hébergée séparément
@@ -829,6 +895,21 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("topbarLogo").innerHTML = logoHtml;
     document.getElementById("accueilLogo").innerHTML = logoHtml;
     document.getElementById("badgeMiniLogo").innerHTML = logoHtml;
+    afficherAffichePub();
+  }
+
+  // Affiche publicitaire (bandeau paysage visible sur toutes les pages).
+  function afficherAffichePub() {
+    const zone = document.getElementById("afficheZone");
+    if (configApp && configApp.AfficheBase64) {
+      document.getElementById("afficheImg").src = "data:image/png;base64," + configApp.AfficheBase64;
+      const lien = document.getElementById("afficheLien");
+      if (configApp.AfficheLien) { lien.href = configApp.AfficheLien; lien.style.cursor = "pointer"; }
+      else { lien.removeAttribute("href"); lien.style.cursor = "default"; }
+      zone.style.display = "block";
+    } else {
+      zone.style.display = "none";
+    }
   }
 
   // ==================== NAVIGATION PRE-CONNEXION ====================
@@ -995,7 +1076,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       onglets = [
         { id: "bible", label: "📖 Bible" },
         { id: "prieres", label: "🙏 Séances directes" },
-        { id: "enregistrements", label: "🎧 Enregistrements" },
+        { id: "audios", label: "🎧 Audios" },
         { id: "documents", label: "📄 Documents" },
         { id: "videos", label: "▶️ Vidéos" },
         { id: "offrandes", label: "🙌 Offrandes" },
@@ -1010,7 +1091,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         { id: "offrandes", label: "Offrandes" },
         { id: "bible", label: "📖 Bible" },
         { id: "prieres", label: "🙏 Séances directes" },
-        { id: "enregistrements", label: "🎧 Enregistrements" },
+        { id: "audios", label: "🎧 Audios" },
         { id: "documents", label: "📄 Documents" },
         { id: "videos", label: "▶️ Vidéos" },
         { id: "messages", label: "Messages" }
@@ -1041,6 +1122,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     remplirBadge();
     ongletActuel = null;
     afficherOnglet("groupes");
+    chargerCompteursEtBadges();
   }
 
   function entrerModeVisiteur(ongletInitial) {
@@ -1059,6 +1141,69 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     construireTabs();
     ongletActuel = null;
     afficherOnglet(ongletInitial || "prieres");
+    chargerCompteursEtBadges();
+  }
+
+  // ==================== NOTIFICATIONS "NOUVEAU" (points rouges sur les onglets) ====================
+  let compteursCache = null;
+
+  function chargerCompteursEtBadges() {
+    appelServeur("getCompteurs", codeActuel()).then(function (c) {
+      compteursCache = c;
+      appliquerBadgesTabs();
+    }).catch(function () { /* pas grave si ça échoue : simplement pas de badges cette fois */ });
+  }
+
+  function mappingBadgesOnglets_() {
+    if (!compteursCache) return {};
+    return {
+      groupes: compteursCache.groupes,
+      cotisation: compteursCache.cotisations,
+      prieres: compteursCache.seances,
+      audios: compteursCache.audios,
+      documents: compteursCache.documents,
+      videos: compteursCache.playlists,
+      messages: (compteursCache.reponsesRecues || 0) + (compteursCache.annonces || 0)
+    };
+  }
+
+  function appliquerBadgesTabs() {
+    const mapping = mappingBadgesOnglets_();
+    Object.keys(mapping).forEach(function (section) {
+      const tab = document.querySelector('#tabsPrincipaux .tab[data-tab="' + section + '"]');
+      if (!tab) return;
+      const nombre = mapping[section];
+      const cle = "arc_vu_" + section + "_" + codeActuel();
+      let dernierVu = null;
+      try { dernierVu = localStorage.getItem(cle); } catch (e) { /* stockage indisponible, tant pis */ }
+      const estNouveau = dernierVu !== null && Number(dernierVu) < nombre;
+      let badge = tab.querySelector(".badge-nouveau");
+      if (estNouveau) {
+        if (!badge) { badge = document.createElement("span"); badge.className = "badge-nouveau"; tab.appendChild(badge); }
+      } else if (badge) { badge.remove(); }
+      // Première visite jamais enregistrée : on initialise la référence sans afficher de badge
+      // (sinon tout paraîtrait "nouveau" au tout premier chargement de l'application).
+      if (dernierVu === null) { try { localStorage.setItem(cle, String(nombre)); } catch (e) {} }
+    });
+    // Onglet Admin et ses sous-onglets : le compteur "Nouveau" est la vérité du serveur
+    // (Statut = Nouveau), pas besoin de mémoriser un "déjà vu" localement.
+    const totalAdmin = (compteursCache && compteursCache.messagesNouveaux || 0) + (compteursCache && compteursCache.demandesNouvelles || 0);
+    const tabAdmin = document.querySelector('#tabsPrincipaux .tab[data-tab="admin"]');
+    if (tabAdmin) {
+      let badge = tabAdmin.querySelector(".badge-nouveau");
+      if (totalAdmin > 0) { if (!badge) { badge = document.createElement("span"); badge.className = "badge-nouveau"; tabAdmin.appendChild(badge); } }
+      else if (badge) { badge.remove(); }
+    }
+  }
+
+  // Marque un onglet comme "vu" (retire son point rouge) — appelé quand on l'ouvre.
+  function marquerOngletVu_(nom) {
+    const mapping = mappingBadgesOnglets_();
+    if (mapping[nom] === undefined) return;
+    try { localStorage.setItem("arc_vu_" + nom + "_" + codeActuel(), String(mapping[nom])); } catch (e) {}
+    const tab = document.querySelector('#tabsPrincipaux .tab[data-tab="' + nom + '"]');
+    const badge = tab && tab.querySelector(".badge-nouveau");
+    if (badge) badge.remove();
   }
 
   function ouvrirGroupePriereVisiteur() {
@@ -1128,13 +1273,14 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     if (nom === "groupes") chargerGroupes();
     else if (nom === "cotisation") { chargerTypesCotisationMembre(); chargerMesCotisations(); }
     else if (nom === "offrandes") chargerMesOffrandes();
-    else if (nom === "enregistrements") chargerEnregistrements();
+    else if (nom === "audios") chargerAudios();
     else if (nom === "documents") chargerDocuments();
     else if (nom === "bible") chargerLivresBible();
     else if (nom === "messages") { chargerMesMessages(); chargerMesAnnonces(); }
     else if (nom === "videos") chargerPlaylists();
     else if (nom === "prieres") chargerSeances();
     else if (nom === "admin") chargerDonneesAdmin();
+    marquerOngletVu_(nom);
   }
 
   function construireAdminSubtabs() {
@@ -1144,9 +1290,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       { id: "apparence", label: "Apparence", permission: "systeme" },
       { id: "groupes", label: "Groupes", permission: "contenus" },
       { id: "seances", label: "Séances", permission: "contenus" },
-      { id: "enregistrements", label: "🎧 Enregistrements", permission: "contenus" },
+      { id: "audios", label: "🎧 Audios", permission: "contenus" },
       { id: "documents", label: "📄 Documents", permission: "contenus" },
       { id: "playlists", label: "▶️ Playlists", permission: "contenus" },
+      { id: "affiche", label: "🖼️ Affiche", permission: "contenus" },
       { id: "membres", label: "Membres", permission: "systeme" },
       { id: "annonces", label: "📢 Annonces", permission: "systeme" },
       { id: "paiements", label: "Paiements", permission: "finances" },
@@ -1157,7 +1304,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     ];
     const visibles = tousLesSousOnglets.filter(function (s) { return permissions.indexOf(s.permission) !== -1; });
     document.getElementById("adminSubtabs").innerHTML = visibles.map(function (s, i) {
-      return '<div class="admin-subtab' + (i === 0 ? " active" : "") + '" data-sub="' + s.id + '" onclick="afficherSousOnglet(\'' + s.id + '\')">' + s.label + "</div>";
+      const compteurs = { messages: compteursCache && compteursCache.messagesNouveaux, demandesPriere: compteursCache && compteursCache.demandesNouvelles };
+      const nombre = compteurs[s.id];
+      const badge = nombre ? '<span class="badge-compteur">' + nombre + '</span>' : '';
+      return '<div class="admin-subtab' + (i === 0 ? " active" : "") + '" data-sub="' + s.id + '" onclick="afficherSousOnglet(\'' + s.id + '\')">' + s.label + badge + "</div>";
     }).join("");
     document.querySelectorAll(".admin-section").forEach(function (s) { s.classList.remove("active"); });
     if (visibles.length) {
@@ -1175,11 +1325,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     else if (nom === "membres") appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin).catch(function (err) { afficherErreurZone("adminListeMembres", err); });
     else if (nom === "annonces") chargerMembresPourAnnonce();
     else if (nom === "paiements") appelServeur("getPaiementsAdmin", membreCourant.code).then(afficherPaiementsAdmin).catch(function (err) { afficherErreurZone("adminListePaiements", err); });
-    else if (nom === "messages") appelServeur("getMessagesAdmin", membreCourant.code).then(afficherMessagesAdmin).catch(function (err) { afficherErreurZone("adminListeMessages", err); });
+    else if (nom === "messages") { document.getElementById("rechercheMessagesAdmin").value = ""; appelServeur("getMessagesAdmin", membreCourant.code).then(function (data) { messagesAdminCache = data || []; afficherMessagesAdmin(messagesAdminCache); }).catch(function (err) { afficherErreurZone("adminListeMessages", err); }); }
     else if (nom === "cotisation") appelServeur("getTypesCotisation").then(afficherTypesCotisationAdmin).catch(function (err) { afficherErreurZone("adminListeTypesCotisation", err); });
-    else if (nom === "enregistrements") appelServeur("getEnregistrements").then(afficherEnregistrementsAdmin).catch(function (err) { afficherErreurZone("adminListeEnregistrements", err); });
+    else if (nom === "audios") appelServeur("getEnregistrements").then(function (data) {
+      if (categoriesAudioCache) { afficherEnregistrementsAdmin(data); return; }
+      appelServeur("getCategoriesAudio").then(function (cats) { categoriesAudioCache = cats; afficherEnregistrementsAdmin(data); });
+    }).catch(function (err) { afficherErreurZone("adminListeEnregistrements", err); });
     else if (nom === "documents") appelServeur("getDocuments").then(afficherDocumentsAdmin).catch(function (err) { afficherErreurZone("adminListeDocuments", err); });
     else if (nom === "playlists") appelServeur("getPlaylists").then(afficherPlaylistsAdmin).catch(function (err) { afficherErreurZone("adminListePlaylists", err); });
+    else if (nom === "affiche") chargerAfficheAdmin();
     else if (nom === "demandesPriere") appelServeur("getDemandesPriereAdmin", membreCourant.code).then(afficherDemandesPriereAdmin).catch(function (err) { afficherErreurZone("adminListeDemandesPriere", err); });
     else if (nom === "codes") appelServeur("getCodesInscriptionAdmin", membreCourant.code).then(afficherCodesInscriptionAdmin).catch(function (err) { afficherErreurZone("adminListeCodesInscription", err); });
   }
@@ -1427,16 +1581,48 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   // ==================== ENREGISTREMENTS (audio, Public/Membres) ====================
-  function chargerEnregistrements() {
+  // ==================== AUDIOS (playlists par catégorie + recherche) ====================
+  let audiosCache = [];
+  const CATEGORIES_AUDIO_DEFAUT = ["Séances live", "Prédications & Prières", "Adorations & Louanges", "Témoignages", "Annonces"];
+  let categoriesAudioCache = null;
+
+  function chargerAudios() {
+    document.getElementById("rechercheAudios").value = "";
     const fonction = modeVisiteur ? "getEnregistrementsPublic" : "getEnregistrements";
-    appelServeur(fonction).then(afficherEnregistrements).catch(function (err) { afficherErreurZone("listeEnregistrements", err); });
+    Promise.all([
+      appelServeur(fonction),
+      categoriesAudioCache ? Promise.resolve(categoriesAudioCache) : appelServeur("getCategoriesAudio")
+    ]).then(function (resultats) {
+      audiosCache = resultats[0] || [];
+      categoriesAudioCache = resultats[1] || [];
+      afficherCategoriesAudio();
+    }).catch(function (err) { afficherErreurZone("listeCategoriesAudio", err); });
   }
 
-  function afficherEnregistrements(enregistrements) {
-    enregistrements = enregistrements || [];
-    const zone = document.getElementById("listeEnregistrements");
-    if (!enregistrements.length) { zone.innerHTML = '<p class="empty-state">Aucun enregistrement disponible pour le moment.</p>'; return; }
-    zone.innerHTML = enregistrements.map(function (a) {
+  function afficherCategoriesAudio() {
+    document.getElementById("listeAudiosCategorie").style.display = "none";
+    const zone = document.getElementById("listeCategoriesAudio");
+    zone.style.display = "block";
+    if (!audiosCache.length) { zone.innerHTML = '<p class="empty-state">Aucun audio disponible pour le moment.</p>'; return; }
+    zone.innerHTML = '<div class="grille-playlists">' + categoriesAudioCache.map(function (cat) {
+      const nb = audiosCache.filter(function (a) { return a.Categorie === cat; }).length;
+      return '<div class="playlist-tuile" onclick="ouvrirCategorieAudio(\'' + cat.replace(/'/g, "&#39;") + '\')"><span class="ic">🎧</span><span class="lib">' + escapeHtml(cat) + '</span><div class="item-desc" style="margin-top:4px;">' + nb + ' audio(s)</div></div>';
+    }).join("") + '</div>';
+  }
+
+  function ouvrirCategorieAudio(categorie) {
+    document.getElementById("listeCategoriesAudio").style.display = "none";
+    const zone = document.getElementById("listeAudiosCategorie");
+    zone.style.display = "block";
+    afficherListeAudios(audiosCache.filter(function (a) { return a.Categorie === categorie; }), categorie);
+  }
+
+  function afficherListeAudios(audios, titreZone) {
+    const zone = document.getElementById("listeAudiosCategorie");
+    let html = '<button class="secondary small" style="margin-bottom:10px;" onclick="afficherCategoriesAudio()">← Toutes les catégories</button>';
+    if (titreZone) html += '<p class="field-label">' + escapeHtml(titreZone) + '</p>';
+    if (!audios.length) { zone.innerHTML = html + '<p class="empty-state">Aucun audio ici pour le moment.</p>'; return; }
+    html += audios.map(function (a) {
       const pillVisibilite = a.Visibilite === "Membres" ? '<span class="vis-pill">Membres</span>' : '';
       return '<div class="contenu-item">' +
         '<div class="item-nom">🎧 ' + escapeHtml(a.Titre) + pillVisibilite + '</div>' +
@@ -1445,17 +1631,45 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + a.DriveFileId + '/preview" allow="autoplay" oncontextmenu="return false;"></iframe>' +
         '</div>';
     }).join("");
+    zone.innerHTML = html;
+  }
+
+  function filtrerAudios() {
+    const requete = document.getElementById("rechercheAudios").value.trim().toLowerCase();
+    if (!requete) { afficherCategoriesAudio(); return; }
+    document.getElementById("listeCategoriesAudio").style.display = "none";
+    document.getElementById("listeAudiosCategorie").style.display = "block";
+    const resultats = audiosCache.filter(function (a) {
+      return (a.Titre || "").toLowerCase().indexOf(requete) !== -1 || (a.Description || "").toLowerCase().indexOf(requete) !== -1;
+    });
+    afficherListeAudios(resultats, "Résultats pour \"" + document.getElementById("rechercheAudios").value.trim() + "\"");
   }
 
   // ==================== NOS ÉCRITS (documents) ====================
   // ==================== DOCUMENTS (gratuits ou payants, téléchargeables) ====================
   let documentEnCoursAchat = null;
 
+  let documentsCache = [];
+
   function chargerDocuments() {
-    appelServeur("getDocuments").then(afficherDocuments).catch(function (err) {
+    document.getElementById("rechercheDocuments").value = "";
+    appelServeur("getDocuments").then(function (documents) {
+      documentsCache = documents || [];
+      afficherDocuments(documentsCache);
+    }).catch(function (err) {
       afficherErreurZone("listeDocumentsGratuits", err);
       afficherErreurZone("listeDocumentsPayants", err);
     });
+  }
+
+  function filtrerDocuments() {
+    const requete = document.getElementById("rechercheDocuments").value.trim().toLowerCase();
+    if (!requete) { afficherDocuments(documentsCache); return; }
+    afficherDocuments(documentsCache.filter(function (d) {
+      return (d.Titre || "").toLowerCase().indexOf(requete) !== -1 ||
+        (d.Description || "").toLowerCase().indexOf(requete) !== -1 ||
+        (d.Auteur || "").toLowerCase().indexOf(requete) !== -1;
+    }));
   }
 
   function afficherDocuments(documents) {
@@ -1558,8 +1772,23 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   // ==================== MESSAGERIE (texte + audio) ====================
+  let mesMessagesCache = [];
+
   function chargerMesMessages() {
-    appelServeur("getMesMessages", membreCourant.code).then(afficherMesMessages).catch(function (err) { afficherErreurZone("listeMesMessages", err); });
+    document.getElementById("rechercheMesMessages").value = "";
+    appelServeur("getMesMessages", membreCourant.code).then(function (messages) {
+      mesMessagesCache = messages || [];
+      afficherMesMessages(mesMessagesCache);
+    }).catch(function (err) { afficherErreurZone("listeMesMessages", err); });
+  }
+
+  function filtrerMesMessages() {
+    const requete = document.getElementById("rechercheMesMessages").value.trim().toLowerCase();
+    if (!requete) { afficherMesMessages(mesMessagesCache); return; }
+    afficherMesMessages(mesMessagesCache.filter(function (m) {
+      return (m.TypeMessage !== "Audio" && (m.Message || "").toLowerCase().indexOf(requete) !== -1) ||
+        (m.ReponseType !== "Audio" && (m.Reponse || "").toLowerCase().indexOf(requete) !== -1);
+    }));
   }
 
   function chargerMesAnnonces() {
@@ -1571,9 +1800,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const zone = document.getElementById("listeMesAnnonces");
     if (!annonces.length) { zone.innerHTML = ""; return; }
     zone.innerHTML = annonces.map(function (a) {
+      const contenu = a.TypeAnnonce === "Audio"
+        ? '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + a.PieceJointeId + '/preview" allow="autoplay"></iframe>'
+        : a.TypeAnnonce === "Document"
+        ? '<a class="secondary small" style="display:inline-block;text-decoration:none;text-align:center;margin-top:6px;" href="https://drive.google.com/uc?export=download&id=' + a.PieceJointeId + '" target="_blank">⬇️ Télécharger le document</a>'
+        : "";
       return '<div class="card" style="background:#fff7e8;border-color:#f4c400;">' +
         '<div class="item-desc" style="margin-bottom:4px;">📢 Annonce du ' + escapeHtml(a.Date) + '</div>' +
-        '<div style="font-size:14px;">' + escapeHtml(a.Texte) + '</div></div>';
+        (a.Texte ? '<div style="font-size:14px;">' + escapeHtml(a.Texte) + '</div>' : '') +
+        contenu + '</div>';
     }).join("");
   }
 
@@ -1656,7 +1891,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           const base64 = lecteur.result.split(",")[1];
           if (cibleReponseAudioAdmin) {
             appelServeur("repondreMessageAudio", membreCourant.code, cibleReponseAudioAdmin, base64).then(function () {
-              appelServeur("getMessagesAdmin", membreCourant.code).then(afficherMessagesAdmin);
+              appelServeur("getMessagesAdmin", membreCourant.code).then(function (data) { messagesAdminCache = data || []; afficherMessagesAdmin(messagesAdminCache); });
+              chargerCompteursEtBadges();
             }).catch(function (err) { alert("Erreur envoi audio : " + err.message); });
           } else {
             appelServeur("envoyerMessageAudio", membreCourant.code, base64).then(function () {
@@ -1723,11 +1959,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   // ==================== VIDÉOS — PLAYLISTS ====================
+  let videosPlaylistCourante = [];
+  let nomPlaylistCourante = "";
+
   function chargerPlaylists() {
     document.getElementById("lecteurVideoZone").style.display = "none";
     document.getElementById("lecteurVideoZone").innerHTML = "";
     document.getElementById("listeVideosPlaylist").style.display = "none";
     document.getElementById("listePlaylists").style.display = "block";
+    document.getElementById("rechercheVideos").value = "";
     appelServeur("getPlaylists").then(afficherPlaylists).catch(function (err) { afficherErreurZone("listePlaylists", err); });
   }
 
@@ -1745,10 +1985,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const zoneListe = document.getElementById("listeVideosPlaylist");
     document.getElementById("listePlaylists").style.display = "none";
     zoneListe.style.display = "block";
+    document.getElementById("rechercheVideos").value = "";
+    nomPlaylistCourante = nom;
     zoneListe.innerHTML = '<p class="field-label">' + escapeHtml(nom) + '</p><div class="loading">Chargement…</div>';
     appelServeur("getVideosPlaylist", playlistId).then(function (res) {
       if (!res.succes) { zoneListe.innerHTML = '<p class="field-label">' + escapeHtml(nom) + '</p><p class="error">' + escapeHtml(res.message) + '</p>'; return; }
-      afficherVideosPlaylist(res.videos, nom);
+      videosPlaylistCourante = res.videos || [];
+      afficherVideosPlaylist(videosPlaylistCourante, nom);
     }).catch(function (err) {
       zoneListe.innerHTML = '<p class="field-label">' + escapeHtml(nom) + '</p><p class="error">Erreur : ' + escapeHtml(err.message) + '</p>';
     });
@@ -1758,7 +2001,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     videos = videos || [];
     const zone = document.getElementById("listeVideosPlaylist");
     let html = '<p class="field-label">' + escapeHtml(nom) + '</p><button class="secondary small full-mt" style="margin-bottom:10px;" onclick="chargerPlaylists()">← Toutes les playlists</button>';
-    if (!videos.length) { zone.innerHTML = html + '<p class="empty-state">Aucune vidéo dans cette playlist pour le moment.</p>'; return; }
+    if (!videos.length) { zone.innerHTML = html + '<p class="empty-state">Aucune vidéo trouvée.</p>'; return; }
     html += videos.map(function (v) {
       const titreEchappe = escapeHtml(v.titre).replace(/'/g, "&#39;");
       return '<div class="video-item" onclick="lireVideo(\'' + v.videoId + '\',\'' + titreEchappe + '\')">' +
@@ -1768,6 +2011,14 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         '</div>';
     }).join("");
     zone.innerHTML = html;
+  }
+
+  function filtrerVideosPlaylist() {
+    const requete = document.getElementById("rechercheVideos").value.trim().toLowerCase();
+    if (document.getElementById("listeVideosPlaylist").style.display === "none") return; // aucune playlist ouverte
+    if (!requete) { afficherVideosPlaylist(videosPlaylistCourante, nomPlaylistCourante); return; }
+    const resultats = videosPlaylistCourante.filter(function (v) { return (v.titre || "").toLowerCase().indexOf(requete) !== -1; });
+    afficherVideosPlaylist(resultats, nomPlaylistCourante);
   }
 
   function lireVideo(videoId, titre) {
@@ -1938,12 +2189,23 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       const options = Object.keys(LIBELLES_ROLES).map(function (r) {
         return '<option value="' + r + '"' + (m.role === r ? " selected" : "") + '>' + LIBELLES_ROLES[r] + '</option>';
       }).join("");
-      return '<div class="item-row">' +
+      const estSuspendu = m.statut === "Suspendu";
+      const statutAffiche = estSuspendu && m.dateFinSuspension ? "Suspendu jusqu'au " + m.dateFinSuspension : m.statut;
+      const actionsCompte = estSuspendu
+        ? '<button class="secondary small" onclick="reactiverMembreClick(\'' + codeEchappe + '\')">Réactiver</button>'
+        : '<input type="number" min="1" value="7" id="joursSuspension-' + m.code + '" style="width:56px;margin:0;padding:6px;font-size:11px;" title="Nombre de jours">' +
+          '<button class="secondary small" onclick="suspendreMembreClick(\'' + codeEchappe + '\')">Suspendre</button>';
+      return '<div class="item-block">' +
+        '<div class="item-row" style="border:none;padding-bottom:8px;">' +
         '<div><div class="item-nom">' + escapeHtml(nomAff) + '</div>' +
-        '<div class="item-desc">' + escapeHtml(m.telephone || "") + " · " + escapeHtml(m.statut) + '</div></div>' +
+        '<div class="item-desc">' + escapeHtml(m.telephone || "") + " · " + escapeHtml(statutAffiche) + '</div></div>' +
         '<div style="display:flex; align-items:center; gap:8px;">' +
         '<span class="role-pill ' + pillClass + '">' + escapeHtml(LIBELLES_ROLES[m.role] || m.role) + "</span>" +
         '<select style="width:auto;margin:0;padding:6px 8px;font-size:11px;" onchange="changerRole(\'' + codeEchappe + '\', this.value)">' + options + '</select>' +
+        '</div></div>' +
+        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
+        actionsCompte +
+        '<button class="danger-outline small" onclick="supprimerMembreClick(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">Retirer</button>' +
         '</div></div>';
     }).join("");
   }
@@ -1954,8 +2216,31 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
+  function suspendreMembreClick(code) {
+    const inputJours = document.getElementById("joursSuspension-" + code);
+    const jours = inputJours ? Number(inputJours.value) || 7 : 7;
+    if (!confirm("Suspendre ce membre pour " + jours + " jour(s) ? Il ne pourra plus se connecter pendant cette période.")) return;
+    appelServeur("suspendreMembre", membreCourant.code, code, jours).then(function () {
+      appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function reactiverMembreClick(code) {
+    appelServeur("reactiverMembre", membreCourant.code, code).then(function () {
+      appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function supprimerMembreClick(code, nom) {
+    if (!confirm('Retirer définitivement "' + nom + '" de la plateforme ? Cette action est irréversible (son historique de paiements est conservé pour la comptabilité).')) return;
+    appelServeur("supprimerMembre", membreCourant.code, code).then(function () {
+      appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
   // ==================== ANNONCES GROUPÉES (Super Admin) ====================
   function chargerMembresPourAnnonce() {
+    document.getElementById("caseToutCocher").checked = false;
     appelServeur("getMembresAdmin", membreCourant.code).then(function (data) {
       const liste = data.liste || [];
       const zone = document.getElementById("listeMembresAnnonce");
@@ -1970,21 +2255,101 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }).catch(function (err) { afficherErreurZone("listeMembresAnnonce", err); });
   }
 
+  function toggleToutCocherMembres() {
+    const coche = document.getElementById("caseToutCocher").checked;
+    document.querySelectorAll(".case-annonce").forEach(function (c) { c.checked = coche; });
+  }
+
+  function basculerTypeAnnonce() {
+    const type = document.getElementById("typeAnnonce").value;
+    document.getElementById("zoneAnnonceTexte").style.display = type === "Texte" ? "block" : "none";
+    document.getElementById("zoneAnnonceAudio").style.display = type === "Audio" ? "block" : "none";
+    document.getElementById("zoneAnnonceDocument").style.display = type === "Document" ? "block" : "none";
+  }
+
+  // --- Enregistrement du message vocal d'une annonce (indépendant de la messagerie) ---
+  let audioAnnonceBase64 = null;
+  let enregistreurAnnonce = null;
+  let morceauxAnnonce = [];
+  let chronoAnnonceInterval = null;
+  let secondesAnnonce = 0;
+
+  function toggleEnregistrementAnnonce() {
+    if (enregistreurAnnonce && enregistreurAnnonce.state === "recording") { enregistreurAnnonce.stop(); return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { alert("L'enregistrement audio n'est pas supporté par ce navigateur."); return; }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (flux) {
+      morceauxAnnonce = [];
+      enregistreurAnnonce = new MediaRecorder(flux);
+      enregistreurAnnonce.ondataavailable = function (e) { if (e.data.size > 0) morceauxAnnonce.push(e.data); };
+      enregistreurAnnonce.onstop = function () {
+        flux.getTracks().forEach(function (t) { t.stop(); });
+        clearInterval(chronoAnnonceInterval);
+        document.getElementById("chronoAnnonceAudio").style.display = "none";
+        document.getElementById("btnMicroAnnonce").classList.remove("enregistrement");
+        document.getElementById("btnMicroAnnonce").textContent = "🎙️ Enregistrer le message vocal";
+        const blob = new Blob(morceauxAnnonce, { type: "audio/webm" });
+        const lecteur = new FileReader();
+        lecteur.onload = function () {
+          audioAnnonceBase64 = lecteur.result.split(",")[1];
+          document.getElementById("messageAudioAnnonceEnregistre").textContent = "✓ Message vocal prêt à être envoyé (" + secondesAnnonce + " s).";
+        };
+        lecteur.readAsDataURL(blob);
+      };
+      enregistreurAnnonce.start();
+      secondesAnnonce = 0;
+      document.getElementById("messageAudioAnnonceEnregistre").textContent = "";
+      document.getElementById("chronoAnnonceAudio").style.display = "inline";
+      document.getElementById("btnMicroAnnonce").classList.add("enregistrement");
+      document.getElementById("btnMicroAnnonce").textContent = "⏹️ Arrêter";
+      chronoAnnonceInterval = setInterval(function () {
+        secondesAnnonce++;
+        const m = String(Math.floor(secondesAnnonce / 60)).padStart(2, "0");
+        const s = String(secondesAnnonce % 60).padStart(2, "0");
+        document.getElementById("chronoAnnonceAudio").textContent = m + ":" + s;
+      }, 1000);
+    }).catch(function () { alert("Impossible d'accéder au microphone."); });
+  }
+
   function envoyerAnnonceClick() {
-    const texte = document.getElementById("texteAnnonce").value.trim();
     const err = document.getElementById("erreurAnnonce");
     err.style.display = "none";
     const codes = Array.prototype.slice.call(document.querySelectorAll(".case-annonce:checked")).map(function (c) { return c.value; });
-    if (!texte) { err.textContent = "Le texte est requis."; err.style.display = "block"; return; }
     if (!codes.length) { err.textContent = "Sélectionnez au moins un membre."; err.style.display = "block"; return; }
-    appelServeur("envoyerAnnonceGroupee", membreCourant.code, codes, texte).then(function (res) {
-      alert("Annonce envoyée à " + res.nombreDestinataires + " membre(s).");
-      document.getElementById("texteAnnonce").value = "";
-      document.querySelectorAll(".case-annonce:checked").forEach(function (c) { c.checked = false; });
-    }).catch(function (e) {
-      err.textContent = "Erreur : " + e.message;
-      err.style.display = "block";
-    });
+    const type = document.getElementById("typeAnnonce").value;
+
+    function finaliserEnvoi(texte, base64, nomFichier, mimeType) {
+      appelServeur("envoyerAnnonceGroupee", membreCourant.code, codes, texte, type, base64, nomFichier, mimeType).then(function (res) {
+        alert("Annonce envoyée à " + res.nombreDestinataires + " membre(s).");
+        document.getElementById("texteAnnonce").value = "";
+        document.getElementById("texteAnnonceAudio").value = "";
+        document.getElementById("texteAnnonceDocument").value = "";
+        document.getElementById("fichierAnnonceDocument").value = "";
+        document.getElementById("messageAudioAnnonceEnregistre").textContent = "";
+        audioAnnonceBase64 = null;
+        document.querySelectorAll(".case-annonce:checked").forEach(function (c) { c.checked = false; });
+        document.getElementById("caseToutCocher").checked = false;
+      }).catch(function (e) {
+        err.textContent = "Erreur : " + e.message;
+        err.style.display = "block";
+      });
+    }
+
+    if (type === "Texte") {
+      const texte = document.getElementById("texteAnnonce").value.trim();
+      if (!texte) { err.textContent = "Le texte est requis."; err.style.display = "block"; return; }
+      finaliserEnvoi(texte, null, null, null);
+    } else if (type === "Audio") {
+      if (!audioAnnonceBase64) { err.textContent = "Enregistrez d'abord un message vocal."; err.style.display = "block"; return; }
+      finaliserEnvoi(document.getElementById("texteAnnonceAudio").value.trim(), audioAnnonceBase64, "annonce.webm", "audio/webm");
+    } else {
+      const fichier = document.getElementById("fichierAnnonceDocument").files[0];
+      if (!fichier) { err.textContent = "Choisissez un fichier à joindre."; err.style.display = "block"; return; }
+      const lecteur = new FileReader();
+      lecteur.onload = function () {
+        finaliserEnvoi(document.getElementById("texteAnnonceDocument").value.trim(), lecteur.result.split(",")[1], fichier.name, fichier.type || "application/octet-stream");
+      };
+      lecteur.readAsDataURL(fichier);
+    }
   }
 
   function afficherPaiementsAdmin(paiements) {
@@ -2034,6 +2399,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     });
   }
 
+  let messagesAdminCache = [];
+
   function afficherMessagesAdmin(messages) {
     messages = messages || [];
     const zone = document.getElementById("adminListeMessages");
@@ -2065,11 +2432,22 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }).join("");
   }
 
+  function filtrerMessagesAdmin() {
+    const requete = document.getElementById("rechercheMessagesAdmin").value.trim().toLowerCase();
+    if (!requete) { afficherMessagesAdmin(messagesAdminCache); return; }
+    afficherMessagesAdmin(messagesAdminCache.filter(function (m) {
+      return (m.NomMembre || "").toLowerCase().indexOf(requete) !== -1 ||
+        (m.TypeMessage !== "Audio" && (m.Message || "").toLowerCase().indexOf(requete) !== -1) ||
+        (m.ReponseType !== "Audio" && (m.Reponse || "").toLowerCase().indexOf(requete) !== -1);
+    }));
+  }
+
   function envoyerReponse(idMessage) {
     const texte = document.getElementById("reponse-" + idMessage).value.trim();
     if (!texte) return;
     appelServeur("repondreMessage", membreCourant.code, idMessage, texte).then(function () {
-      appelServeur("getMessagesAdmin", membreCourant.code).then(afficherMessagesAdmin);
+      appelServeur("getMessagesAdmin", membreCourant.code).then(function (data) { messagesAdminCache = data || []; afficherMessagesAdmin(messagesAdminCache); });
+      chargerCompteursEtBadges();
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
@@ -2128,16 +2506,26 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
-  // ==================== ARCHIVES (admin) ====================
-  // --- Enregistrements (admin) ---
+  // ==================== AUDIOS (admin) ====================
+  function remplirSelecteurCategoriesAudio() {
+    const select = document.getElementById("recCategorie");
+    if (select.options.length) return;
+    (categoriesAudioCache || CATEGORIES_AUDIO_DEFAUT).forEach(function (cat) {
+      const option = document.createElement("option");
+      option.value = cat; option.textContent = cat;
+      select.appendChild(option);
+    });
+  }
+
   function afficherEnregistrementsAdmin(enregistrements) {
+    remplirSelecteurCategoriesAudio();
     enregistrements = enregistrements || [];
     const zone = document.getElementById("adminListeEnregistrements");
-    if (!enregistrements.length) { zone.innerHTML = '<p class="empty-state">Aucun enregistrement.</p>'; return; }
+    if (!enregistrements.length) { zone.innerHTML = '<p class="empty-state">Aucun audio.</p>'; return; }
     zone.innerHTML = enregistrements.map(function (a) {
       return '<div class="item-row">' +
         '<div><div class="item-nom">🎧 ' + escapeHtml(a.Titre) + '</div>' +
-        '<div class="item-desc">' + escapeHtml(a.Description || "") + " · " + escapeHtml(a.Visibilite) + " · Ajouté le " + escapeHtml(a.DateAjout) + '</div></div>' +
+        '<div class="item-desc">' + escapeHtml(a.Categorie) + " · " + escapeHtml(a.Visibilite) + " · Ajouté le " + escapeHtml(a.DateAjout) + '</div></div>' +
         '<button class="danger-outline small" onclick="supprimerEnregistrementAdmin(\'' + a.ID + '\')">Supprimer</button>' +
         '</div>';
     }).join("");
@@ -2147,11 +2535,12 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const titre = document.getElementById("recTitre").value.trim();
     const description = document.getElementById("recDescription").value.trim();
     const lien = document.getElementById("recLienDrive").value.trim();
+    const categorie = document.getElementById("recCategorie").value;
     const visibilite = document.getElementById("recVisibilite").value;
     const err = document.getElementById("erreurEnregistrement");
     err.style.display = "none";
     if (!titre || !lien) { err.textContent = "Le titre et le lien Google Drive sont requis."; err.style.display = "block"; return; }
-    appelServeur("ajouterEnregistrement", membreCourant.code, titre, description, lien, visibilite).then(function () {
+    appelServeur("ajouterEnregistrement", membreCourant.code, titre, description, lien, visibilite, categorie).then(function () {
       document.getElementById("recTitre").value = "";
       document.getElementById("recDescription").value = "";
       document.getElementById("recLienDrive").value = "";
@@ -2163,7 +2552,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerEnregistrementAdmin(id) {
-    if (!confirm("Supprimer cet enregistrement ?")) return;
+    if (!confirm("Supprimer cet audio ?")) return;
     appelServeur("supprimerEnregistrement", membreCourant.code, id).then(function () {
       appelServeur("getEnregistrements").then(afficherEnregistrementsAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
@@ -2267,6 +2656,76 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
+  // --- Affiche publicitaire (admin) ---
+  let afficheBase64EnCours = null;
+
+  function chargerAfficheAdmin() {
+    afficheBase64EnCours = null;
+    document.getElementById("erreurAffiche").style.display = "none";
+    document.getElementById("afficheLienInput").value = (configApp && configApp.AfficheLien) || "";
+    if (configApp && configApp.AfficheBase64) {
+      document.getElementById("affichePreviewImg").src = "data:image/png;base64," + configApp.AfficheBase64;
+      document.getElementById("affichePreviewZone").style.display = "block";
+    } else {
+      document.getElementById("affichePreviewZone").style.display = "none";
+    }
+  }
+
+  function previsualiserAffiche(event) {
+    const fichier = event.target.files[0];
+    if (!fichier) return;
+    const image = new Image();
+    const lecteurUrl = URL.createObjectURL(fichier);
+    image.onload = function () {
+      // Redimensionne côté navigateur en format paysage (max 1200x400) avant envoi,
+      // pour rester léger et cohérent avec le ratio d'affichage.
+      const canvas = document.createElement("canvas");
+      const largeurCible = 1200, hauteurCible = 400;
+      canvas.width = largeurCible; canvas.height = hauteurCible;
+      const ctx = canvas.getContext("2d");
+      const ratioImage = image.width / image.height, ratioCible = largeurCible / hauteurCible;
+      let sx, sy, sw, sh;
+      if (ratioImage > ratioCible) { sh = image.height; sw = sh * ratioCible; sx = (image.width - sw) / 2; sy = 0; }
+      else { sw = image.width; sh = sw / ratioCible; sx = 0; sy = (image.height - sh) / 2; }
+      ctx.drawImage(image, sx, sy, sw, sh, 0, 0, largeurCible, hauteurCible);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+      afficheBase64EnCours = dataUrl.split(",")[1];
+      document.getElementById("affichePreviewImg").src = dataUrl;
+      document.getElementById("affichePreviewZone").style.display = "block";
+      URL.revokeObjectURL(lecteurUrl);
+    };
+    image.src = lecteurUrl;
+  }
+
+  function enregistrerAffiche() {
+    const err = document.getElementById("erreurAffiche");
+    err.style.display = "none";
+    if (!afficheBase64EnCours) { err.textContent = "Choisissez d'abord une image."; err.style.display = "block"; return; }
+    const lien = document.getElementById("afficheLienInput").value.trim();
+    appelServeur("mettreAJourAffiche", membreCourant.code, afficheBase64EnCours, lien).then(function () {
+      configApp.AfficheBase64 = afficheBase64EnCours;
+      configApp.AfficheLien = lien;
+      afficherAffichePub();
+      alert("Affiche publiée.");
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function retirerAfficheClick() {
+    if (!confirm("Retirer l'affiche actuellement publiée ?")) return;
+    appelServeur("retirerAffiche", membreCourant.code).then(function () {
+      configApp.AfficheBase64 = "";
+      configApp.AfficheLien = "";
+      afficheBase64EnCours = null;
+      document.getElementById("affichePreviewZone").style.display = "none";
+      document.getElementById("fichierAffiche").value = "";
+      document.getElementById("afficheLienInput").value = "";
+      afficherAffichePub();
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
   // --- Demandes de prière (admin) ---
   function afficherDemandesPriereAdmin(demandes) {
     demandes = demandes || [];
@@ -2293,6 +2752,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function traiterDemandePriereAdmin(id) {
     appelServeur("traiterDemandePriere", membreCourant.code, id).then(function () {
       appelServeur("getDemandesPriereAdmin", membreCourant.code).then(afficherDemandesPriereAdmin);
+      chargerCompteursEtBadges();
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
