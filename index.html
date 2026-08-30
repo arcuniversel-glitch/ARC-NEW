@@ -605,11 +605,14 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <div class="card">
           <label class="field-label">Ajouter un document</label>
           <input id="docTitre" type="text" placeholder="Titre du document">
+          <input id="docAuteur" type="text" placeholder="Auteur du document">
+          <input id="docEmailAuteur" type="email" placeholder="E-mail de l'auteur (pour notification d'achat)">
           <input id="docDescription" type="text" placeholder="Description courte (facultative)">
           <input id="docLienDrive" type="text" placeholder="Lien de partage Google Drive du document">
           <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">
             Contrairement aux Enregistrements, ces documents doivent rester <strong>téléchargeables</strong> :
             n'activez pas la restriction "empêcher le téléchargement" sur ce fichier dans Google Drive.
+            Si un e-mail d'auteur est renseigné, il recevra une notification automatique à chaque achat (documents payants uniquement).
           </p>
           <label class="field-label">Type</label>
           <select id="docType" onchange="document.getElementById('docPrixZone').style.display = this.value === 'Payant' ? 'block' : 'none';">
@@ -1464,6 +1467,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     zoneGratuits.innerHTML = gratuits.length ? gratuits.map(function (d) {
       return '<div class="contenu-item">' +
         '<div class="item-nom">📄 ' + escapeHtml(d.Titre) + '</div>' +
+        (d.Auteur ? '<div class="item-desc">Par ' + escapeHtml(d.Auteur) + '</div>' : '') +
         (d.Description ? '<div class="item-desc">' + escapeHtml(d.Description) + '</div>' : '') +
         '<div class="item-desc">Ajouté le ' + escapeHtml(d.DateAjout) + '</div>' +
         '<button class="secondary small full-mt" onclick="telechargerDocument(\'' + d.ID + '\')">⬇️ Télécharger</button>' +
@@ -1475,6 +1479,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       const titreEchappe = escapeHtml(d.Titre).replace(/'/g, "&#39;");
       return '<div class="contenu-item">' +
         '<div class="item-nom">📄 ' + escapeHtml(d.Titre) + ' <span class="vis-pill">' + Number(d.Prix).toLocaleString("fr-FR") + ' F</span></div>' +
+        (d.Auteur ? '<div class="item-desc">Par ' + escapeHtml(d.Auteur) + '</div>' : '') +
         (d.Description ? '<div class="item-desc">' + escapeHtml(d.Description) + '</div>' : '') +
         '<div class="item-desc">Ajouté le ' + escapeHtml(d.DateAjout) + '</div>' +
         '<button class="flame small full-mt" onclick="acheterDocument(\'' + d.ID + '\',\'' + titreEchappe + '\',' + Number(d.Prix) + ')">💳 Acheter et télécharger</button>' +
@@ -2174,7 +2179,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       const libellePrix = d.Type === "Payant" ? Number(d.Prix).toLocaleString("fr-FR") + " FCFA" : "Gratuit";
       return '<div class="item-row">' +
         '<div><div class="item-nom">📄 ' + escapeHtml(d.Titre) + ' <span class="role-pill ' + pillClass + '">' + libellePrix + '</span></div>' +
-        '<div class="item-desc">' + escapeHtml(d.Description || "") + " · Ajouté le " + escapeHtml(d.DateAjout) + '</div></div>' +
+        '<div class="item-desc">' + (d.Auteur ? "Par " + escapeHtml(d.Auteur) + " · " : "") + escapeHtml(d.Description || "") + " · Ajouté le " + escapeHtml(d.DateAjout) + '</div></div>' +
         '<button class="danger-outline small" onclick="supprimerDocumentAdmin(\'' + d.ID + '\')">Supprimer</button>' +
         '</div>';
     }).join("");
@@ -2182,6 +2187,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function creerDocumentAdmin() {
     const titre = document.getElementById("docTitre").value.trim();
+    const auteur = document.getElementById("docAuteur").value.trim();
+    const emailAuteur = document.getElementById("docEmailAuteur").value.trim();
     const description = document.getElementById("docDescription").value.trim();
     const lien = document.getElementById("docLienDrive").value.trim();
     const type = document.getElementById("docType").value;
@@ -2190,8 +2197,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     err.style.display = "none";
     if (!titre || !lien) { err.textContent = "Le titre et le lien Google Drive sont requis."; err.style.display = "block"; return; }
     if (type === "Payant" && (!prix || Number(prix) <= 0)) { err.textContent = "Indiquez un prix pour un document payant."; err.style.display = "block"; return; }
-    appelServeur("ajouterDocument", membreCourant.code, titre, description, lien, type, prix).then(function () {
+    appelServeur("ajouterDocument", membreCourant.code, titre, description, lien, type, prix, auteur, emailAuteur).then(function () {
       document.getElementById("docTitre").value = "";
+      document.getElementById("docAuteur").value = "";
+      document.getElementById("docEmailAuteur").value = "";
       document.getElementById("docDescription").value = "";
       document.getElementById("docLienDrive").value = "";
       document.getElementById("docPrix").value = "";
