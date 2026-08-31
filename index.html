@@ -14,7 +14,7 @@
   <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap');
 :root{--blue:#0757a8;--blue2:#0b2f68;--red:#d71920;--red2:#a90812;--yellow:#f4c400;--ink:#17233c;--muted:#69758a;--bg:#f4f7fb;--card:#fff;--line:#e4e9f2;--green:#168653;--danger:#c62828;--shadow:0 12px 35px rgba(12,47,104,.09)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#f7f9fd,#eef3f9);color:var(--ink);font-family:Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased;top:0 !important;position:static !important}.goog-te-banner-frame,.goog-te-gadget-icon,body>.skiptranslate{display:none !important}#google_translate_element{display:none !important}h1,h2,.display{font-family:Montserrat,Arial,sans-serif}.wrap{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:28px 0 70px}.center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 10% 10%,rgba(7,87,168,.13),transparent 35%),radial-gradient(circle at 90% 90%,rgba(215,25,32,.13),transparent 35%)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:hidden;max-width:100vw}img,iframe{max-width:100%}body{margin:0;background:linear-gradient(180deg,#f7f9fd,#eef3f9);color:var(--ink);font-family:Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased;top:0 !important;position:static !important;overflow-x:hidden;max-width:100vw}.goog-te-banner-frame,.goog-te-gadget-icon,body>.skiptranslate{display:none !important}#google_translate_element{display:none !important}h1,h2,.display{font-family:Montserrat,Arial,sans-serif}.wrap{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:28px 0 70px}.center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 10% 10%,rgba(7,87,168,.13),transparent 35%),radial-gradient(circle at 90% 90%,rgba(215,25,32,.13),transparent 35%)}
 .topbar{background:linear-gradient(110deg,var(--blue2),var(--blue) 55%,var(--red));padding:13px max(22px,calc((100% - 1180px)/2));color:#fff;display:none;align-items:center;gap:13px;position:sticky;top:0;z-index:100;box-shadow:0 8px 25px rgba(7,47,104,.22);min-height:72px}.topbar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--yellow)}.logo-circle{width:46px;height:46px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--blue2);font-weight:800;overflow:hidden;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.15)}.logo-circle img,.logo-circle-lg img,.badge-mini-logo img{width:100%;height:100%;object-fit:cover}.topbar-nom{font-size:16px;font-weight:800;line-height:1.25}.topbar-sub{font-size:11px;opacity:.78;margin-top:2px}
 .brand-center{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:24px}.logo-circle-lg{width:92px;height:92px;border-radius:24px;background:#fff;box-shadow:0 14px 35px rgba(7,47,104,.18);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:30px;color:var(--blue2);overflow:hidden;border:4px solid #fff;margin-bottom:14px;position:relative}.logo-circle-lg:after{content:"";position:absolute;inset:-4px;border-radius:27px;padding:4px;background:linear-gradient(135deg,var(--blue),var(--red),var(--yellow));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}.brand-nom{font-family:Montserrat;font-weight:800;font-size:20px;color:var(--blue2);line-height:1.3}.card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow);margin-bottom:18px}.auth-screen .wrap{width:min(520px,calc(100% - 30px))}.auth-screen .card{position:relative;overflow:hidden}.auth-screen .card:before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,var(--blue),var(--red),var(--yellow))}
 h1.titre{font-size:25px;margin:0 0 7px;color:var(--blue2);text-align:center;font-weight:800}.subtitle{color:var(--muted);font-size:14px;margin:0 0 20px;line-height:1.6;text-align:center}.subtitle.left,h1.titre.left{text-align:left}.section-title{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;color:var(--blue2);margin:8px 0 14px}.section-title .ic{font-size:20px}
@@ -472,6 +472,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     <div class="section" id="section-messages">
       <div class="section-title"><span class="ic">✉️</span> Messagerie avec l'administration</div>
       <div id="listeMesAnnonces"></div>
+      <div id="espacesPubMessagesZone"></div>
       <div class="card">
         <textarea id="nouveauMessage" rows="2" placeholder="Votre message…"></textarea>
         <div id="erreurNouveauMessage" class="error" style="display:none;"></div>
@@ -498,11 +499,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div class="card" id="lecteurVideoPlateformeZone" style="display:none;"></div>
       <div id="listePlaylists"><div class="loading">Chargement…</div></div>
       <div class="card" id="listeVideosPlaylist" style="display:none;"></div>
-      <button class="secondary" onclick="ouvrirYoutube()">Voir toute la chaîne YouTube</button>
     </div>
 
     <div class="section" id="section-prieres">
       <div class="section-title"><span class="ic">🙏</span> Séances directes</div>
+      <input type="text" id="rechercheSeances" placeholder="🔎 Rechercher une séance…" oninput="filtrerSeances()">
       <div class="card" id="listeSeances"><div class="loading">Chargement…</div></div>
     </div>
 
@@ -557,19 +558,41 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
       <div class="admin-section" id="admin-seances">
         <div class="card">
-          <label class="field-label">Ajouter une séance directe</label>
+          <label class="field-label" id="etiquetteFormSeance">Ajouter une séance directe</label>
           <input id="nsTitre" type="text" placeholder="Titre (ex : Prière du mardi)">
           <label class="field-label">Date (facultative)</label>
-          <input id="nsDate" type="date">
+          <input id="nsDate" type="text" list="suggestionsDatesSeance" placeholder="Ex : 15/09/2026, tous les samedis, Lundi au vendredi…">
+          <datalist id="suggestionsDatesSeance">
+            <option value="Tous les jours">
+            <option value="Tous les lundis">
+            <option value="Tous les mardis">
+            <option value="Tous les mercredis">
+            <option value="Tous les jeudis">
+            <option value="Tous les vendredis">
+            <option value="Tous les samedis">
+            <option value="Tous les dimanches">
+            <option value="Lundi au vendredi">
+            <option value="Du lundi au samedi">
+          </datalist>
           <input id="nsHeure" type="time">
-          <input id="nsLien" type="text" placeholder="Lien Google Meet">
+          <input id="nsLien" type="text" placeholder="Lien de réunion (Google Meet ou Zoom)">
           <label class="field-label">Visible par</label>
           <select id="nsVisibilite">
             <option value="Membres">Membres inscrits uniquement</option>
             <option value="Public">Tout le monde (y compris visiteurs)</option>
           </select>
+          <label class="field-label">Type</label>
+          <select id="nsType" onchange="document.getElementById('nsPrixZone').style.display = this.value === 'Payant' ? 'block' : 'none';">
+            <option value="Gratuit">Gratuite</option>
+            <option value="Payant">Payante</option>
+          </select>
+          <div id="nsPrixZone" style="display:none;">
+            <label class="field-label">Prix (FCFA)</label>
+            <input id="nsPrix" type="number" min="1" placeholder="Ex : 500">
+          </div>
           <div id="erreurSeance" class="error" style="display:none;"></div>
-          <button onclick="creerSeance()">Ajouter la séance</button>
+          <button id="btnValiderSeance" onclick="creerSeance()">Ajouter la séance</button>
+          <button id="btnAnnulerEditionSeance" class="secondary small full-mt" style="display:none;" onclick="annulerEditionSeance()">Annuler la modification</button>
         </div>
         <div class="card" id="adminListeSeances"><div class="loading">Chargement…</div></div>
       </div>
@@ -807,6 +830,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
             <option value="audios">Audios</option>
             <option value="videos">Vidéos</option>
             <option value="documents">Documents</option>
+            <option value="messages">Messages</option>
           </select>
           <label class="field-label">Type</label>
           <select id="pubType" onchange="document.getElementById('pubImageZone').style.display = this.value === 'Image' ? 'block' : 'none'; document.getElementById('pubVideoZone').style.display = this.value === 'Video' ? 'block' : 'none';">
@@ -830,8 +854,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
       <div class="admin-section" id="admin-affiche">
         <div class="card">
-          <label class="field-label">Ajouter une image au slider (3 maximum)</label>
-          <p class="subtitle left" style="margin-top:-4px;">Format paysage recommandé (ex : 1200 × 400 px). Les 3 images défilent automatiquement en haut du tableau de bord des membres.</p>
+          <label class="field-label">Ajouter une image au slider (7 maximum)</label>
+          <p class="subtitle left" style="margin-top:-4px;">Format paysage recommandé (ex : 1200 × 400 px). Les images défilent automatiquement en haut du tableau de bord des membres.</p>
           <div id="affichePreviewZone" style="display:none;margin-bottom:12px;border-radius:12px;overflow:hidden;aspect-ratio:3/1;background:#eef3f9;">
             <img id="affichePreviewImg" style="width:100%;height:100%;object-fit:cover;display:block;">
           </div>
@@ -879,7 +903,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // ==================== ADRESSE DE L'API (backend Apps Script) ====================
   // Collez ici l'URL de déploiement de votre Apps Script (celle qui se termine par /exec).
   // C'est la SEULE ligne à modifier après avoir déployé Code.gs comme API.
-  const API_URL = "https://script.google.com/macros/s/AKfycbxp5ajlso_NZNIHh8n70vLENpXB2JgNq9j7XYutED9OitnskiJhVl9zwuW83P0eKQU/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbzcsMfQidjwHjJpLndf842DZZtGrj6E5dNQk7j67twj9qa1b3XBPR-mlmkoLYEjdTex/exec";
 
   // ==================== APPEL SERVEUR (via l'API Apps Script) ====================
   // Remplace l'ancien google.script.run : la page est maintenant hébergée séparément
@@ -1357,7 +1381,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.querySelectorAll(".auth-screen").forEach(function (s) { s.classList.remove("active"); });
     document.getElementById("ecranDashboard").style.display = "block";
     document.getElementById("topbar").style.display = "flex";
-    document.getElementById("topbarSub").textContent = "Espace visiteur";
+    document.getElementById("topbarSub").textContent = "arcuniversel@gmail.com";
     document.getElementById("btnDeconnexion").style.display = "inline-flex";
     document.getElementById("btnDeconnexion").textContent = "Quitter";
     document.getElementById("bonjourNom").textContent = "Bienvenue 👋";
@@ -1569,7 +1593,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.querySelectorAll(".admin-subtab").forEach(function (t) { t.classList.toggle("active", t.dataset.sub === nom); });
     document.querySelectorAll(".admin-section").forEach(function (s) { s.classList.toggle("active", s.id === "admin-" + nom); });
     if (nom === "groupes") { appelServeur("getGroupesAdmin", membreCourant.code).then(afficherGroupesAdmin).catch(function (err) { afficherErreurZone("adminListeGroupes", err); }); document.getElementById("ggpLien").value = (configApp && configApp.LienGroupePriere) || ""; }
-    else if (nom === "seances") appelServeur("getSeances").then(afficherSeancesAdmin).catch(function (err) { afficherErreurZone("adminListeSeances", err); });
+    else if (nom === "seances") appelServeur("getSeances", membreCourant.code).then(afficherSeancesAdmin).catch(function (err) { afficherErreurZone("adminListeSeances", err); });
     else if (nom === "membres") appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin).catch(function (err) { afficherErreurZone("adminListeMembres", err); });
     else if (nom === "annonces") chargerMembresPourAnnonce();
     else if (nom === "paiements") appelServeur("getPaiementsAdmin", membreCourant.code).then(afficherPaiementsAdmin).catch(function (err) { afficherErreurZone("adminListePaiements", err); });
@@ -1640,24 +1664,49 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // ==================== SEANCES ====================
   function codeActuel() { return membreCourant ? membreCourant.code : "VISITEUR"; }
 
+  let seancesCache = [];
+
   function chargerSeances() {
+    document.getElementById("rechercheSeances").value = "";
     const fonction = modeVisiteur ? "getSeancesPublic" : "getSeances";
-    appelServeur(fonction).then(afficherSeances).catch(function (err) { afficherErreurZone("listeSeances", err); });
+    appelServeur(fonction, codeActuel()).then(function (seances) {
+      seancesCache = seances || [];
+      afficherSeances(seancesCache);
+    }).catch(function (err) { afficherErreurZone("listeSeances", err); });
+  }
+
+  function filtrerSeances() {
+    const requete = document.getElementById("rechercheSeances").value.trim().toLowerCase();
+    if (!requete) { afficherSeances(seancesCache); return; }
+    afficherSeances(seancesCache.filter(function (s) {
+      return (s.Titre || "").toLowerCase().indexOf(requete) !== -1 ||
+        (s.Date ? String(s.Date).toLowerCase().indexOf(requete) !== -1 : false);
+    }));
   }
 
   function afficherSeances(seances) {
     seances = seances || [];
     const zone = document.getElementById("listeSeances");
-    if (!seances.length) { zone.innerHTML = '<p class="empty-state">Aucune séance programmée.</p>'; return; }
+    if (!seances.length) { zone.innerHTML = '<p class="empty-state">Aucune séance trouvée.</p>'; return; }
     zone.innerHTML = seances.map(function (s) {
-      const date = s.Date ? new Date(s.Date).toLocaleDateString("fr-FR") : "Date à confirmer";
+      const date = s.Date ? escapeHtml(String(s.Date)) : "Date à confirmer";
       const heure = s.Heure ? " à " + escapeHtml(s.Heure) : "";
+      const badgePremium = s.Type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : "";
+      const bouton = (s.Type === "Payant" && !s.LienMeet)
+        ? '<button class="flame small" onclick="acheterSeance(\'' + s.ID + '\',' + Number(s.Prix) + ')">💳 ' + Number(s.Prix).toLocaleString("fr-FR") + ' F</button>'
+        : '<button class="btn-meet" onclick="window.open(\'' + (s.LienMeet || "").replace(/'/g, "&#39;") + '\', \'_blank\')">Rejoindre</button>';
       return '<div class="item-row">' +
-        '<div><div class="item-nom">' + escapeHtml(s.Titre) + '</div>' +
+        '<div><div class="item-nom">' + escapeHtml(s.Titre) + badgePremium + '</div>' +
         '<div class="item-desc">' + date + heure + '</div></div>' +
-        '<button class="btn-meet" onclick="window.open(\'' + s.LienMeet + '\', \'_blank\')">Rejoindre</button>' +
+        bouton +
         '</div>';
     }).join("");
+  }
+
+  function acheterSeance(id, prix) {
+    if (!configApp || !configApp.kkiapayPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    typeCotisationEnCours = { nom: id, montant: prix, periodicite: "", categorie: "Seance" };
+    openKkiapayWidget({ amount: prix, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
   }
 
   // ==================== COTISATIONS ====================
@@ -1795,6 +1844,19 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       return;
     }
 
+    if (info.categorie === "Seance") {
+      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "Kkiapay", info.nom, null, "Seance")
+        .then(function (res) {
+          if (!res.succes) { alert("Le paiement n'a pas pu être vérifié."); return; }
+          return appelServeur("getLienSeance", codeActuel(), info.nom, transactionId).then(function (lienRes) {
+            if (!lienRes.succes) { alert(lienRes.message || "Accès indisponible."); return; }
+            window.open(lienRes.lien, "_blank");
+            chargerSeances();
+          });
+        }).catch(function (err) { alert("Erreur : " + err.message); });
+      return;
+    }
+
     if (info.categorie === "Publication") {
       appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "Kkiapay", info.nom, null, "Publication")
         .then(function (res) {
@@ -1895,8 +1957,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     zone.style.display = "block";
     if (!audiosCache.length) { zone.innerHTML = '<p class="empty-state">Aucun audio disponible pour le moment.</p>'; return; }
     zone.innerHTML = '<div class="grille-playlists">' + categoriesAudioCache.map(function (cat) {
-      const nb = audiosCache.filter(function (a) { return a.Categorie === cat; }).length;
-      return '<div class="playlist-tuile" onclick="ouvrirCategorieAudio(\'' + cat.replace(/'/g, "&#39;") + '\')"><span class="ic">🎧</span><span class="lib">' + escapeHtml(cat) + '</span><div class="item-desc" style="margin-top:4px;">' + nb + ' audio(s)</div></div>';
+      const nom = typeof cat === "string" ? cat : cat.Nom;
+      const cover = (typeof cat !== "string" && cat.CoverBase64) ? '<img src="data:image/jpeg;base64,' + cat.CoverBase64 + '" style="width:100%;height:64px;object-fit:cover;border-radius:10px;margin-bottom:6px;">' : '<span class="ic">🎧</span>';
+      const nb = audiosCache.filter(function (a) { return a.Categorie === nom; }).length;
+      return '<div class="playlist-tuile" onclick="ouvrirCategorieAudio(\'' + nom.replace(/'/g, "&#39;") + '\')">' + cover + '<span class="lib">' + escapeHtml(nom) + '</span><div class="item-desc" style="margin-top:4px;">' + nb + ' audio(s)</div></div>';
     }).join("") + '</div>';
   }
 
@@ -2033,7 +2097,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       if (!res.succes) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">' + escapeHtml(res.message) + '</p>'; return; }
       videosDeverrouillees[video.id] = true;
       zone.innerHTML = entete +
-        '<iframe class="video-player-frame" src="' + res.apercu + '" allow="autoplay" allowfullscreen></iframe>' +
+        '<iframe class="video-player-frame" src="' + res.apercu + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>' +
         '<div class="lecteur-controles">' +
         '<button onclick="videoUnifieePrecedente()">⏮️</button>' +
         '<button id="btnRepeterVideoPlateforme" class="' + (repeterVideoActif ? "actif" : "") + '" onclick="toggleRepeterVideo()">🔁</button>' +
@@ -2334,6 +2398,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       mesMessagesCache = messages || [];
       afficherMesMessages(mesMessagesCache);
     }).catch(function (err) { afficherErreurZone("listeMesMessages", err); });
+    appelServeur("getEspacesPub", "messages").then(function (espaces) {
+      const zone = document.getElementById("espacesPubMessagesZone");
+      zone.innerHTML = (espaces || []).map(construireCarteEspacePub).join("");
+    }).catch(function () { /* pas grave si ça échoue */ });
   }
 
   function filtrerMesMessages() {
@@ -2539,7 +2607,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     zone.innerHTML = '<div class="grille-playlists">' + playlists.map(function (p) {
       const nomEchappe = escapeHtml(p.Nom).replace(/'/g, "&#39;");
       const nbPlateforme = videosPlateformeCache.filter(function (v) { return v.Categorie === p.Nom; }).length;
-      return '<div class="playlist-tuile" onclick="ouvrirPlaylist(\'' + p.PlaylistId + '\',\'' + nomEchappe + '\')"><span class="ic">▶️</span><span class="lib">' + escapeHtml(p.Nom) + '</span>' +
+      const cover = p.CoverBase64 ? '<img src="data:image/jpeg;base64,' + p.CoverBase64 + '" style="width:100%;height:64px;object-fit:cover;border-radius:10px;margin-bottom:6px;">' : '<span class="ic">▶️</span>';
+      return '<div class="playlist-tuile" onclick="ouvrirPlaylist(\'' + p.PlaylistId + '\',\'' + nomEchappe + '\')">' + cover + '<span class="lib">' + escapeHtml(p.Nom) + '</span>' +
         (nbPlateforme ? '<div class="item-desc" style="margin-top:4px;">+ ' + nbPlateforme + ' vidéo(s) plateforme</div>' : '') + '</div>';
     }).join("") + '</div>';
   }
@@ -2622,7 +2691,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function lireVideo(videoId, titre) {
     const zone = document.getElementById("lecteurVideoZone");
     const boucle = repeterVideoActif ? "1" : "0";
-    zone.innerHTML = '<iframe class="video-player-frame" src="https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&rel=0&loop=' + boucle + '" title="' + titre + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>' +
+    zone.innerHTML = '<iframe class="video-player-frame" src="https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&rel=0&loop=' + boucle + '" title="' + titre + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>' +
       '<div class="lecteur-controles">' +
       '<button onclick="videoUnifieePrecedente()">⏮️</button>' +
       '<button id="btnRepeterVideo" class="' + (repeterVideoActif ? "actif" : "") + '" onclick="toggleRepeterVideo()">🔁</button>' +
@@ -2736,34 +2805,78 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
+  let seancesAdminCache = [];
+  let seanceEnEditionId = null;
+
   function afficherSeancesAdmin(seances) {
-    seances = seances || [];
+    seancesAdminCache = seances || [];
     const zone = document.getElementById("adminListeSeances");
-    if (!seances.length) { zone.innerHTML = '<p class="empty-state">Aucune séance.</p>'; return; }
-    zone.innerHTML = seances.map(function (s) {
-      const date = s.Date ? new Date(s.Date).toLocaleDateString("fr-FR") : "Date à confirmer";
+    if (!seancesAdminCache.length) { zone.innerHTML = '<p class="empty-state">Aucune séance.</p>'; return; }
+    zone.innerHTML = seancesAdminCache.map(function (s) {
+      const date = s.Date ? escapeHtml(String(s.Date)) : "Date à confirmer";
+      const libellePrix = s.Type === "Payant" ? Number(s.Prix).toLocaleString("fr-FR") + " FCFA" : "Gratuite";
       return '<div class="item-row">' +
-        '<div><div class="item-nom">' + escapeHtml(s.Titre) + '</div>' +
-        '<div class="item-desc">' + date + (s.Heure ? " à " + escapeHtml(s.Heure) : "") + '</div></div>' +
+        '<div><div class="item-nom">' + escapeHtml(s.Titre) + ' <span class="role-pill ' + (s.Type === "Payant" ? "role-admin" : "role-membre") + '">' + libellePrix + '</span></div>' +
+        '<div class="item-desc">' + date + (s.Heure ? " à " + escapeHtml(s.Heure) : "") + " · " + escapeHtml(s.Visibilite) + '</div></div>' +
+        '<div style="display:flex;gap:6px;">' +
+        '<button class="secondary small" onclick="editerSeanceAdmin(\'' + s.ID + '\')">Modifier</button>' +
         '<button class="danger-outline small" onclick="supprimerSeanceAdmin(\'' + s.ID + '\')">Supprimer</button>' +
-        '</div>';
+        '</div></div>';
     }).join("");
+  }
+
+  function editerSeanceAdmin(id) {
+    const s = seancesAdminCache.find(function (x) { return x.ID === id; });
+    if (!s) return;
+    seanceEnEditionId = id;
+    document.getElementById("etiquetteFormSeance").textContent = "Modifier la séance";
+    document.getElementById("nsTitre").value = s.Titre || "";
+    document.getElementById("nsDate").value = s.Date || "";
+    document.getElementById("nsHeure").value = s.Heure || "";
+    document.getElementById("nsLien").value = s.LienMeet || "";
+    document.getElementById("nsVisibilite").value = s.Visibilite === "Public" ? "Public" : "Membres";
+    document.getElementById("nsType").value = s.Type === "Payant" ? "Payant" : "Gratuit";
+    document.getElementById("nsPrix").value = s.Prix || "";
+    document.getElementById("nsPrixZone").style.display = s.Type === "Payant" ? "block" : "none";
+    document.getElementById("btnValiderSeance").textContent = "Enregistrer les modifications";
+    document.getElementById("btnAnnulerEditionSeance").style.display = "inline-flex";
+    document.getElementById("nsTitre").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function annulerEditionSeance() {
+    seanceEnEditionId = null;
+    document.getElementById("etiquetteFormSeance").textContent = "Ajouter une séance directe";
+    document.getElementById("nsTitre").value = "";
+    document.getElementById("nsDate").value = "";
+    document.getElementById("nsHeure").value = "";
+    document.getElementById("nsLien").value = "";
+    document.getElementById("nsType").value = "Gratuit";
+    document.getElementById("nsPrix").value = "";
+    document.getElementById("nsPrixZone").style.display = "none";
+    document.getElementById("btnValiderSeance").textContent = "Ajouter la séance";
+    document.getElementById("btnAnnulerEditionSeance").style.display = "none";
   }
 
   function creerSeance() {
     const titre = document.getElementById("nsTitre").value.trim();
-    const date = document.getElementById("nsDate").value;
+    const date = document.getElementById("nsDate").value.trim();
     const heure = document.getElementById("nsHeure").value;
     const lien = document.getElementById("nsLien").value.trim();
+    const visibilite = document.getElementById("nsVisibilite").value;
+    const type = document.getElementById("nsType").value;
+    const prix = document.getElementById("nsPrix").value;
     const err = document.getElementById("erreurSeance");
     err.style.display = "none";
     if (!titre || !lien) { err.textContent = "Titre et lien sont requis (la date est facultative)."; err.style.display = "block"; return; }
-    appelServeur("ajouterSeance", membreCourant.code, titre, date, heure, lien).then(function () {
-      document.getElementById("nsTitre").value = "";
-      document.getElementById("nsDate").value = "";
-      document.getElementById("nsHeure").value = "";
-      document.getElementById("nsLien").value = "";
-      appelServeur("getSeances").then(afficherSeancesAdmin);
+    if (type === "Payant" && (!prix || Number(prix) <= 0)) { err.textContent = "Indiquez un prix pour une séance payante."; err.style.display = "block"; return; }
+
+    const action = seanceEnEditionId
+      ? appelServeur("modifierSeance", membreCourant.code, seanceEnEditionId, titre, date, heure, lien, visibilite, type, prix)
+      : appelServeur("ajouterSeance", membreCourant.code, titre, date, heure, lien, visibilite, type, prix);
+
+    action.then(function () {
+      annulerEditionSeance();
+      appelServeur("getSeances", membreCourant.code).then(afficherSeancesAdmin);
     }).catch(function (e) {
       err.textContent = "Erreur : " + e.message;
       err.style.display = "block";
@@ -2773,7 +2886,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function supprimerSeanceAdmin(id) {
     if (!confirm("Supprimer cette séance ?")) return;
     appelServeur("supprimerSeance", membreCourant.code, id).then(function () {
-      appelServeur("getSeances").then(afficherSeancesAdmin);
+      if (seanceEnEditionId === id) annulerEditionSeance();
+      appelServeur("getSeances", membreCourant.code).then(afficherSeancesAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
@@ -3122,9 +3236,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // ==================== AUDIOS (admin) ====================
   let couverturesEnCours = {};
 
-  function previsualiserCoverGenerique(event, imgId, zoneId, cle) {
-    const fichier = event.target.files[0];
-    if (!fichier) return;
+  function convertirImageEnBase64_(fichier, callback) {
     const image = new Image();
     const url = URL.createObjectURL(fichier);
     image.onload = function () {
@@ -3137,20 +3249,30 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       canvas.width = w; canvas.height = h;
       canvas.getContext("2d").drawImage(image, 0, 0, w, h);
       const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
-      couverturesEnCours[cle] = dataUrl.split(",")[1];
-      document.getElementById(imgId).src = dataUrl;
-      document.getElementById(zoneId).style.display = "block";
       URL.revokeObjectURL(url);
+      callback(dataUrl.split(",")[1], dataUrl);
     };
     image.src = url;
+  }
+
+  function previsualiserCoverGenerique(event, imgId, zoneId, cle) {
+    const fichier = event.target.files[0];
+    if (!fichier) return;
+    convertirImageEnBase64_(fichier, function (base64, dataUrl) {
+      couverturesEnCours[cle] = base64;
+      document.getElementById(imgId).src = dataUrl;
+      document.getElementById(zoneId).style.display = "block";
+    });
   }
 
   function remplirSelecteurCategoriesAudio() {
     const select = document.getElementById("recCategorie");
     select.innerHTML = "";
-    (categoriesAudioCache || CATEGORIES_AUDIO_DEFAUT).forEach(function (cat) {
+    const liste = (categoriesAudioCache || CATEGORIES_AUDIO_DEFAUT.map(function (n) { return { Nom: n }; }));
+    liste.forEach(function (cat) {
+      const nom = typeof cat === "string" ? cat : cat.Nom;
       const option = document.createElement("option");
-      option.value = cat; option.textContent = cat;
+      option.value = nom; option.textContent = nom;
       select.appendChild(option);
     });
   }
@@ -3161,18 +3283,31 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function afficherCategoriesAudioAdmin(categories) {
     categories = categories || [];
-    categoriesAudioCache = categories.map(function (c) { return c.Nom; });
+    categoriesAudioCache = categories;
     remplirSelecteurCategoriesAudio();
     const zone = document.getElementById("adminListeCategoriesAudio");
     if (!categories.length) { zone.innerHTML = '<p class="empty-state">Aucune catégorie.</p>'; return; }
     zone.innerHTML = categories.map(function (c) {
+      const cover = c.CoverBase64 ? '<img src="data:image/jpeg;base64,' + c.CoverBase64 + '" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">' : '<div style="width:40px;height:40px;border-radius:8px;background:#eef3f9;display:flex;align-items:center;justify-content:center;">🎧</div>';
       return '<div class="item-row" style="padding:8px 0;">' +
-        '<input type="text" value="' + escapeHtml(c.Nom) + '" id="catAudio-' + c.ID + '" style="margin:0;">' +
+        '<div style="display:flex;align-items:center;gap:8px;flex:1;">' + cover +
+        '<input type="text" value="' + escapeHtml(c.Nom) + '" id="catAudio-' + c.ID + '" style="margin:0;"></div>' +
         '<div style="display:flex;gap:6px;">' +
+        '<label class="file-btn-label" style="padding:6px 9px;font-size:10px;">🖼️<input type="file" accept="image/*" style="display:none;" onchange="changerImageCategorieAudio(event,\'' + c.ID + '\')"></label>' +
         '<button class="secondary small" style="width:auto;" onclick="modifierCategorieAudioClick(\'' + c.ID + '\')">💾</button>' +
         '<button class="danger-outline small" style="width:auto;" onclick="supprimerCategorieAudioClick(\'' + c.ID + '\')">🗑️</button>' +
         '</div></div>';
     }).join("");
+  }
+
+  function changerImageCategorieAudio(event, id) {
+    const fichier = event.target.files[0];
+    if (!fichier) return;
+    convertirImageEnBase64_(fichier, function (base64) {
+      appelServeur("modifierImageCategorieAudio", membreCourant.code, id, base64).then(function () {
+        chargerCategoriesAudioAdmin();
+      }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   function creerCategorieAudioClick() {
@@ -3311,14 +3446,27 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     if (!playlists.length) { zone.innerHTML = '<p class="empty-state">Aucune playlist.</p>'; return; }
     zone.innerHTML = playlists.map(function (p) {
       const idEchappe = p.ID.replace(/'/g, "&#39;");
+      const cover = p.CoverBase64 ? '<img src="data:image/jpeg;base64,' + p.CoverBase64 + '" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">' : '<div style="width:40px;height:40px;border-radius:8px;background:#eef3f9;display:flex;align-items:center;justify-content:center;">▶️</div>';
       return '<div class="item-block">' +
-        '<div class="item-nom">' + escapeHtml(p.Nom) + (p.PlaylistId ? "" : ' <span class="vis-pill" style="background:#fff0f0;color:#b00f18;">lien manquant</span>') + '</div>' +
+        '<div class="item-nom" style="display:flex;align-items:center;gap:8px;">' + cover + escapeHtml(p.Nom) + (p.PlaylistId ? "" : ' <span class="vis-pill" style="background:#fff0f0;color:#b00f18;">lien manquant</span>') + '</div>' +
         '<div style="display:flex;gap:8px;margin-top:8px;">' +
         '<input type="text" id="plLienEdit-' + p.ID + '" placeholder="Lien de la playlist YouTube" value="' + (p.PlaylistId ? "https://www.youtube.com/playlist?list=" + p.PlaylistId : "") + '" style="margin:0;">' +
         '<button class="secondary small" style="width:auto;" onclick="modifierPlaylistAdmin(\'' + idEchappe + '\')">💾</button>' +
         '<button class="danger-outline small" style="width:auto;" onclick="supprimerPlaylistAdmin(\'' + idEchappe + '\')">🗑️</button>' +
-        '</div></div>';
+        '</div>' +
+        '<label class="file-btn-label" style="margin-top:8px;font-size:10px;">🖼️ Changer l\'image<input type="file" accept="image/*" style="display:none;" onchange="changerImagePlaylist(event,\'' + idEchappe + '\')"></label>' +
+        '</div>';
     }).join("");
+  }
+
+  function changerImagePlaylist(event, id) {
+    const fichier = event.target.files[0];
+    if (!fichier) return;
+    convertirImageEnBase64_(fichier, function (base64) {
+      appelServeur("modifierImagePlaylist", membreCourant.code, id, base64).then(function () {
+        appelServeur("getPlaylists").then(afficherPlaylistsAdmin);
+      }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   function modifierPlaylistAdmin(id) {
@@ -3414,7 +3562,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     espaces = espaces || [];
     const zone = document.getElementById("adminListeEspacesPub");
     if (!espaces.length) { zone.innerHTML = '<p class="empty-state">Aucun espace publicitaire.</p>'; return; }
-    const libelles = { audios: "Audios", videos: "Vidéos", documents: "Documents" };
+    const libelles = { audios: "Audios", videos: "Vidéos", documents: "Documents", messages: "Messages" };
     zone.innerHTML = espaces.map(function (e) {
       const apercu = e.Type === "Image" && e.ImageBase64 ? '<img src="data:image/jpeg;base64,' + e.ImageBase64 + '" style="width:70px;height:40px;object-fit:cover;border-radius:6px;">' : "🎬";
       return '<div class="item-row">' +
