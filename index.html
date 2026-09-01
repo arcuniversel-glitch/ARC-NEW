@@ -2107,14 +2107,19 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const zone = document.getElementById("lecteurVideoZone");
     zone.style.display = "block";
     zone.scrollIntoView({ behavior: "smooth", block: "start" });
-    zone.innerHTML = '<div id="ytPlayerHost" class="video-player-frame"></div>' + construireControlesVideo_();
+    // On construit nous-mêmes le même lecteur simple qu'avant (youtube-nocookie, sans
+    // habillage supplémentaire) — enablejsapi=1 permet juste de détecter la fin de lecture
+    // en coulisses, sans changer l'apparence ni ajouter les suggestions "plein écran" du
+    // lecteur officiel généré automatiquement par l'API.
+    zone.innerHTML = '<iframe id="ytPlayerHost" class="video-player-frame" src="https://www.youtube-nocookie.com/embed/' + v.videoId + '?autoplay=1&rel=0&enablejsapi=1" title="' + escapeHtml(v.titre).replace(/"/g, "&quot;") + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>' + construireControlesVideo_();
     chargerApiYoutube_(function () {
       // La zone peut avoir changé entretemps (utilisateur ayant cliqué ailleurs) : on
-      // vérifie que le conteneur existe toujours avant de créer le lecteur.
+      // vérifie que le conteneur existe toujours avant de s'y attacher.
       if (!document.getElementById("ytPlayerHost")) return;
+      // On s'attache à l'iframe déjà affichée (au lieu de laisser l'API en générer une
+      // nouvelle) : le lecteur garde exactement son apparence simple habituelle, seule la
+      // détection de fin de lecture est ajoutée en coulisses.
       ytPlayerActuel = new YT.Player("ytPlayerHost", {
-        videoId: v.videoId,
-        playerVars: { autoplay: 1, rel: 0 },
         events: {
           onStateChange: function (e) { if (e.data === YT.PlayerState.ENDED) gererFinVideo_(); }
         }
