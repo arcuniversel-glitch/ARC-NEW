@@ -399,7 +399,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     <!-- Demande de prière (formulaire public) -->
     <div class="section" id="section-demandePriere">
       <div class="section-title"><span class="ic">✉️</span> Demande de prière</div>
-      <div class="card">
+      <div class="card" id="dpFormulaireZone">
         <div class="form-public-note">Partagez votre requête, notre équipe de prière vous accompagne.</div>
         <label class="field-label">Nom</label>
         <input id="dpNom" type="text" placeholder="Nom">
@@ -424,6 +424,30 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <div id="erreurDemandePriere" class="error" style="display:none;"></div>
         <button class="flame" onclick="envoyerDemandePriereClick()">Envoyer ma requête</button>
         <div id="messageDemandePriere" style="margin-top:10px;font-size:13px;"></div>
+      </div>
+
+      <p class="field-label" style="margin:18px 0 8px;">Vous avez déjà envoyé une demande ?</p>
+      <div class="card" id="dpSuiviFormulaireZone">
+        <p class="subtitle left">Entrez le code reçu après l'envoi et votre numéro WhatsApp pour échanger avec notre équipe.</p>
+        <input id="dpSuiviCode" type="text" placeholder="Code reçu (ex : PR-XXXXXXXX)">
+        <input id="dpSuiviWhatsapp" type="tel" placeholder="Votre numéro WhatsApp">
+        <div id="erreurSuiviDemande" class="error" style="display:none;"></div>
+        <button class="secondary" onclick="ouvrirSuiviDemandePriere()">Voir la conversation</button>
+      </div>
+
+      <div class="card" id="dpConversationZone" style="display:none;">
+        <button class="secondary small" style="margin-bottom:10px;" onclick="fermerSuiviDemandePriere()">← Retour</button>
+        <p class="field-label" id="dpConversationTitre"></p>
+        <div id="dpListeMessages"><div class="loading">Chargement…</div></div>
+        <textarea id="dpNouveauMessage" rows="2" placeholder="Votre message…" style="margin-top:10px;"></textarea>
+        <div id="erreurDpMessage" class="error" style="display:none;"></div>
+        <div class="msg-audio-controles">
+          <button onclick="envoyerMonMessageDemandePriere()">Envoyer le texte</button>
+        </div>
+        <div class="msg-audio-controles">
+          <button class="btn-micro" id="btnMicroDemandePriere" onclick="toggleEnregistrementDemandePriere()">🎙️ Message vocal</button>
+          <span class="chrono-enregistrement" id="chronoAudioDp" style="display:none;">00:00</span>
+        </div>
       </div>
     </div>
 
@@ -870,7 +894,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // ==================== ADRESSE DE L'API (backend Apps Script) ====================
   // Collez ici l'URL de déploiement de votre Apps Script (celle qui se termine par /exec).
   // C'est la SEULE ligne à modifier après avoir déployé Code.gs comme API.
-  const API_URL = "https://script.google.com/macros/s/AKfycbzcsMfQidjwHjJpLndf842DZZtGrj6E5dNQk7j67twj9qa1b3XBPR-mlmkoLYEjdTex/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyBOvScNdIsYbJlVfduCaSAkxC_-juQo-NjWqmWlE7ux27pBsBqQwxyow9DAdjEtT4o/exec";
 
   // ==================== APPEL SERVEUR (via l'API Apps Script) ====================
   // Remplace l'ancien google.script.run : la page est maintenant hébergée séparément
@@ -1655,7 +1679,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     if (!seances.length) { zone.innerHTML = '<p class="empty-state">Aucune séance trouvée.</p>'; return; }
     zone.innerHTML = seances.map(function (s) {
       const date = s.Date ? escapeHtml(String(s.Date)) : "Date à confirmer";
-      const heure = s.Heure ? " à " + escapeHtml(s.Heure) : "";
+      const heure = s.Heure ? " à " + escapeHtml(formaterHeureSeance_(s.Heure)) : "";
       const badgePremium = s.Type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : "";
       const bouton = (s.Type === "Payant" && !s.LienMeet)
         ? '<button class="flame small" onclick="acheterSeance(\'' + s.ID + '\',' + Number(s.Prix) + ')">💳 ' + Number(s.Prix).toLocaleString("fr-FR") + ' F</button>'
@@ -2604,12 +2628,124 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     appelServeur("envoyerDemandePriere", donnees).then(function (res) {
       if (!res.succes) { err.textContent = res.message || "Envoi impossible."; err.style.display = "block"; return; }
       msg.className = "success-text";
-      msg.textContent = "✓ Votre requête a bien été transmise. Merci de votre confiance.";
+      msg.innerHTML = "✓ Votre requête a bien été transmise. Merci de votre confiance.<br>" +
+        "<strong>Notez ce code pour suivre votre demande et échanger avec nous : " + escapeHtml(res.id) + "</strong>";
       ["dpNom", "dpPrenom", "dpProfession", "dpAge", "dpWhatsapp", "dpRequete"].forEach(function (id) { document.getElementById(id).value = ""; });
       document.getElementById("dpSituation").value = "";
+      document.getElementById("dpSuiviCode").value = res.id;
     }).catch(function (e) {
       err.textContent = "Erreur : " + e.message;
       err.style.display = "block";
+    });
+  }
+
+  // ==================== SUIVI / CONVERSATION — DEMANDE DE PRIÈRE (sans compte) ====================
+  let dpIdCourant = null;
+  let dpWhatsappCourant = null;
+
+  function ouvrirSuiviDemandePriere() {
+    const code = document.getElementById("dpSuiviCode").value.trim().toUpperCase();
+    const numero = document.getElementById("dpSuiviWhatsapp").value.trim();
+    const err = document.getElementById("erreurSuiviDemande");
+    err.style.display = "none";
+    if (!code || !numero) { err.textContent = "Le code et le numéro WhatsApp sont requis."; err.style.display = "block"; return; }
+
+    appelServeur("getMessagesDemandePriere", code, numero).then(function (res) {
+      if (!res.succes) { err.textContent = res.message || "Introuvable."; err.style.display = "block"; return; }
+      dpIdCourant = code;
+      dpWhatsappCourant = numero;
+      document.getElementById("dpFormulaireZone").style.display = "none";
+      document.getElementById("dpSuiviFormulaireZone").style.display = "none";
+      document.getElementById("dpConversationZone").style.display = "block";
+      document.getElementById("dpConversationTitre").textContent = "Votre demande : " + res.demande.Requete.substring(0, 60) + (res.demande.Requete.length > 60 ? "…" : "");
+      afficherMessagesDemandePriere(res.messages);
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function fermerSuiviDemandePriere() {
+    dpIdCourant = null;
+    dpWhatsappCourant = null;
+    document.getElementById("dpConversationZone").style.display = "none";
+    document.getElementById("dpFormulaireZone").style.display = "block";
+    document.getElementById("dpSuiviFormulaireZone").style.display = "block";
+  }
+
+  function afficherMessagesDemandePriere(messages) {
+    messages = messages || [];
+    const zone = document.getElementById("dpListeMessages");
+    if (!messages.length) { zone.innerHTML = '<p class="empty-state">Aucun échange pour le moment.</p>'; return; }
+    zone.innerHTML = messages.map(function (m) {
+      const date = m.Date ? new Date(m.Date).toLocaleDateString("fr-FR") : "";
+      const estAdmin = !m.NomMembre || m.NomMembre.indexOf("🙏") === -1;
+      const contenu = m.TypeMessage === "Audio"
+        ? '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + m.Message + '/preview" allow="autoplay"></iframe>'
+        : escapeHtml(m.Message);
+      let html = '<div class="' + (estAdmin ? "message-reponse" : "message-bulle") + '">' + contenu + '<div class="message-date">' + date + "</div></div>";
+      if (m.Reponse) {
+        const contenuReponse = m.ReponseType === "Audio"
+          ? '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + m.Reponse + '/preview" allow="autoplay"></iframe>'
+          : escapeHtml(m.Reponse);
+        html += '<div class="message-reponse"><strong>Réponse de l\u2019administration :</strong><br>' + contenuReponse + "</div>";
+      }
+      return html;
+    }).join("");
+  }
+
+  function envoyerMonMessageDemandePriere() {
+    const zone = document.getElementById("dpNouveauMessage");
+    const err = document.getElementById("erreurDpMessage");
+    const texte = zone.value.trim();
+    err.style.display = "none";
+    if (!texte || !dpIdCourant) return;
+    appelServeur("envoyerMessageDemandePriere", dpIdCourant, dpWhatsappCourant, texte).then(function (res) {
+      if (!res.succes) { err.textContent = "Le message n'a pas pu être envoyé."; err.style.display = "block"; return; }
+      zone.value = "";
+      appelServeur("getMessagesDemandePriere", dpIdCourant, dpWhatsappCourant).then(function (r) { afficherMessagesDemandePriere(r.messages); });
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function toggleEnregistrementDemandePriere() {
+    if (enregistreurAudio && enregistreurAudio.state === "recording") { enregistreurAudio.stop(); return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { alert("L'enregistrement audio n'est pas supporté par ce navigateur."); return; }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (flux) {
+      morceauxAudio = [];
+      enregistreurAudio = new MediaRecorder(flux);
+      enregistreurAudio.ondataavailable = function (e) { if (e.data.size > 0) morceauxAudio.push(e.data); };
+      enregistreurAudio.onstop = function () {
+        flux.getTracks().forEach(function (t) { t.stop(); });
+        clearInterval(chronoInterval);
+        document.getElementById("chronoAudioDp").style.display = "none";
+        document.getElementById("btnMicroDemandePriere").classList.remove("enregistrement");
+        document.getElementById("btnMicroDemandePriere").textContent = "🎙️ Message vocal";
+        const blob = new Blob(morceauxAudio, { type: "audio/webm" });
+        const lecteur = new FileReader();
+        lecteur.onload = function () {
+          const base64 = lecteur.result.split(",")[1];
+          appelServeur("envoyerMessageDemandePriereAudio", dpIdCourant, dpWhatsappCourant, base64).then(function () {
+            appelServeur("getMessagesDemandePriere", dpIdCourant, dpWhatsappCourant).then(function (r) { afficherMessagesDemandePriere(r.messages); });
+          }).catch(function (err) { alert("Erreur envoi audio : " + err.message); });
+        };
+        lecteur.readAsDataURL(blob);
+      };
+      enregistreurAudio.start();
+      secondesEcoulees = 0;
+      document.getElementById("chronoAudioDp").style.display = "inline";
+      document.getElementById("btnMicroDemandePriere").classList.add("enregistrement");
+      document.getElementById("btnMicroDemandePriere").textContent = "⏹️ Arrêter";
+      chronoInterval = setInterval(function () {
+        secondesEcoulees++;
+        const m = String(Math.floor(secondesEcoulees / 60)).padStart(2, "0");
+        const s = String(secondesEcoulees % 60).padStart(2, "0");
+        document.getElementById("chronoAudioDp").textContent = m + ":" + s;
+      }, 1000);
+    }).catch(function () {
+      alert("Impossible d'accéder au microphone. Vérifiez les autorisations de l'application.");
     });
   }
 
@@ -2820,7 +2956,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       const libellePrix = s.Type === "Payant" ? Number(s.Prix).toLocaleString("fr-FR") + " FCFA" : "Gratuite";
       return '<div class="item-row">' +
         '<div><div class="item-nom">' + escapeHtml(s.Titre) + ' <span class="role-pill ' + (s.Type === "Payant" ? "role-admin" : "role-membre") + '">' + libellePrix + '</span></div>' +
-        '<div class="item-desc">' + date + (s.Heure ? " à " + escapeHtml(s.Heure) : "") + " · " + escapeHtml(s.Visibilite) + '</div></div>' +
+        '<div class="item-desc">' + date + (s.Heure ? " à " + escapeHtml(formaterHeureSeance_(s.Heure)) : "") + " · " + escapeHtml(s.Visibilite) + '</div></div>' +
         '<div style="display:flex;gap:6px;">' +
         '<button class="secondary small" onclick="editerSeanceAdmin(\'' + s.ID + '\')">Modifier</button>' +
         '<button class="danger-outline small" onclick="supprimerSeanceAdmin(\'' + s.ID + '\')">Supprimer</button>' +
@@ -3856,6 +3992,17 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   // Icône par défaut d'une playlist/catégorie selon son nom, tant qu'aucune image
   // personnalisée n'a été ajoutée par un administrateur.
+  // Filet de sécurité d'affichage : si une heure de séance a été enregistrée avant la
+  // correction du format (et ressemble donc à "1899-12-30T11:50:39.000Z" au lieu de
+  // "12:00"), on en extrait proprement l'heure au lieu d'afficher le texte brut.
+  function formaterHeureSeance_(valeur) {
+    if (!valeur) return "";
+    const texte = String(valeur);
+    const correspondance = texte.match(/T(\d{2}):(\d{2})/);
+    if (correspondance) return correspondance[1] + ":" + correspondance[2];
+    return texte;
+  }
+
   function iconePourNom_(nom) {
     const n = (nom || "").toLowerCase();
     if (n.indexOf("louange") !== -1 || n.indexOf("adoration") !== -1) return "🎵";
