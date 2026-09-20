@@ -24,7 +24,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 .slide-affiche{position:absolute;inset:0;opacity:0;transition:opacity .7s ease;}
 .slide-affiche.active{opacity:1;}
 .slide-affiche img{width:100%;height:100%;object-fit:cover;display:block}
-.tabs{display:flex;gap:8px;margin:0 0 22px;overflow-x:auto;padding:5px 2px 8px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{padding:11px 16px;border-radius:12px;background:#fff;color:var(--blue2);font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;border:1px solid var(--line);box-shadow:0 4px 12px rgba(12,47,104,.05);position:relative}.tab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(7,87,168,.2)}.badge-nouveau{position:absolute;top:4px;right:5px;width:9px;height:9px;background:var(--red);border-radius:50%;box-shadow:0 0 0 2px #fff}.section,.auth-screen{display:none}.section.active,.auth-screen.active{display:block}.item-row{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);gap:14px}.item-row:last-child{border-bottom:0}.item-block{border-bottom:1px solid var(--line);padding:15px 0}.item-block:last-child{border-bottom:0}.item-nom{font-weight:800;font-size:14px}.item-desc{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}.btn-rejoindre{width:auto;padding:9px 14px;font-size:12px;background:#1fbe68;box-shadow:none}.btn-meet{background:linear-gradient(135deg,var(--blue2),var(--blue));width:auto;padding:9px 14px;font-size:12px}.join-form{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}.join-form.active{display:flex;gap:8px;flex-wrap:wrap}.join-form input{flex:1;min-width:160px;margin:0}.join-form button{width:auto}.join-error{width:100%;color:var(--danger);font-size:12px}
+.tabs{display:flex;gap:8px;margin:0 0 22px;overflow-x:auto;padding:5px 2px 8px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}@media(min-width:700px){.tabs{flex-wrap:wrap;overflow-x:visible}}.tab{padding:11px 16px;border-radius:12px;background:#fff;color:var(--blue2);font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;border:1px solid var(--line);box-shadow:0 4px 12px rgba(12,47,104,.05);position:relative}.tab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(7,87,168,.2)}.badge-nouveau{position:absolute;top:4px;right:5px;width:9px;height:9px;background:var(--red);border-radius:50%;box-shadow:0 0 0 2px #fff}.section,.auth-screen{display:none}.section.active,.auth-screen.active{display:block}.item-row{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);gap:14px}.item-row:last-child{border-bottom:0}.item-block{border-bottom:1px solid var(--line);padding:15px 0}.item-block:last-child{border-bottom:0}.item-nom{font-weight:800;font-size:14px}.item-desc{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}.btn-rejoindre{width:auto;padding:9px 14px;font-size:12px;background:#1fbe68;box-shadow:none}.btn-meet{background:linear-gradient(135deg,var(--blue2),var(--blue));width:auto;padding:9px 14px;font-size:12px}.join-form{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}.join-form.active{display:flex;gap:8px;flex-wrap:wrap}.join-form input{flex:1;min-width:160px;margin:0}.join-form button{width:auto}.join-error{width:100%;color:var(--danger);font-size:12px}
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}.stat-box{background:linear-gradient(145deg,#fff,#f7faff);border:1px solid var(--line);border-radius:16px;padding:18px;text-align:center;position:relative;overflow:hidden}.stat-box:after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--red),var(--yellow))}.stat-num{font-size:25px;font-weight:800;color:var(--blue2);font-family:Montserrat}.stat-label{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600}
 .badge-portrait{width:380px;max-width:100%;margin:0 auto;border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 18px 45px rgba(7,47,104,.24);position:relative;border:1px solid #e7eaf1}.badge-top-band{background:linear-gradient(135deg,var(--blue2),var(--blue) 55%,var(--red));padding:20px 16px 48px;text-align:center;color:#fff;position:relative}.badge-top-band:after{content:"";position:absolute;bottom:0;left:0;right:0;height:7px;background:var(--yellow)}.badge-mini-logo{width:46px;height:46px;border-radius:13px;background:#fff;margin:0 auto 9px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.75);font-weight:800;color:var(--blue2)}.badge-org-name{font-weight:800;font-size:11px;letter-spacing:.8px;text-transform:uppercase;line-height:1.4}.badge-photo-wrap{width:106px;height:106px;border-radius:50%;background:#eef3f9;border:5px solid white;box-shadow:0 7px 18px rgba(0,0,0,.2);margin:-43px auto 0;overflow:hidden;position:relative;z-index:2;display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--muted)}.badge-photo-wrap img{width:100%;height:100%;object-fit:cover}.badge-body{padding:13px 24px 26px;text-align:center}.badge-fullname{font-family:Montserrat;font-weight:800;font-size:19px;color:var(--ink);margin-top:8px}.badge-role-tag{display:inline-block;margin-top:7px;font-size:10px;font-weight:800;color:#9b0f17;background:#fff0f0;padding:5px 12px;border-radius:999px}.badge-divider{height:1px;background:var(--line);margin:17px 0 13px}.badge-info-row{display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;color:var(--ink);margin-bottom:9px}.badge-status-tag{display:inline-block;margin-top:4px;font-size:10px;font-weight:800;color:var(--green);background:#e7f7ef;padding:5px 12px;border-radius:999px}.badge-qr-wrap{margin-top:18px;display:flex;justify-content:center}.badge-qr-wrap img{border-radius:10px;padding:6px;background:white;border:1px solid var(--line)}.badge-code-small{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.6px}
 .photo-upload-preview,.logo-upload-preview{width:88px;height:88px;border-radius:18px;background:#eef3f9;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 13px;border:2px dashed #cbd5e5;font-size:30px;color:var(--muted)}.photo-upload-preview img,.logo-upload-preview img{width:100%;height:100%;object-fit:cover}.file-btn-label{display:inline-block;padding:10px 15px;background:#edf3fb;color:var(--blue2);border-radius:11px;font-size:12px;font-weight:800;cursor:pointer}.loading{text-align:center;color:var(--muted);padding:28px;font-size:13px}.empty-state{text-align:center;color:var(--muted);padding:24px 10px;font-size:13px}.admin-subtabs{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}.admin-subtab{padding:9px 13px;border-radius:10px;background:#edf3fb;color:var(--blue2);font-size:11px;font-weight:800;cursor:pointer;position:relative}.admin-subtab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff}.badge-compteur{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px;box-shadow:0 0 0 2px #fff}.admin-section{display:none}.admin-section.active{display:block}.codes-box{background:#f6f8fc;border:1px dashed #cfd7e5;border-radius:10px;padding:12px;font-family:monospace;font-size:11px;max-height:160px;overflow-y:auto;white-space:pre-wrap;margin-top:10px}.role-pill,.statut-pill{font-size:10px;font-weight:800;padding:5px 9px;border-radius:999px}.role-admin{background:#fff0f0;color:#b00f18}.role-membre{background:#edf3fb;color:var(--muted)}.statut-nouveau{background:#fff0f0;color:#b00f18}.statut-traite{background:#e7f7ef;color:var(--green)}table.mini-table{width:100%;border-collapse:collapse;font-size:12px;display:block;overflow-x:auto;white-space:nowrap}table.mini-table th{text-align:left;color:var(--muted);font-weight:800;padding:9px 7px;border-bottom:2px solid var(--line);font-size:10px;text-transform:uppercase}table.mini-table td{padding:10px 7px;border-bottom:1px solid var(--line)}.message-bulle{background:#edf3fb;border-radius:15px;padding:13px 15px;margin-bottom:7px;font-size:13px}.message-reponse{background:#fff2f1;border-left:4px solid var(--red);border-radius:0 13px 13px 0;padding:11px 14px;margin:7px 0 16px 14px;font-size:12px}.message-date{font-size:10px;color:var(--muted);margin-top:5px}.message-attente{font-style:italic;color:var(--muted);font-size:11px;margin:4px 0 16px 14px}.admin-message-card{border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;background:#fff}.youtube-card{text-align:center;padding:38px 24px}.youtube-icon{font-size:45px;margin-bottom:10px}.video-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}.video-item:last-child{border-bottom:0}.video-thumb{width:110px;height:62px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#eef3f9}.video-titre{font-weight:700;font-size:13px;line-height:1.35}.video-date{font-size:11px;color:var(--muted);margin-top:3px}.video-player-frame{width:100%;aspect-ratio:16/9;border:none;display:block;background:#000}.cotisation-type-card{border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:linear-gradient(145deg,#fff,#fafcff)}.cotisation-type-nom{font-weight:800;font-size:14px}.cotisation-type-periode{color:var(--muted);font-size:11px;margin-top:3px}.cotisation-type-montant{font-family:Montserrat;font-weight:800;color:var(--blue2);font-size:16px;white-space:nowrap}
@@ -2036,43 +2036,21 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function afficherLecteurActif(entete, res) {
     const zone = document.getElementById("lecteurAudioZone");
-    // Lecteur audio natif du navigateur (au lieu de l'aperçu Google Drive) : le clic de
-    // l'utilisateur reste directement lié à la lecture, ce qui évite le blocage du son que
-    // les navigateurs appliquent aux contenus intégrés (iframe) d'un autre site. En cas
-    // d'échec sur un fichier particulier, on bascule automatiquement sur l'aperçu Drive.
+    // Lecteur intégré Google Drive : le plus fiable pour la lecture elle-même. Limite
+    // technique honnête (propre à Drive, sans solution côté navigateur) : la lecture ne
+    // démarre pas toute seule et il faut cliquer sur ▶ à l'intérieur du cadre ci-dessous —
+    // et comme Drive ne signale pas la fin de lecture à notre application, l'enchaînement
+    // automatique n'est pas possible ici (contrairement aux vidéos YouTube). Précédent et
+    // Suivant restent pleinement fonctionnels pour naviguer manuellement dans la liste.
     zone.innerHTML = entete +
-      '<audio id="audioElementActuel" style="width:calc(100% - 28px);margin:0 14px;display:block;" src="' + res.lien + '" controls autoplay></audio>' +
-      '<div id="audioFallbackZone"></div>' +
+      '<p class="item-desc" style="padding:0 14px 8px;">👉 Cliquez sur ▶ dans le lecteur ci-dessous pour démarrer l\'écoute.</p>' +
+      '<iframe class="audio-frame" style="margin:0 14px;width:calc(100% - 28px);" src="' + res.apercu + '" allow="autoplay"></iframe>' +
       '<div class="lecteur-controles">' +
       '<button onclick="audioPrecedent()">⏮️</button>' +
-      '<button id="btnRepeterUnAudio" class="' + (modeRepetitionAudio === "un" ? "actif" : "") + '" onclick="definirRepetitionAudio(\'un\')" title="Répéter cette piste">🔂 1</button>' +
-      '<button id="btnRepeterToutAudio" class="' + (modeRepetitionAudio === "tout" ? "actif" : "") + '" onclick="definirRepetitionAudio(\'tout\')" title="Répéter toute la liste">🔁 Tout</button>' +
+      '<button id="btnRepeterToutAudio" class="' + (modeRepetitionAudio === "tout" ? "actif" : "") + '" onclick="definirRepetitionAudio(\'tout\')" title="Revenir au premier audio après le dernier">🔁 Tout</button>' +
       '<button onclick="audioSuivant()">⏭️</button>' +
       '</div>' +
       '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + res.lien + '" target="_blank">⬇️ Télécharger</a></div>';
-
-    const element = document.getElementById("audioElementActuel");
-    element.addEventListener("ended", gererFinAudio_);
-    element.addEventListener("error", function () {
-      document.getElementById("audioFallbackZone").innerHTML =
-        '<p class="item-desc" style="padding:8px 14px 0;">La lecture directe a échoué pour ce fichier — lecteur de secours ci-dessous.</p>' +
-        '<iframe class="audio-frame" style="margin:8px 14px 0;width:calc(100% - 28px);" src="' + res.apercu + '" allow="autoplay"></iframe>';
-      element.style.display = "none";
-    });
-  }
-
-  function gererFinAudio_() {
-    if (modeRepetitionAudio === "un") {
-      const el = document.getElementById("audioElementActuel");
-      if (el) { el.currentTime = 0; el.play(); }
-      return;
-    }
-    if (indexAudioActuel < listeAudioActuelle.length - 1) {
-      jouerAudio(indexAudioActuel + 1);
-    } else if (modeRepetitionAudio === "tout" && listeAudioActuelle.length) {
-      jouerAudio(0);
-    }
-    // Sinon : fin de liste sans répétition, la lecture s'arrête simplement.
   }
 
   function audioPrecedent() {
@@ -2087,9 +2065,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // Un seul mode actif à la fois : cliquer sur un mode déjà actif le désactive.
   function definirRepetitionAudio(mode) {
     modeRepetitionAudio = (modeRepetitionAudio === mode) ? "aucun" : mode;
-    const btnUn = document.getElementById("btnRepeterUnAudio");
     const btnTout = document.getElementById("btnRepeterToutAudio");
-    if (btnUn) btnUn.classList.toggle("actif", modeRepetitionAudio === "un");
     if (btnTout) btnTout.classList.toggle("actif", modeRepetitionAudio === "tout");
   }
 
