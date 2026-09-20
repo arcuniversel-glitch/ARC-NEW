@@ -18,6 +18,23 @@
 .topbar{background:linear-gradient(110deg,var(--blue2),var(--blue) 55%,var(--red));padding:13px max(22px,calc((100% - 1180px)/2));color:#fff;display:none;align-items:center;gap:13px;position:sticky;top:0;z-index:100;box-shadow:0 8px 25px rgba(7,47,104,.22);min-height:72px}.topbar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--yellow)}.logo-circle{width:46px;height:46px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--blue2);font-weight:800;overflow:hidden;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.15)}.logo-circle img,.logo-circle-lg img,.badge-mini-logo img{width:100%;height:100%;object-fit:cover}.topbar-nom{font-size:16px;font-weight:800;line-height:1.25}.topbar-sub{font-size:11px;opacity:.78;margin-top:2px}
 .brand-center{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:24px}.logo-circle-lg{width:92px;height:92px;border-radius:24px;background:#fff;box-shadow:0 14px 35px rgba(7,47,104,.18);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:30px;color:var(--blue2);overflow:hidden;border:4px solid #fff;margin-bottom:14px;position:relative}.logo-circle-lg:after{content:"";position:absolute;inset:-4px;border-radius:27px;padding:4px;background:linear-gradient(135deg,var(--blue),var(--red),var(--yellow));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}.brand-nom{font-family:Montserrat;font-weight:800;font-size:20px;color:var(--blue2);line-height:1.3}.card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow);margin-bottom:18px}.auth-screen .wrap{width:min(520px,calc(100% - 30px))}.auth-screen .card{position:relative;overflow:hidden}.auth-screen .card:before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,var(--blue),var(--red),var(--yellow))}
 h1.titre{font-size:25px;margin:0 0 7px;color:var(--blue2);text-align:center;font-weight:800}.subtitle{color:var(--muted);font-size:14px;margin:0 0 20px;line-height:1.6;text-align:center}.subtitle.left,h1.titre.left{text-align:left}.section-title{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;color:var(--blue2);margin:8px 0 14px}.section-title .ic{font-size:20px}
+/* Identité visuelle propre à chacune des 4 grandes rubriques de contenu */
+#section-audios .section-title{color:#b8720a}
+#section-audios .section-title .ic{background:linear-gradient(135deg,#f0a020,#c47d0a);color:#fff;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+#section-audios .hero-vedette{background:linear-gradient(135deg,#c47d0a,#f0a020)}
+#section-audios .sub-nav-btn.active{background:linear-gradient(135deg,#c47d0a,#f0a020)}
+#section-videos .section-title{color:#6d28d9}
+#section-videos .section-title .ic{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+#section-videos .hero-vedette{background:linear-gradient(135deg,#6d28d9,#8b5cf6)}
+#section-videos .sub-nav-btn.active{background:linear-gradient(135deg,#6d28d9,#8b5cf6)}
+#section-documents .section-title{color:#0f766e}
+#section-documents .section-title .ic{background:linear-gradient(135deg,#14b8a6,#0f766e);color:#fff;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+#section-documents .hero-vedette{background:linear-gradient(135deg,#0f766e,#14b8a6)}
+#section-documents .sub-nav-btn.active{background:linear-gradient(135deg,#0f766e,#14b8a6)}
+#section-prieres .section-title{color:#b0121a}
+#section-prieres .section-title .ic{background:linear-gradient(135deg,#e23a41,#b0121a);color:#fff;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+#section-prieres .hero-vedette{background:linear-gradient(135deg,#b0121a,#e23a41)}
+#section-prieres .sub-nav-btn.active{background:linear-gradient(135deg,#b0121a,#e23a41)}
 input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;margin-bottom:13px;font-family:inherit;background:#fbfcfe;transition:.2s}input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(7,87,168,.09);background:#fff}label.field-label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.55px;margin-bottom:7px;display:block}button{width:100%;padding:13px 16px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:transform .15s,box-shadow .15s,opacity .15s;box-shadow:0 7px 16px rgba(7,87,168,.18)}button:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(7,87,168,.22)}button.secondary{background:#edf3fb;color:var(--blue2);box-shadow:none}button.flame{background:linear-gradient(135deg,var(--red2),var(--red),#ee4a24);box-shadow:0 7px 16px rgba(215,25,32,.18)}button.danger-outline{background:#fff0f0;color:var(--danger);box-shadow:none}button.small{width:auto;padding:9px 14px;font-size:12px}button.full-mt{margin-top:10px}button.ghost-link{background:transparent;color:var(--blue);box-shadow:none;text-decoration:none}button.ghost-link:hover{box-shadow:none}.error{color:var(--danger);font-size:13px;margin:-5px 0 12px}.success-text{color:var(--green);font-size:13px}
 #ecranDashboard{display:none}
 #sliderAfficheZone{width:100%;margin:0 auto 18px;aspect-ratio:3/1;max-height:340px;overflow:hidden;position:relative;border-radius:16px;box-shadow:var(--shadow)}
@@ -145,6 +162,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div class="topbar-nom" id="topbarNom">Association</div>
       <div class="topbar-sub" id="topbarSub">Espace membres</div>
     </div>
+    <button id="btnContact" onclick="afficherEcranContact()" class="btn-topbar-mini" title="Contactez-nous">📞 Contact</button>
     <button id="btnDeconnexion" onclick="quitterSession()" class="btn-topbar-mini" style="display:none;margin-left:auto;">Se déconnecter</button>
     <button id="btnInstallerApp" onclick="installerApplication()" style="display:none;width:auto;margin-left:auto;padding:8px 12px;font-size:12px;background:rgba(255,255,255,.18);color:#fff;box-shadow:none;white-space:nowrap;">📲 Installer</button>
   </div>
@@ -161,6 +179,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <p class="subtitle">Connectez-vous à votre espace membre ou créez votre compte.</p>
         <button onclick="afficherEcran('connexionForm')">Se connecter</button>
         <button class="secondary full-mt" onclick="demarrerInscription()">Créer un compte</button>
+        <button class="ghost-link full-mt" onclick="afficherEcranContact()">📞 Contactez-nous</button>
         <button id="btnInstallerAppAccueil" onclick="installerApplication()" class="ghost-link full-mt" style="display:none;">📲 Installer l'application sur mon téléphone</button>
         <select id="selecteurTraduction" onchange="traduireVers(this.value)" style="margin-top:10px;">
           <option value="">🌐 Traduire l'application…</option>
@@ -207,6 +226,30 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <div id="erreurConnexion" class="error" style="display:none;"></div>
         <button onclick="seConnecter()">Se connecter</button>
         <button class="ghost-link" onclick="afficherEcran('accueil')">← Retour</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONTACTEZ-NOUS ===== -->
+  <div id="ecranContact" class="center-screen auth-screen">
+    <div class="wrap">
+      <div class="card">
+        <h1 class="titre left">📞 Contactez-nous</h1>
+        <p class="subtitle left">Une question, une suggestion ? Écrivez-nous, nous vous répondrons rapidement.</p>
+        <div class="card" style="background:#f7faff;margin-bottom:16px;">
+          <div class="item-desc" style="font-size:13px;margin-bottom:6px;">☎️ Téléphone : <strong id="contactTelephone">—</strong></div>
+          <div class="item-desc" style="font-size:13px;">✉️ E-mail : <strong id="contactEmail">—</strong></div>
+        </div>
+        <label class="field-label">Votre nom</label>
+        <input id="contactNom" type="text" placeholder="Nom">
+        <label class="field-label">Votre e-mail ou numéro de téléphone</label>
+        <input id="contactCoordonnee" type="text" placeholder="Pour qu'on puisse vous répondre">
+        <label class="field-label">Votre message</label>
+        <textarea id="contactMessage" rows="4" placeholder="Écrivez votre message…"></textarea>
+        <div id="erreurContact" class="error" style="display:none;"></div>
+        <button class="flame" onclick="envoyerContactClick()">Envoyer le message</button>
+        <div id="messageContact" style="margin-top:10px;font-size:13px;"></div>
+        <button class="ghost-link full-mt" onclick="retourDepuisContact()">← Retour</button>
       </div>
     </div>
   </div>
@@ -502,9 +545,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
       <div class="sub-nav" id="subNavAudios">
         <button class="sub-nav-btn active" data-sub="accueil" onclick="afficherSousAudios('accueil')">Accueil</button>
-        <button class="sub-nav-btn" data-sub="emissions" onclick="afficherSousAudios('emissions')">Émissions</button>
+        <button class="sub-nav-btn" data-sub="emissions" onclick="afficherSousAudios('emissions')">Playlists</button>
         <button class="sub-nav-btn" data-sub="biographies" onclick="afficherSousAudios('biographies')">Biographies</button>
-        <button class="sub-nav-btn" data-sub="lyrics" onclick="afficherSousAudios('lyrics')">Lyrics</button>
       </div>
 
       <div class="card" id="lecteurAudioZone" style="display:none;"></div>
@@ -523,11 +565,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
       <div class="sub-section" id="audiosSous-biographies">
         <div class="card" id="listeBiographiesAudios"><div class="loading">Chargement…</div></div>
-      </div>
-
-      <div class="sub-section" id="audiosSous-lyrics">
-        <input type="text" id="rechercheLyricsAudios" placeholder="🔎 Rechercher des paroles…" oninput="filtrerLyricsAudios()">
-        <div class="card" id="listeLyricsAudios"><div class="loading">Chargement…</div></div>
       </div>
     </div>
 
@@ -590,9 +627,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
       <div class="sub-nav" id="subNavVideos">
         <button class="sub-nav-btn active" data-sub="accueil" onclick="afficherSousVideos('accueil')">Accueil</button>
-        <button class="sub-nav-btn" data-sub="emissions" onclick="afficherSousVideos('emissions')">Émissions</button>
+        <button class="sub-nav-btn" data-sub="emissions" onclick="afficherSousVideos('emissions')">Playlists</button>
         <button class="sub-nav-btn" data-sub="biographies" onclick="afficherSousVideos('biographies')">Biographies</button>
-        <button class="sub-nav-btn" data-sub="lyrics" onclick="afficherSousVideos('lyrics')">Lyrics</button>
       </div>
 
       <div class="card" id="lecteurVideoZone" style="display:none;padding:0;overflow:hidden;"></div>
@@ -612,17 +648,31 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div class="sub-section" id="videosSous-biographies">
         <div class="card" id="listeBiographiesVideos"><div class="loading">Chargement…</div></div>
       </div>
-
-      <div class="sub-section" id="videosSous-lyrics">
-        <input type="text" id="rechercheLyricsVideos" placeholder="🔎 Rechercher des paroles…" oninput="filtrerLyricsVideos()">
-        <div class="card" id="listeLyricsVideos"><div class="loading">Chargement…</div></div>
-      </div>
     </div>
 
     <div class="section" id="section-prieres">
       <div class="section-title"><span class="ic">🙏</span> Séances directes</div>
-      <input type="text" id="rechercheSeances" placeholder="🔎 Rechercher une séance…" oninput="filtrerSeances()">
-      <div class="card" id="listeSeances"><div class="loading">Chargement…</div></div>
+
+      <div class="sub-nav" id="subNavSeances">
+        <button class="sub-nav-btn active" data-sub="accueil" onclick="afficherSousSeances('accueil')">Accueil</button>
+        <button class="sub-nav-btn" data-sub="actualites" onclick="afficherSousSeances('actualites')">Actualités</button>
+        <button class="sub-nav-btn" data-sub="toutes" onclick="afficherSousSeances('toutes')">Toutes les séances</button>
+      </div>
+
+      <div class="sub-section active" id="seancesSous-accueil">
+        <div class="zone-pub" id="pubSeancesHaut"></div>
+        <div id="seancesAlaUne"><div class="loading">Chargement…</div></div>
+        <div class="zone-pub" id="pubSeancesBas"></div>
+      </div>
+
+      <div class="sub-section" id="seancesSous-actualites">
+        <div class="card" id="seancesActualites"><div class="loading">Chargement…</div></div>
+      </div>
+
+      <div class="sub-section" id="seancesSous-toutes">
+        <input type="text" id="rechercheSeances" placeholder="🔎 Rechercher une séance…" oninput="filtrerSeances()">
+        <div class="card" id="listeSeances"><div class="loading">Chargement…</div></div>
+      </div>
     </div>
 
     <!-- ===== ADMINISTRATION ===== -->
@@ -1229,6 +1279,55 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("ecran" + nom.charAt(0).toUpperCase() + nom.slice(1)).classList.add("active");
   }
 
+  // Accessible depuis l'écran d'accueil (avant connexion) ET depuis l'en-tête une fois
+  // connecté/en mode visiteur — "Retour" ramène là où l'utilisateur se trouvait avant.
+  function afficherEcranContact() {
+    document.querySelectorAll(".auth-screen").forEach(function (s) { s.classList.remove("active"); });
+    document.getElementById("ecranDashboard").style.display = "none";
+    document.getElementById("topbar").style.display = "none";
+    document.getElementById("erreurContact").style.display = "none";
+    document.getElementById("messageContact").textContent = "";
+    document.getElementById("contactTelephone").textContent = (configApp && configApp.TelephoneContact) || "Non renseigné";
+    document.getElementById("contactEmail").textContent = (configApp && configApp.EmailContact) || "arcuniversel@gmail.com";
+    document.getElementById("ecranContact").classList.add("active");
+  }
+
+  function retourDepuisContact() {
+    document.getElementById("ecranContact").classList.remove("active");
+    if (membreCourant || modeVisiteur) {
+      document.getElementById("ecranDashboard").style.display = "block";
+      document.getElementById("topbar").style.display = "flex";
+    } else {
+      afficherEcran("accueil");
+    }
+  }
+
+  function envoyerContactClick() {
+    const nom = document.getElementById("contactNom").value.trim();
+    const coordonnee = document.getElementById("contactCoordonnee").value.trim();
+    const message = document.getElementById("contactMessage").value.trim();
+    const err = document.getElementById("erreurContact");
+    const msg = document.getElementById("messageContact");
+    err.style.display = "none";
+    msg.textContent = "";
+    if (!nom || !coordonnee || !message) {
+      err.textContent = "Tous les champs sont obligatoires.";
+      err.style.display = "block";
+      return;
+    }
+    appelServeur("envoyerMessageContact", nom, coordonnee, message).then(function (res) {
+      if (!res.succes) { err.textContent = res.message || "Envoi impossible."; err.style.display = "block"; return; }
+      msg.className = "success-text";
+      msg.textContent = "✓ Votre message a bien été envoyé. Merci, nous reviendrons vers vous rapidement.";
+      document.getElementById("contactNom").value = "";
+      document.getElementById("contactCoordonnee").value = "";
+      document.getElementById("contactMessage").value = "";
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
   function demarrerInscription() {
     codeInvitationInscription = '';
     document.getElementById("codeInscription").value = '';
@@ -1762,14 +1861,48 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function codeActuel() { return membreCourant ? membreCourant.code : "VISITEUR"; }
 
   let seancesCache = [];
+  let sousOngletSeancesActuel = "accueil";
 
   function chargerSeances() {
     document.getElementById("rechercheSeances").value = "";
     const fonction = modeVisiteur ? "getSeancesPublic" : "getSeances";
     appelServeur(fonction, codeActuel()).then(function (seances) {
       seancesCache = seances || [];
-      afficherSeances(seancesCache);
-    }).catch(function (err) { afficherErreurZone("listeSeances", err); });
+      afficherSousSeances(sousOngletSeancesActuel || "accueil");
+    }).catch(function (err) { afficherErreurZone("seancesAlaUne", err); });
+  }
+
+  function afficherSousSeances(nom) {
+    sousOngletSeancesActuel = nom;
+    document.querySelectorAll("#subNavSeances .sub-nav-btn").forEach(function (b) { b.classList.toggle("active", b.dataset.sub === nom); });
+    document.querySelectorAll("#section-prieres .sub-section").forEach(function (s) { s.classList.toggle("active", s.id === "seancesSous-" + nom); });
+    if (nom === "accueil") afficherAccueilSeances();
+    else if (nom === "actualites") afficherActualitesSeances();
+    else if (nom === "toutes") afficherSeances(seancesCache);
+  }
+
+  function afficherAccueilSeances() {
+    afficherPubsDoubles_("seances", "pubSeancesHaut", "pubSeancesBas");
+    const zone = document.getElementById("seancesAlaUne");
+    if (!seancesCache.length) { zone.innerHTML = '<p class="empty-state">Aucune séance programmée pour le moment.</p>'; return; }
+    const vedette = seancesCache[0];
+    const dateVedette = vedette.Date ? escapeHtml(String(vedette.Date)) : "Date à confirmer";
+    const heureVedette = vedette.Heure ? " à " + escapeHtml(formaterHeureSeance_(vedette.Heure)) : "";
+    let html = '<div class="hero-vedette" onclick="afficherSousSeances(\'toutes\')">' +
+      '<div class="hero-vedette-body"><div class="hero-vedette-label">🙏 Prochaine séance</div><div class="hero-vedette-titre">' + escapeHtml(vedette.Titre) + '</div>' +
+      '<div class="item-desc" style="color:rgba(255,255,255,.85);">' + dateVedette + heureVedette + '</div>' +
+      '</div></div>';
+    const restants = seancesCache.slice(1, 6);
+    if (restants.length) {
+      html += '<p class="field-label">À venir</p><div class="card">' + restants.map(construireCarteSeance_).join("") + '</div>';
+    }
+    zone.innerHTML = html;
+  }
+
+  function afficherActualitesSeances() {
+    const zone = document.getElementById("seancesActualites");
+    if (!seancesCache.length) { zone.innerHTML = '<p class="empty-state">Aucune séance programmée pour le moment.</p>'; return; }
+    zone.innerHTML = seancesCache.slice(0, 10).map(construireCarteSeance_).join("");
   }
 
   function filtrerSeances() {
@@ -1781,23 +1914,25 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }));
   }
 
+  function construireCarteSeance_(s) {
+    const date = s.Date ? escapeHtml(String(s.Date)) : "Date à confirmer";
+    const heure = s.Heure ? " à " + escapeHtml(formaterHeureSeance_(s.Heure)) : "";
+    const badgePremium = s.Type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : "";
+    const bouton = (s.Type === "Payant" && !s.LienMeet)
+      ? '<button class="flame small" onclick="acheterSeance(\'' + s.ID + '\',' + Number(s.Prix) + ')">💳 ' + Number(s.Prix).toLocaleString("fr-FR") + ' F</button>'
+      : '<button class="btn-meet" onclick="ouvrirLienExterne_(\'' + (s.LienMeet || "").replace(/'/g, "&#39;") + '\')">Rejoindre</button>';
+    return '<div class="item-row">' +
+      '<div><div class="item-nom">' + escapeHtml(s.Titre) + badgePremium + '</div>' +
+      '<div class="item-desc">' + date + heure + '</div></div>' +
+      bouton +
+      '</div>';
+  }
+
   function afficherSeances(seances) {
     seances = seances || [];
     const zone = document.getElementById("listeSeances");
     if (!seances.length) { zone.innerHTML = '<p class="empty-state">Aucune séance trouvée.</p>'; return; }
-    zone.innerHTML = seances.map(function (s) {
-      const date = s.Date ? escapeHtml(String(s.Date)) : "Date à confirmer";
-      const heure = s.Heure ? " à " + escapeHtml(formaterHeureSeance_(s.Heure)) : "";
-      const badgePremium = s.Type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : "";
-      const bouton = (s.Type === "Payant" && !s.LienMeet)
-        ? '<button class="flame small" onclick="acheterSeance(\'' + s.ID + '\',' + Number(s.Prix) + ')">💳 ' + Number(s.Prix).toLocaleString("fr-FR") + ' F</button>'
-        : '<button class="btn-meet" onclick="ouvrirLienExterne_(\'' + (s.LienMeet || "").replace(/'/g, "&#39;") + '\')">Rejoindre</button>';
-      return '<div class="item-row">' +
-        '<div><div class="item-nom">' + escapeHtml(s.Titre) + badgePremium + '</div>' +
-        '<div class="item-desc">' + date + heure + '</div></div>' +
-        bouton +
-        '</div>';
-    }).join("");
+    zone.innerHTML = seances.map(construireCarteSeance_).join("");
   }
 
   function acheterSeance(id, prix) {
@@ -2072,7 +2207,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     if (nom === "accueil") afficherAccueilAudios();
     else if (nom === "emissions") afficherCategoriesAudio();
     else if (nom === "biographies") chargerBiographiesAudios();
-    else if (nom === "lyrics") afficherLyricsAudios();
   }
 
   function afficherAccueilAudios() {
@@ -2136,22 +2270,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("listeBiographiesAudios").innerHTML = html;
   }
 
-  function afficherLyricsAudios() {
-    const requete = (document.getElementById("rechercheLyricsAudios").value || "").trim().toLowerCase();
-    const avecParoles = audiosCache.filter(function (a) { return a.Paroles && a.Paroles.trim(); });
-    const filtres = requete ? avecParoles.filter(function (a) { return a.Titre.toLowerCase().indexOf(requete) !== -1; }) : avecParoles;
-    const zone = document.getElementById("listeLyricsAudios");
-    if (!filtres.length) { zone.innerHTML = '<p class="empty-state">Aucune parole disponible pour le moment.</p>'; return; }
-    zone.innerHTML = filtres.map(function (a) {
-      const idxGlobal = audiosCache.indexOf(a);
-      return '<div class="item-block"><div class="item-nom">' + escapeHtml(a.Titre) + (a.Auteur ? ' <span class="item-desc">— ' + escapeHtml(a.Auteur) + '</span>' : '') + '</div>' +
-        '<p style="font-size:13px;white-space:pre-wrap;margin-top:8px;line-height:1.6;">' + escapeHtml(a.Paroles) + '</p>' +
-        '<button class="secondary small full-mt" onclick="jouerAudioDepuisAccueil_(' + idxGlobal + ')">🎧 Écouter</button></div>';
-    }).join("");
-  }
-
-  function filtrerLyricsAudios() { afficherLyricsAudios(); }
-
   function afficherCategoriesAudio() {
     document.getElementById("listeAudiosCategorie").style.display = "none";
     const zone = document.getElementById("listeCategoriesAudio");
@@ -2184,15 +2302,23 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       const pillVisibilite = a.Visibilite === "Membres" ? '<span class="vis-pill">Membres</span>' : '';
       const badgePremium = a.Type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : '';
       const cover = a.CoverBase64 ? '<img class="lecteur-cover" src="data:image/jpeg;base64,' + a.CoverBase64 + '">' : '<div class="lecteur-cover" style="display:flex;align-items:center;justify-content:center;">🎧</div>';
+      const boutonLyrics = (a.Paroles && a.Paroles.trim())
+        ? '<button class="secondary small" style="width:auto;margin-top:6px;" onclick="event.stopPropagation();afficherParolesAudioClick_(' + i + ')">📜 Lyrics</button>' : '';
       return '<div class="contenu-item" style="display:flex;gap:12px;align-items:center;cursor:pointer;" onclick="jouerAudio(' + i + ')">' +
         cover +
         '<div style="flex:1;">' +
         '<div class="item-nom">' + escapeHtml(a.Titre) + pillVisibilite + badgePremium + '</div>' +
         (a.Auteur ? '<div class="item-desc">Par ' + escapeHtml(a.Auteur) + '</div>' : '') +
         '<div class="item-desc">' + escapeHtml(a.DateAjout) + '</div>' +
+        boutonLyrics +
         '</div></div>';
     });
     zone.innerHTML = entete + cartes.join("");
+  }
+
+  function afficherParolesAudioClick_(index) {
+    const a = listeAudioActuelle[index];
+    if (a) afficherParolesModal_(a.Titre, a.Paroles);
   }
 
   function filtrerAudios() {
@@ -3011,7 +3137,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     if (nom === "accueil") afficherAccueilVideos();
     else if (nom === "emissions") { document.getElementById("listePlaylists").style.display = "block"; afficherPlaylists(playlistsCache); }
     else if (nom === "biographies") chargerBiographiesVideos();
-    else if (nom === "lyrics") afficherLyricsVideos();
   }
 
   function afficherAccueilVideos() {
@@ -3041,7 +3166,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // vidéo unifié (celui utilisé pour les Émissions), puis lance la lecture.
   function jouerVideoDepuisAccueil_(index) {
     videosPlaylistCourante = videosPlateformeCache.map(function (v) {
-      return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout };
+      return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout, paroles: v.Paroles };
     });
     document.getElementById("videosSous-accueil").scrollIntoView({ behavior: "smooth", block: "start" });
     lireVideoUnifiee(index);
@@ -3083,22 +3208,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("listeBiographiesVideos").innerHTML = html;
   }
 
-  function afficherLyricsVideos() {
-    const requete = (document.getElementById("rechercheLyricsVideos").value || "").trim().toLowerCase();
-    const avecParoles = videosPlateformeCache.filter(function (v) { return v.Paroles && v.Paroles.trim(); });
-    const filtres = requete ? avecParoles.filter(function (v) { return v.Titre.toLowerCase().indexOf(requete) !== -1; }) : avecParoles;
-    const zone = document.getElementById("listeLyricsVideos");
-    if (!filtres.length) { zone.innerHTML = '<p class="empty-state">Aucune parole disponible pour le moment.</p>'; return; }
-    zone.innerHTML = filtres.map(function (v) {
-      const idxGlobal = videosPlateformeCache.indexOf(v);
-      return '<div class="item-block"><div class="item-nom">' + escapeHtml(v.Titre) + (v.Auteur ? ' <span class="item-desc">— ' + escapeHtml(v.Auteur) + '</span>' : '') + '</div>' +
-        '<p style="font-size:13px;white-space:pre-wrap;margin-top:8px;line-height:1.6;">' + escapeHtml(v.Paroles) + '</p>' +
-        '<button class="secondary small full-mt" onclick="jouerVideoDepuisAccueil_(' + idxGlobal + ')">▶️ Regarder</button></div>';
-    }).join("");
-  }
-
-  function filtrerLyricsVideos() { afficherLyricsVideos(); }
-
   function afficherPlaylists(playlists) {
     const zone = document.getElementById("listePlaylists");
     if (!playlists.length) { zone.innerHTML = '<div class="card"><p class="empty-state">Aucune playlist configurée pour le moment.</p></div>'; return; }
@@ -3127,7 +3236,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         return { source: "youtube", videoId: v.videoId, titre: v.titre, miniature: v.miniature, datePublication: v.datePublication };
       });
       const videosPlateforme = videosPlateformeCache.filter(function (v) { return v.Categorie === nom; }).map(function (v) {
-        return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout };
+        return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout, paroles: v.Paroles };
       });
       videosPlaylistCourante = videosYoutube.concat(videosPlateforme);
       afficherVideosPlaylist(videosPlaylistCourante, nom);
@@ -3152,13 +3261,21 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       }
       const badgePremium = v.type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : '';
       const miniature = v.cover ? 'data:image/jpeg;base64,' + v.cover : '';
+      const boutonLyrics = (v.paroles && v.paroles.trim())
+        ? '<button class="secondary small" style="width:auto;margin-top:4px;" onclick="event.stopPropagation();afficherParolesVideoClick_(' + i + ')">📜 Lyrics</button>' : '';
       return '<div class="video-item" onclick="lireVideoUnifiee(' + i + ')">' +
         (miniature ? '<img class="video-thumb" src="' + miniature + '" alt="">' : '<div class="video-thumb" style="display:flex;align-items:center;justify-content:center;">🎬</div>') +
         '<div><div class="video-titre">' + escapeHtml(v.titre) + " " + badgePremium + '</div>' +
-        '<div class="video-date">' + (v.auteur ? "Par " + escapeHtml(v.auteur) + " · " : "") + escapeHtml(v.dateAjout) + '</div></div>' +
-        '</div>';
+        '<div class="video-date">' + (v.auteur ? "Par " + escapeHtml(v.auteur) + " · " : "") + escapeHtml(v.dateAjout) + '</div>' +
+        boutonLyrics +
+        '</div></div>';
     });
     zone.innerHTML = entete + cartes.join("");
+  }
+
+  function afficherParolesVideoClick_(index) {
+    const v = videosPlaylistCourante[index];
+    if (v) afficherParolesModal_(v.titre, v.paroles);
   }
 
   function chargerPlaylistsEtRevenir() {
@@ -4365,6 +4482,25 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }
     const lienComplet = /^https?:\/\//i.test(nettoye) ? nettoye : "https://" + nettoye;
     window.open(lienComplet, "_blank");
+  }
+
+  // Petite fenêtre pour afficher les paroles d'un audio ou d'une vidéo, sans avoir besoin
+  // d'une rubrique dédiée — réutilisable partout où un bouton "Lyrics" apparaît.
+  function afficherParolesModal_(titre, paroles) {
+    const ancien = document.querySelector(".paroles-overlay");
+    if (ancien) ancien.remove();
+    const overlay = document.createElement("div");
+    overlay.className = "paroles-overlay";
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(10,20,40,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;";
+    overlay.onclick = function (e) { if (e.target === overlay) overlay.remove(); };
+    const box = document.createElement("div");
+    box.style.cssText = "background:#fff;border-radius:18px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;padding:20px;";
+    box.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;">' +
+      '<div class="item-nom">📜 ' + escapeHtml(titre) + '</div>' +
+      '<button class="secondary small" style="width:auto;flex-shrink:0;" onclick="this.closest(\'.paroles-overlay\').remove()">✕</button></div>' +
+      '<p style="font-size:13px;line-height:1.7;white-space:pre-wrap;">' + escapeHtml(paroles) + '</p>';
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
   }
 
   function escapeHtml(str) {
