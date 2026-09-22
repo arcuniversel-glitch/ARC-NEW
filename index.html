@@ -67,6 +67,19 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 .carte-bio-extrait{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .zone-pub{margin:14px 0}
 .zone-pub img{width:100%;border-radius:14px;display:block}
+/* Actualités — présentation façon blog (image, catégorie, auteur, extrait) */
+.blog-card{margin-bottom:22px;cursor:pointer}
+.blog-card-image-wrap{position:relative;border-radius:16px;overflow:hidden;margin-bottom:12px;background:#eef3f9}
+.blog-card-image-wrap img{width:100%;height:200px;object-fit:cover;display:block}
+.blog-card-tag{position:absolute;top:12px;left:12px;background:#22c55e;color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:999px}
+.blog-card-titre{font-family:Montserrat;font-size:19px;font-weight:800;line-height:1.3;margin-bottom:8px}
+.blog-card-auteur{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:10px}
+.blog-card-extrait{font-size:13px;line-height:1.6;color:#333;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.blog-detail-corps{font-size:14px;line-height:1.75;white-space:pre-wrap;margin-top:14px}
+#section-audios .blog-card-tag{background:linear-gradient(135deg,#f0a020,#c47d0a)}
+#section-videos .blog-card-tag{background:linear-gradient(135deg,#8b5cf6,#6d28d9)}
+#section-documents .blog-card-tag{background:linear-gradient(135deg,#14b8a6,#0f766e)}
+#section-prieres .blog-card-tag{background:linear-gradient(135deg,#e23a41,#b0121a)}
 .zone-pub .item-desc{text-align:center;margin-bottom:6px}
 /* Visiteur & navigation */
 .btn-topbar-mini{width:auto;padding:8px 12px;font-size:11px;background:rgba(255,255,255,.18);color:#fff;box-shadow:none;white-space:nowrap}
@@ -546,7 +559,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div class="sub-nav" id="subNavAudios">
         <button class="sub-nav-btn active" data-sub="accueil" onclick="afficherSousAudios('accueil')">Accueil</button>
         <button class="sub-nav-btn" data-sub="emissions" onclick="afficherSousAudios('emissions')">Playlists</button>
-        <button class="sub-nav-btn" data-sub="biographies" onclick="afficherSousAudios('biographies')">Biographies</button>
+        <button class="sub-nav-btn" data-sub="actualites" onclick="afficherSousAudios('actualites')">Actualités</button>
       </div>
 
       <div class="card" id="lecteurAudioZone" style="display:none;"></div>
@@ -563,8 +576,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <div class="card" id="listeAudiosCategorie" style="display:none;"></div>
       </div>
 
-      <div class="sub-section" id="audiosSous-biographies">
-        <div class="card" id="listeBiographiesAudios"><div class="loading">Chargement…</div></div>
+      <div class="sub-section" id="audiosSous-actualites">
+        <div id="listeActualitesAudios"><div class="loading">Chargement…</div></div>
       </div>
     </div>
 
@@ -628,7 +641,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div class="sub-nav" id="subNavVideos">
         <button class="sub-nav-btn active" data-sub="accueil" onclick="afficherSousVideos('accueil')">Accueil</button>
         <button class="sub-nav-btn" data-sub="emissions" onclick="afficherSousVideos('emissions')">Playlists</button>
-        <button class="sub-nav-btn" data-sub="biographies" onclick="afficherSousVideos('biographies')">Biographies</button>
+        <button class="sub-nav-btn" data-sub="actualites" onclick="afficherSousVideos('actualites')">Actualités</button>
       </div>
 
       <div class="card" id="lecteurVideoZone" style="display:none;padding:0;overflow:hidden;"></div>
@@ -645,8 +658,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <div class="card" id="listeVideosPlaylist" style="display:none;"></div>
       </div>
 
-      <div class="sub-section" id="videosSous-biographies">
-        <div class="card" id="listeBiographiesVideos"><div class="loading">Chargement…</div></div>
+      <div class="sub-section" id="videosSous-actualites">
+        <div id="listeActualitesVideos"><div class="loading">Chargement…</div></div>
       </div>
     </div>
 
@@ -987,6 +1000,71 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <button onclick="creerVideoPlateformeAdmin()">Ajouter</button>
         </div>
         <div class="card" id="adminListeVideosPlateforme"><div class="loading">Chargement…</div></div>
+      </div>
+
+      <div class="admin-section" id="admin-actualites">
+        <div class="card">
+          <label class="field-label">Nouvelle actualité</label>
+          <p class="subtitle left" style="margin-top:-4px;">Format paysage recommandé (ex : 16:9). Choisissez la rubrique où elle doit apparaître.</p>
+          <div id="actualitePreviewZone" style="display:none;margin-bottom:12px;border-radius:12px;overflow:hidden;aspect-ratio:16/9;background:#eef3f9;">
+            <img id="actualitePreviewImg" style="width:100%;height:100%;object-fit:cover;display:block;">
+          </div>
+          <label class="file-btn-label">
+            📷 Choisir une image
+            <input type="file" id="fichierActualite" accept="image/*" style="display:none;" onchange="previsualiserCoverGenerique(event,'actualitePreviewImg','actualitePreviewZone','actualite')">
+          </label>
+          <label class="field-label" style="margin-top:14px;">Titre</label>
+          <input id="actualiteTitre" type="text" placeholder="Titre de l'actualité">
+          <label class="field-label">Catégorie / étiquette</label>
+          <input id="actualiteCategorie" type="text" placeholder="Ex : Afrique, Événement, Annonce…">
+          <label class="field-label">Rubrique</label>
+          <select id="actualiteRubrique">
+            <option value="toutes">Toutes les sections</option>
+            <option value="audios">Audios uniquement</option>
+            <option value="videos">Vidéos uniquement</option>
+            <option value="documents">Documents uniquement</option>
+            <option value="seances">Séances directes uniquement</option>
+          </select>
+          <label class="field-label">Auteur / signature</label>
+          <input id="actualiteAuteur" type="text" placeholder="Nom affiché sous le titre">
+          <label class="field-label">Contenu</label>
+          <textarea id="actualiteContenu" rows="6" placeholder="Texte complet de l'article…"></textarea>
+          <div id="erreurActualite" class="error" style="display:none;margin-top:10px;"></div>
+          <button class="flame full-mt" id="btnPublierActualite" onclick="publierActualiteClick()">Publier</button>
+        </div>
+        <div class="card" id="adminListeActualites"><div class="loading">Chargement…</div></div>
+      </div>
+
+      <div class="admin-section" id="admin-espacesPub">
+        <div class="card">
+          <label class="field-label">Espaces publicitaires internes (2-3 par emplacement)</label>
+          <p class="subtitle left" style="margin-top:-4px;">Insérés en haut de l'onglet Accueil de chaque section. Image ou courte vidéo.</p>
+          <label class="field-label">Emplacement</label>
+          <select id="pubEmplacement">
+            <option value="audios">Audios</option>
+            <option value="videos">Vidéos</option>
+            <option value="documents">Documents</option>
+            <option value="seances">Séances directes</option>
+            <option value="messages">Messages</option>
+          </select>
+          <label class="field-label">Type</label>
+          <select id="pubType" onchange="document.getElementById('pubImageZone').style.display = this.value === 'Image' ? 'block' : 'none'; document.getElementById('pubVideoZone').style.display = this.value === 'Video' ? 'block' : 'none';">
+            <option value="Image">Image</option>
+            <option value="Video">Courte vidéo (lien Google Drive)</option>
+          </select>
+          <div id="pubImageZone">
+            <div id="pubImagePreviewZone" style="display:none;margin-bottom:10px;"><img id="pubImagePreviewImg" style="width:100%;max-height:120px;object-fit:cover;border-radius:10px;"></div>
+            <label class="file-btn-label">📷 Choisir une image<input type="file" id="pubImageFichier" accept="image/*" style="display:none;" onchange="previsualiserCoverGenerique(event,'pubImagePreviewImg','pubImagePreviewZone','espacePub')"></label>
+          </div>
+          <div id="pubVideoZone" style="display:none;">
+            <input id="pubLienDrive" type="text" placeholder="Lien de partage Google Drive de la vidéo">
+          </div>
+          <label class="field-label">Lien au clic (facultatif)</label>
+          <input id="pubLien" type="text" placeholder="https://...">
+          <div id="erreurEspacePub" class="error" style="display:none;"></div>
+          <button class="flame full-mt" onclick="creerEspacePubAdmin()">Ajouter</button>
+        </div>
+        <div class="card" id="adminListeEspacesPub"><div class="loading">Chargement…</div></div>
       </div>
 
       <div class="admin-section" id="admin-affiche">
@@ -1761,6 +1839,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       { id: "playlists", label: "▶️ Playlists", permission: "contenus" },
       { id: "videosPlateforme", label: "🎬 Vidéos", permission: "contenus" },
       { id: "affiche", label: "🖼️ Affiche", permission: "contenus" },
+      { id: "actualites", label: "📰 Actualités", permission: "contenus" },
+      { id: "espacesPub", label: "📢 Espaces pub", permission: "contenus" },
       { id: "membres", label: "Membres", permission: "systeme" },
       { id: "annonces", label: "📢 Annonces", permission: "systeme" },
       { id: "paiements", label: "Paiements", permission: "finances" },
@@ -1803,6 +1883,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     else if (nom === "playlists") appelServeur("getPlaylists").then(afficherPlaylistsAdmin).catch(function (err) { afficherErreurZone("adminListePlaylists", err); });
     else if (nom === "videosPlateforme") appelServeur("getVideos").then(afficherVideosPlateformeAdmin).catch(function (err) { afficherErreurZone("adminListeVideosPlateforme", err); });
     else if (nom === "affiche") chargerAfficheAdmin();
+    else if (nom === "actualites") appelServeur("getActualitesAdmin").then(afficherActualitesAdmin).catch(function (err) { afficherErreurZone("adminListeActualites", err); });
+    else if (nom === "espacesPub") appelServeur("getEspacesPubAdmin").then(afficherEspacesPubAdmin).catch(function (err) { afficherErreurZone("adminListeEspacesPub", err); });
     else if (nom === "demandesPriere") appelServeur("getDemandesPriereAdmin", membreCourant.code).then(afficherDemandesPriereAdmin).catch(function (err) { afficherErreurZone("adminListeDemandesPriere", err); });
     else if (nom === "soumissions") appelServeur("getSoumissionsAdmin", membreCourant.code).then(afficherSoumissionsAdmin).catch(function (err) { afficherErreurZone("adminListeSoumissions", err); });
     else if (nom === "codes") appelServeur("getCodesInscriptionAdmin", membreCourant.code).then(afficherCodesInscriptionAdmin).catch(function (err) { afficherErreurZone("adminListeCodesInscription", err); });
@@ -1898,10 +1980,20 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     zone.innerHTML = html;
   }
 
+  let actualitesSeancesCache = null;
+
   function afficherActualitesSeances() {
     const zone = document.getElementById("seancesActualites");
-    if (!seancesCache.length) { zone.innerHTML = '<p class="empty-state">Aucune séance programmée pour le moment.</p>'; return; }
-    zone.innerHTML = seancesCache.slice(0, 10).map(construireCarteSeance_).join("");
+    appelServeur("getActualites", "seances").then(function (liste) {
+      actualitesSeancesCache = liste || [];
+      if (!liste.length) { zone.innerHTML = '<p class="empty-state">Aucune actualité pour le moment.</p>'; return; }
+      zone.innerHTML = liste.map(function (a) { return construireCarteActualite_(a, "ouvrirActualiteSeances_"); }).join("");
+    }).catch(function (err) { afficherErreurZone("seancesActualites", err); });
+  }
+
+  function ouvrirActualiteSeances_(id) {
+    const a = actualitesSeancesCache.find(function (x) { return x.ID === id; });
+    if (a) afficherDetailActualiteModal_(a);
   }
 
   function filtrerSeances() {
@@ -2205,7 +2297,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.querySelectorAll("#section-audios .sub-section").forEach(function (s) { s.classList.toggle("active", s.id === "audiosSous-" + nom); });
     if (nom === "accueil") afficherAccueilAudios();
     else if (nom === "emissions") afficherCategoriesAudio();
-    else if (nom === "biographies") chargerBiographiesAudios();
+    else if (nom === "actualites") chargerActualitesAudios();
   }
 
   function afficherAccueilAudios() {
@@ -2233,40 +2325,24 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     jouerAudio(index);
   }
 
-  function chargerBiographiesAudios() {
-    if (auteursCache) { afficherBiographiesAudios(auteursCache); return; }
-    appelServeur("getAuteurs").then(function (auteurs) {
-      auteursCache = auteurs || [];
-      afficherBiographiesAudios(auteursCache);
-    }).catch(function (err) { afficherErreurZone("listeBiographiesAudios", err); });
+  let actualitesAudiosCache = null;
+
+  function chargerActualitesAudios() {
+    appelServeur("getActualites", "audios").then(function (liste) {
+      actualitesAudiosCache = liste || [];
+      afficherActualitesAudios(actualitesAudiosCache);
+    }).catch(function (err) { afficherErreurZone("listeActualitesAudios", err); });
   }
 
-  function afficherBiographiesAudios(auteurs) {
-    const zone = document.getElementById("listeBiographiesAudios");
-    if (!auteurs.length) { zone.innerHTML = '<p class="empty-state">Aucune biographie disponible pour le moment.</p>'; return; }
-    zone.innerHTML = auteurs.map(function (a, i) {
-      const photo = a.PhotoBase64 ? '<img class="carte-bio-photo" src="data:image/jpeg;base64,' + a.PhotoBase64 + '">' : '<div class="carte-bio-photo" style="display:flex;align-items:center;justify-content:center;">👤</div>';
-      const extrait = a.Biographie ? escapeHtml(a.Biographie).substring(0, 140) : "";
-      return '<div class="carte-bio" onclick="afficherFicheAuteur_(' + i + ')">' + photo +
-        '<div><div class="carte-bio-nom">' + escapeHtml(a.Nom) + '</div><div class="carte-bio-extrait">' + extrait + '</div></div></div>';
-    }).join("");
+  function afficherActualitesAudios(liste) {
+    const zone = document.getElementById("listeActualitesAudios");
+    if (!liste.length) { zone.innerHTML = '<p class="empty-state">Aucune actualité pour le moment.</p>'; return; }
+    zone.innerHTML = liste.map(function (a) { return construireCarteActualite_(a, "ouvrirActualiteAudios_"); }).join("");
   }
 
-  function afficherFicheAuteur_(index) {
-    const a = auteursCache[index];
-    if (!a) return;
-    const photo = a.PhotoBase64 ? '<img style="width:80px;height:80px;border-radius:50%;object-fit:cover;" src="data:image/jpeg;base64,' + a.PhotoBase64 + '">' : '<div style="width:80px;height:80px;border-radius:50%;background:#eef3f9;display:flex;align-items:center;justify-content:center;font-size:28px;">👤</div>';
-    const oeuvresAudio = audiosCache.filter(function (x) { return x.Auteur === a.Nom; });
-    let html = '<button class="secondary small" style="margin-bottom:12px;" onclick="afficherBiographiesAudios(auteursCache)">← Retour</button>' +
-      '<div style="display:flex;gap:14px;align-items:center;margin-bottom:14px;">' + photo + '<div class="item-nom" style="font-size:17px;">' + escapeHtml(a.Nom) + '</div></div>' +
-      (a.Biographie ? '<p style="font-size:13px;line-height:1.6;white-space:pre-wrap;">' + escapeHtml(a.Biographie) + '</p>' : '<p class="empty-state">Pas encore de biographie renseignée.</p>');
-    if (oeuvresAudio.length) {
-      html += '<p class="field-label" style="margin-top:16px;">🎧 Audios de ' + escapeHtml(a.Nom) + '</p>' + oeuvresAudio.map(function (x) {
-        const idxGlobal = audiosCache.indexOf(x);
-        return '<div class="item-row" style="cursor:pointer;" onclick="jouerAudioDepuisAccueil_(' + idxGlobal + ')"><div class="item-nom">' + escapeHtml(x.Titre) + '</div></div>';
-      }).join("");
-    }
-    document.getElementById("listeBiographiesAudios").innerHTML = html;
+  function ouvrirActualiteAudios_(id) {
+    const a = actualitesAudiosCache.find(function (x) { return x.ID === id; });
+    if (a) afficherDetailActualiteModal_(a);
   }
 
   function afficherCategoriesAudio() {
@@ -2675,10 +2751,20 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   // "Actualités" : les 10 derniers documents ajoutés, avec leur fiche complète (comme dans
   // "Tous les documents"), pour permettre l'action (téléchargement/achat) directement.
+  let actualitesDocumentsCache = null;
+
   function afficherActualitesDocuments() {
     const zone = document.getElementById("documentsActualites");
-    if (!documentsCache.length) { zone.innerHTML = '<p class="empty-state">Aucun document pour le moment.</p>'; return; }
-    zone.innerHTML = documentsCache.slice(0, 10).map(construireCarteDocument_).join("");
+    appelServeur("getActualites", "documents").then(function (liste) {
+      actualitesDocumentsCache = liste || [];
+      if (!liste.length) { zone.innerHTML = '<p class="empty-state">Aucune actualité pour le moment.</p>'; return; }
+      zone.innerHTML = liste.map(function (a) { return construireCarteActualite_(a, "ouvrirActualiteDocuments_"); }).join("");
+    }).catch(function (err) { afficherErreurZone("documentsActualites", err); });
+  }
+
+  function ouvrirActualiteDocuments_(id) {
+    const a = actualitesDocumentsCache.find(function (x) { return x.ID === id; });
+    if (a) afficherDetailActualiteModal_(a);
   }
 
   function filtrerDocuments() {
@@ -3135,7 +3221,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.querySelectorAll("#section-videos .sub-section").forEach(function (s) { s.classList.toggle("active", s.id === "videosSous-" + nom); });
     if (nom === "accueil") afficherAccueilVideos();
     else if (nom === "emissions") { document.getElementById("listePlaylists").style.display = "block"; afficherPlaylists(playlistsCache); }
-    else if (nom === "biographies") chargerBiographiesVideos();
+    else if (nom === "actualites") chargerActualitesVideos();
   }
 
   function afficherAccueilVideos() {
@@ -3171,40 +3257,24 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     lireVideoUnifiee(index);
   }
 
-  function chargerBiographiesVideos() {
-    if (auteursCache) { afficherBiographiesVideos(auteursCache); return; }
-    appelServeur("getAuteurs").then(function (auteurs) {
-      auteursCache = auteurs || [];
-      afficherBiographiesVideos(auteursCache);
-    }).catch(function (err) { afficherErreurZone("listeBiographiesVideos", err); });
+  let actualitesVideosCache = null;
+
+  function chargerActualitesVideos() {
+    appelServeur("getActualites", "videos").then(function (liste) {
+      actualitesVideosCache = liste || [];
+      afficherActualitesVideos(actualitesVideosCache);
+    }).catch(function (err) { afficherErreurZone("listeActualitesVideos", err); });
   }
 
-  function afficherBiographiesVideos(auteurs) {
-    const zone = document.getElementById("listeBiographiesVideos");
-    if (!auteurs.length) { zone.innerHTML = '<p class="empty-state">Aucune biographie disponible pour le moment.</p>'; return; }
-    zone.innerHTML = auteurs.map(function (a, i) {
-      const photo = a.PhotoBase64 ? '<img class="carte-bio-photo" src="data:image/jpeg;base64,' + a.PhotoBase64 + '">' : '<div class="carte-bio-photo" style="display:flex;align-items:center;justify-content:center;">👤</div>';
-      const extrait = a.Biographie ? escapeHtml(a.Biographie).substring(0, 140) : "";
-      return '<div class="carte-bio" onclick="afficherFicheAuteurVideo_(' + i + ')">' + photo +
-        '<div><div class="carte-bio-nom">' + escapeHtml(a.Nom) + '</div><div class="carte-bio-extrait">' + extrait + '</div></div></div>';
-    }).join("");
+  function afficherActualitesVideos(liste) {
+    const zone = document.getElementById("listeActualitesVideos");
+    if (!liste.length) { zone.innerHTML = '<p class="empty-state">Aucune actualité pour le moment.</p>'; return; }
+    zone.innerHTML = liste.map(function (a) { return construireCarteActualite_(a, "ouvrirActualiteVideos_"); }).join("");
   }
 
-  function afficherFicheAuteurVideo_(index) {
-    const a = auteursCache[index];
-    if (!a) return;
-    const photo = a.PhotoBase64 ? '<img style="width:80px;height:80px;border-radius:50%;object-fit:cover;" src="data:image/jpeg;base64,' + a.PhotoBase64 + '">' : '<div style="width:80px;height:80px;border-radius:50%;background:#eef3f9;display:flex;align-items:center;justify-content:center;font-size:28px;">👤</div>';
-    const oeuvresVideo = videosPlateformeCache.filter(function (x) { return x.Auteur === a.Nom; });
-    let html = '<button class="secondary small" style="margin-bottom:12px;" onclick="afficherBiographiesVideos(auteursCache)">← Retour</button>' +
-      '<div style="display:flex;gap:14px;align-items:center;margin-bottom:14px;">' + photo + '<div class="item-nom" style="font-size:17px;">' + escapeHtml(a.Nom) + '</div></div>' +
-      (a.Biographie ? '<p style="font-size:13px;line-height:1.6;white-space:pre-wrap;">' + escapeHtml(a.Biographie) + '</p>' : '<p class="empty-state">Pas encore de biographie renseignée.</p>');
-    if (oeuvresVideo.length) {
-      html += '<p class="field-label" style="margin-top:16px;">▶️ Vidéos de ' + escapeHtml(a.Nom) + '</p>' + oeuvresVideo.map(function (x) {
-        const idxGlobal = videosPlateformeCache.indexOf(x);
-        return '<div class="item-row" style="cursor:pointer;" onclick="jouerVideoDepuisAccueil_(' + idxGlobal + ')"><div class="item-nom">' + escapeHtml(x.Titre) + '</div></div>';
-      }).join("");
-    }
-    document.getElementById("listeBiographiesVideos").innerHTML = html;
+  function ouvrirActualiteVideos_(id) {
+    const a = actualitesVideosCache.find(function (x) { return x.ID === id; });
+    if (a) afficherDetailActualiteModal_(a);
   }
 
   function afficherPlaylists(playlists) {
@@ -4146,11 +4216,96 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   // --- Espaces publicitaires internes (admin) ---
+  // --- Actualités (admin) ---
+  let actualiteEnEditionId = null;
+
+  function afficherActualitesAdmin(liste) {
+    liste = liste || [];
+    const zone = document.getElementById("adminListeActualites");
+    if (!liste.length) { zone.innerHTML = '<p class="empty-state">Aucune actualité pour le moment.</p>'; return; }
+    const libellesRubrique = { toutes: "Toutes", audios: "Audios", videos: "Vidéos", documents: "Documents", seances: "Séances" };
+    zone.innerHTML = liste.map(function (a) {
+      const apercu = a.Image ? '<img src="data:image/jpeg;base64,' + a.Image + '" style="width:60px;height:40px;object-fit:cover;border-radius:6px;">' : '<div style="width:60px;height:40px;background:#eef3f9;border-radius:6px;"></div>';
+      return '<div class="item-row">' +
+        '<div style="display:flex;align-items:center;gap:10px;">' + apercu +
+        '<div><div class="item-nom">' + escapeHtml(a.Titre) + '</div>' +
+        '<div class="item-desc">' + (libellesRubrique[a.Rubrique] || a.Rubrique) + (a.Categorie ? " · " + escapeHtml(a.Categorie) : "") + '</div></div></div>' +
+        '<div style="display:flex;gap:6px;">' +
+        '<button class="secondary small" style="width:auto;" onclick="modifierActualiteClick(\'' + a.ID + '\')">✏️</button>' +
+        '<button class="danger-outline small" style="width:auto;" onclick="supprimerActualiteClick(\'' + a.ID + '\')">🗑️</button>' +
+        '</div></div>';
+    }).join("");
+  }
+
+  function reinitialiserFormulaireActualite_() {
+    actualiteEnEditionId = null;
+    document.getElementById("actualiteTitre").value = "";
+    document.getElementById("actualiteCategorie").value = "";
+    document.getElementById("actualiteRubrique").value = "toutes";
+    document.getElementById("actualiteAuteur").value = "";
+    document.getElementById("actualiteContenu").value = "";
+    document.getElementById("actualitePreviewZone").style.display = "none";
+    document.getElementById("fichierActualite").value = "";
+    delete couverturesEnCours.actualite;
+    document.getElementById("btnPublierActualite").textContent = "Publier";
+  }
+
+  function modifierActualiteClick(id) {
+    appelServeur("getActualitesAdmin").then(function (liste) {
+      const a = (liste || []).find(function (x) { return x.ID === id; });
+      if (!a) return;
+      actualiteEnEditionId = id;
+      document.getElementById("actualiteTitre").value = a.Titre || "";
+      document.getElementById("actualiteCategorie").value = a.Categorie || "";
+      document.getElementById("actualiteRubrique").value = a.Rubrique || "toutes";
+      document.getElementById("actualiteAuteur").value = a.Auteur || "";
+      document.getElementById("actualiteContenu").value = a.Contenu || "";
+      if (a.Image) {
+        document.getElementById("actualitePreviewImg").src = "data:image/jpeg;base64," + a.Image;
+        document.getElementById("actualitePreviewZone").style.display = "block";
+      }
+      document.getElementById("btnPublierActualite").textContent = "Enregistrer les modifications";
+      document.getElementById("admin-actualites").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  function publierActualiteClick() {
+    const titre = document.getElementById("actualiteTitre").value.trim();
+    const categorie = document.getElementById("actualiteCategorie").value.trim();
+    const rubrique = document.getElementById("actualiteRubrique").value;
+    const auteur = document.getElementById("actualiteAuteur").value.trim();
+    const contenu = document.getElementById("actualiteContenu").value.trim();
+    const image = couverturesEnCours.actualite || "";
+    const err = document.getElementById("erreurActualite");
+    err.style.display = "none";
+    if (!titre) { err.textContent = "Le titre est obligatoire."; err.style.display = "block"; return; }
+
+    const appel = actualiteEnEditionId
+      ? appelServeur("modifierActualite", membreCourant.code, actualiteEnEditionId, titre, categorie, rubrique, image, auteur, contenu)
+      : appelServeur("ajouterActualite", membreCourant.code, titre, categorie, rubrique, image, auteur, contenu);
+
+    appel.then(function () {
+      reinitialiserFormulaireActualite_();
+      appelServeur("getActualitesAdmin").then(afficherActualitesAdmin);
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function supprimerActualiteClick(id) {
+    if (!confirm("Supprimer cette actualité ?")) return;
+    appelServeur("supprimerActualite", membreCourant.code, id).then(function () {
+      appelServeur("getActualitesAdmin").then(afficherActualitesAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  // --- Espaces pub (admin) ---
   function afficherEspacesPubAdmin(espaces) {
     espaces = espaces || [];
     const zone = document.getElementById("adminListeEspacesPub");
     if (!espaces.length) { zone.innerHTML = '<p class="empty-state">Aucun espace publicitaire.</p>'; return; }
-    const libelles = { audios: "Audios", videos: "Vidéos", documents: "Documents", messages: "Messages" };
+    const libelles = { audios: "Audios", videos: "Vidéos", documents: "Documents", messages: "Messages", seances: "Séances directes" };
     zone.innerHTML = espaces.map(function (e) {
       const apercu = e.Type === "Image" && e.ImageBase64 ? '<img src="data:image/jpeg;base64,' + e.ImageBase64 + '" style="width:70px;height:40px;object-fit:cover;border-radius:6px;">' : "🎬";
       return '<div class="item-row">' +
@@ -4485,6 +4640,41 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   // Petite fenêtre pour afficher les paroles d'un audio ou d'une vidéo, sans avoir besoin
   // d'une rubrique dédiée — réutilisable partout où un bouton "Lyrics" apparaît.
+  // ==================== ACTUALITÉS (façon blog) — partagé entre les 4 sections ====================
+  function construireCarteActualite_(a, fonctionOuvrir) {
+    const image = a.Image ? '<img src="data:image/jpeg;base64,' + a.Image + '">' : '';
+    const tag = a.Categorie ? '<span class="blog-card-tag">' + escapeHtml(a.Categorie) + '</span>' : '';
+    const extrait = a.Contenu ? escapeHtml(a.Contenu).substring(0, 160) + (a.Contenu.length > 160 ? '…' : '') : '';
+    return '<div class="blog-card" onclick="' + fonctionOuvrir + '(\'' + a.ID + '\')">' +
+      '<div class="blog-card-image-wrap">' + image + tag + '</div>' +
+      '<div class="blog-card-titre">' + escapeHtml(a.Titre) + '</div>' +
+      (a.Auteur ? '<div class="blog-card-auteur">👤 ' + escapeHtml(a.Auteur) + '</div>' : '') +
+      '<div class="blog-card-extrait">' + extrait + '</div>' +
+      '</div>';
+  }
+
+  function afficherDetailActualiteModal_(a) {
+    const ancien = document.querySelector(".actualite-overlay");
+    if (ancien) ancien.remove();
+    const overlay = document.createElement("div");
+    overlay.className = "actualite-overlay";
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(10,20,40,.6);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;";
+    overlay.onclick = function (e) { if (e.target === overlay) overlay.remove(); };
+    const box = document.createElement("div");
+    box.style.cssText = "background:#fff;border-radius:18px;max-width:560px;width:100%;overflow:hidden;margin:20px 0;";
+    const image = a.Image ? '<img src="data:image/jpeg;base64,' + a.Image + '" style="width:100%;height:220px;object-fit:cover;display:block;">' : "";
+    box.innerHTML = image +
+      '<div style="padding:20px;">' +
+      '<button class="secondary small" style="width:auto;float:right;" onclick="this.closest(\'.actualite-overlay\').remove()">✕</button>' +
+      (a.Categorie ? '<span class="blog-card-tag" style="position:static;display:inline-block;margin-bottom:10px;">' + escapeHtml(a.Categorie) + '</span>' : '') +
+      '<div class="blog-card-titre" style="clear:both;">' + escapeHtml(a.Titre) + '</div>' +
+      '<div class="blog-card-auteur">' + (a.Auteur ? '👤 ' + escapeHtml(a.Auteur) + ' · ' : '') + escapeHtml(a.DateAjout) + '</div>' +
+      '<div class="blog-detail-corps">' + escapeHtml(a.Contenu) + '</div>' +
+      '</div>';
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  }
+
   function afficherParolesModal_(titre, paroles) {
     const ancien = document.querySelector(".paroles-overlay");
     if (ancien) ancien.remove();
