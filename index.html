@@ -71,6 +71,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 .carte-bio-extrait{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .zone-pub{margin:14px 0}
 .zone-pub img{width:100%;border-radius:14px;display:block}
+/* Lecteurs persistants : flottent au-dessus du contenu, visibles quelle que soit la
+   rubrique consultée, pour ne jamais interrompre la lecture en cours. */
+.lecteur-persistant{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;width:calc(100% - 24px);max-width:600px;z-index:700;background:#fff;border-radius:16px;box-shadow:0 -6px 30px rgba(12,47,104,.28);max-height:75vh;overflow-y:auto}
+.lecteur-fermer{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(11,47,104,.08);color:var(--blue2);border:none;font-size:14px;font-weight:800;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0}
+.jeu-carte{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.jeu-boutons{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.jeu-boutons a{width:auto;padding:9px 14px;border-radius:10px;background:#edf3fb;color:var(--blue2);font-size:12px;font-weight:800;text-decoration:none;display:inline-block}
 /* Actualités — présentation façon blog (image, catégorie, auteur, extrait) */
 .blog-card{margin-bottom:22px;cursor:pointer}
 .blog-card-image-wrap{position:relative;border-radius:16px;overflow:hidden;margin-bottom:12px;background:#eef3f9}
@@ -200,7 +207,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <button onclick="afficherEcran('connexionForm')">Se connecter</button>
         <button class="secondary full-mt" onclick="demarrerInscription()">Créer un compte</button>
         <button class="ghost-link full-mt" onclick="afficherEcranContact()">📞 Contactez-nous</button>
-        <button id="btnInstallerAppAccueil" onclick="installerApplication()" class="ghost-link full-mt" style="display:none;">📲 Installer l'application sur mon téléphone</button>
         <select id="selecteurTraduction" onchange="traduireVers(this.value)" style="margin-top:10px;">
           <option value="">🌐 Traduire l'application…</option>
           <option value="fr">Français (original)</option>
@@ -421,6 +427,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div class="tabs-scroll-hint" id="tabsScrollHint">›</div>
     </div>
 
+    <!-- Lecteurs persistants : placés hors de toute rubrique (.section) pour continuer à
+         jouer sans interruption quand on change d'onglet — seul un arrêt volontaire (✕) les
+         coupe. Bloc video au-dessus de audio : s'il y en a deux à la fois (cas rare), la
+         vidéo reste la plus visible des deux. -->
+    <div class="lecteur-persistant" id="lecteurVideoZone" style="display:none;padding:0;overflow:hidden;"></div>
+    <div class="lecteur-persistant" id="lecteurAudioZone" style="display:none;"></div>
+
     <div class="section active" id="section-groupes">
       <div class="section-title"><span class="ic">💬</span> Groupes WhatsApp</div>
       <p class="subtitle left" style="margin-top:-6px;">Certains groupes demandent un code d'accès spécifique fourni par un responsable.</p>
@@ -498,6 +511,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         </div>
         <div class="bible-selecteurs" style="margin-top:8px;">
           <button class="secondary small" onclick="chapitreBiblePrecedent()">◀</button>
+          <button class="secondary small" id="btnEcouterBible" onclick="toggleLectureBible()">🔊 Écouter</button>
           <button class="secondary small" onclick="chapitreBibleSuivant()">▶</button>
         </div>
       </div>
@@ -603,8 +617,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <button class="sub-nav-btn" data-sub="actualites" onclick="afficherSousAudios('actualites')">Actualités</button>
       </div>
 
-      <div class="card" id="lecteurAudioZone" style="display:none;"></div>
-
       <div class="sub-section active" id="audiosSous-accueil">
         <div class="zone-pub" id="pubAudiosHaut"></div>
         <div id="audiosAlaUne"><div class="loading">Chargement…</div></div>
@@ -692,8 +704,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <button class="sub-nav-btn" data-sub="actualites" onclick="afficherSousVideos('actualites')">Actualités</button>
       </div>
 
-      <div class="card" id="lecteurVideoZone" style="display:none;padding:0;overflow:hidden;"></div>
-
       <div class="sub-section active" id="videosSous-accueil">
         <div class="zone-pub" id="pubVideosHaut"></div>
         <div id="videosAlaUne"><div class="loading">Chargement…</div></div>
@@ -708,6 +718,50 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
       <div class="sub-section" id="videosSous-actualites">
         <div id="listeActualitesVideos"><div class="loading">Chargement…</div></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-jeu">
+      <div class="section-title"><span class="ic">🎮</span> Jeu</div>
+      <p class="subtitle left" style="margin-top:-6px;">Quelques jeux chrétiens pour apprendre la Bible en vous amusant — téléchargeables gratuitement.</p>
+      <div id="listeJeux">
+
+        <div class="jeu-carte">
+          <div class="item-nom">🎲 Game of Bible</div>
+          <div class="item-desc">Jeu d'aventure et de questions rapides pour tester vos connaissances bibliques — par Spirit Games.</div>
+          <div class="jeu-boutons">
+            <a class="secondary small" href="https://apps.apple.com/us/app/the-bible-game/id1663041338" target="_blank">📱 App Store</a>
+            <a class="secondary small" href="https://play.google.com/store/apps/details?id=com.nlwc.bible.game" target="_blank">🤖 Google Play</a>
+          </div>
+        </div>
+
+        <div class="jeu-carte">
+          <div class="item-nom">🧩 Bible Tiles</div>
+          <div class="item-desc">Jeu de puzzle où l'on associe des tuiles identiques pour découvrir des histoires bibliques illustrées.</div>
+          <div class="jeu-boutons">
+            <a class="secondary small" href="https://apps.apple.com/us/app/bible-tiles-christian-puzzle/id6744103022" target="_blank">📱 App Store</a>
+            <a class="secondary small" href="https://play.google.com/store/apps/details?id=com.sophungamesltd.holytiles" target="_blank">🤖 Google Play</a>
+          </div>
+        </div>
+
+        <div class="jeu-carte">
+          <div class="item-nom">🙏 AMEN Christian Game</div>
+          <div class="item-desc">L'alternative chrétienne au célèbre jeu de cartes UNO, inspirée de la vie et des enseignements de Jésus.</div>
+          <div class="jeu-boutons">
+            <a class="secondary small" href="https://apps.apple.com/us/app/amen-christian-game/id1528445624" target="_blank">📱 App Store</a>
+            <a class="secondary small" href="https://play.google.com/store/apps/details?id=com.rdgames.amengame" target="_blank">🤖 Google Play</a>
+          </div>
+        </div>
+
+        <div class="jeu-carte">
+          <div class="item-nom">⚡ Verse Blitz</div>
+          <div class="item-desc">Jeu d'arcade rapide pour mémoriser des versets bibliques en assemblant les mots dans le bon ordre.</div>
+          <div class="jeu-boutons">
+            <a class="secondary small" href="https://play.google.com/store/apps/details?id=com.codeinfaith.verseblitz" target="_blank">🤖 Google Play</a>
+            <a class="secondary small" href="https://codeinfaith.com/projects/verse-blitz/" target="_blank">🌐 Jouer en ligne</a>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1209,6 +1263,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   window.addEventListener("load", function () {
     appelServeur("getConfig").then(appliquerBranding).catch(function (err) { console.error(err); });
+    initialiserGestionRetourTelephone_();
     if (restaurerSessionSiRecente_()) {
       afficherDashboard();
     } else {
@@ -1254,9 +1309,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function afficherBoutonsInstallation() {
     if (estDejaInstallee()) return;
     const b1 = document.getElementById("btnInstallerApp");
-    const b2 = document.getElementById("btnInstallerAppAccueil");
     if (b1) b1.style.display = "inline-flex";
-    if (b2) b2.style.display = "block";
   }
 
   // Chrome/Android déclenche cet évènement quand l'app remplit les critères d'installation.
@@ -1725,6 +1778,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         { id: "audios", label: "🎧 Audios" },
         { id: "documents", label: "📄 Documents" },
         { id: "videos", label: "▶️ Vidéos" },
+        { id: "jeu", label: "🎮 Jeu" },
         { id: "offrandes", label: "🙌 Offrandes" },
         { id: "cotisation", label: "💳 Cotisations" },
         { id: "demandePriere", label: "✉️ Demande de prière" }
@@ -1740,6 +1794,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         { id: "audios", label: "🎧 Audios" },
         { id: "documents", label: "📄 Documents" },
         { id: "videos", label: "▶️ Vidéos" },
+        { id: "jeu", label: "🎮 Jeu" },
         { id: "messages", label: "Messages" }
       ];
       if (membreCourant && membreCourant.estAuteur) {
@@ -1938,6 +1993,19 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }
   }
 
+  // Relie le bouton/geste "Retour" physique du téléphone (et celui du navigateur) à notre
+  // propre navigation interne, au lieu de laisser l'appareil fermer l'application ou
+  // afficher une page blanche. Technique : on maintient toujours une entrée d'historique
+  // "factice" ; à chaque retour détecté, on en repose une immédiatement (pour rester sur la
+  // même page) et on déclenche notre boutonPrecedent() habituel.
+  function initialiserGestionRetourTelephone_() {
+    history.pushState({ appEtat: true }, "");
+    window.addEventListener("popstate", function () {
+      history.pushState({ appEtat: true }, "");
+      boutonPrecedent();
+    });
+  }
+
   function remplirBadge() {
     document.getElementById("badgeNom").textContent = (membreCourant.prenom + " " + membreCourant.nom).trim() || "—";
     document.getElementById("badgeRole").textContent = membreCourant.roleEglise || "Membre";
@@ -1959,6 +2027,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function afficherOnglet(nom, depuisHistorique) {
     if (!depuisHistorique && ongletActuel && ongletActuel !== nom) historiqueOnglets.push(ongletActuel);
+    if (ongletActuel === "bible" && nom !== "bible") arreterLectureBible(); // ne pas laisser la voix continuer en arrière-plan
     ongletActuel = nom;
     if (!modeVisiteur) sauvegarderSession_(); // prolonge la session tant que le membre navigue activement
     document.getElementById("btnPrecedent").style.display = (historiqueOnglets.length || modeVisiteur) ? "inline-flex" : "none";
@@ -2431,7 +2500,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function chargerAudios() {
     document.getElementById("rechercheAudios").value = "";
-    document.getElementById("lecteurAudioZone").style.display = "none";
+    // Le lecteur audio n'est plus réinitialisé ici : il reste visible et continue de jouer
+    // même en changeant de rubrique — voir fermerLecteurAudio_() pour l'arrêt volontaire.
     const fonction = modeVisiteur ? "getEnregistrementsPublic" : "getEnregistrements";
     Promise.all([
       appelServeur(fonction),
@@ -2568,7 +2638,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     if (!audio) return;
     const zone = document.getElementById("lecteurAudioZone");
     zone.style.display = "block";
-    zone.scrollIntoView({ behavior: "smooth", block: "start" });
 
     const cover = audio.CoverBase64 ? '<img class="lecteur-cover" src="data:image/jpeg;base64,' + audio.CoverBase64 + '">' : '<div class="lecteur-cover" style="display:flex;align-items:center;justify-content:center;">🎧</div>';
     const entete = '<div class="lecteur-entete">' + cover +
@@ -2599,7 +2668,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     // et comme Drive ne signale pas la fin de lecture à notre application, l'enchaînement
     // automatique n'est pas possible ici (contrairement aux vidéos YouTube). Précédent et
     // Suivant restent pleinement fonctionnels pour naviguer manuellement dans la liste.
-    zone.innerHTML = entete +
+    zone.innerHTML = '<button class="lecteur-fermer" onclick="fermerLecteurAudio_()" title="Fermer le lecteur">✕</button>' + entete +
       '<p class="item-desc" style="padding:0 14px 8px;">👉 Cliquez sur ▶ dans le lecteur ci-dessous pour démarrer l\'écoute.</p>' +
       '<iframe class="audio-frame" style="margin:0 14px;width:calc(100% - 28px);" src="' + res.apercu + '" allow="autoplay"></iframe>' +
       '<div class="lecteur-controles">' +
@@ -2608,6 +2677,14 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       '<button onclick="audioSuivant()">⏭️</button>' +
       '</div>' +
       '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + res.lien + '" target="_blank">⬇️ Télécharger</a></div>';
+  }
+
+  // Arrêt volontaire : coupe le lecteur et le masque, quelle que soit la rubrique affichée.
+  function fermerLecteurAudio_() {
+    const zone = document.getElementById("lecteurAudioZone");
+    zone.innerHTML = "";
+    zone.style.display = "none";
+    indexAudioActuel = -1;
   }
 
   function audioPrecedent() {
@@ -2661,6 +2738,16 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }
   }
 
+  // Arrêt volontaire : coupe le lecteur (YouTube ou plateforme) et le masque, quelle que
+  // soit la rubrique affichée.
+  function fermerLecteurVideo_() {
+    detruireLecteurYoutube_();
+    const zone = document.getElementById("lecteurVideoZone");
+    zone.innerHTML = "";
+    zone.style.display = "none";
+    indexVideoUnifieActuel = -1;
+  }
+
   function construireControlesVideo_(masquerRepeterUn) {
     const boutonRepeterUn = masquerRepeterUn ? '' :
       '<button id="btnRepeterUnVideo" class="' + (modeRepetitionVideo === "un" ? "actif" : "") + '" onclick="definirRepetitionVideo(\'un\')" title="Répéter cette vidéo">🔂 1</button>';
@@ -2688,12 +2775,12 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function afficherLecteurYoutube_(v) {
     const zone = document.getElementById("lecteurVideoZone");
     zone.style.display = "block";
-    zone.scrollIntoView({ behavior: "smooth", block: "start" });
     // On construit nous-mêmes le même lecteur simple qu'avant (youtube-nocookie, sans
     // habillage supplémentaire) — enablejsapi=1 permet juste de détecter la fin de lecture
     // en coulisses, sans changer l'apparence ni ajouter les suggestions "plein écran" du
     // lecteur officiel généré automatiquement par l'API.
-    zone.innerHTML = '<iframe id="ytPlayerHost" class="video-player-frame" src="https://www.youtube-nocookie.com/embed/' + v.videoId + '?autoplay=1&rel=0&enablejsapi=1" title="' + escapeHtml(v.titre).replace(/"/g, "&quot;") + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>' + construireControlesVideo_();
+    zone.innerHTML = '<button class="lecteur-fermer" onclick="fermerLecteurVideo_()" title="Fermer le lecteur">✕</button>' +
+      '<iframe id="ytPlayerHost" class="video-player-frame" src="https://www.youtube-nocookie.com/embed/' + v.videoId + '?autoplay=1&rel=0&enablejsapi=1" title="' + escapeHtml(v.titre).replace(/"/g, "&quot;") + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>' + construireControlesVideo_();
     chargerApiYoutube_(function () {
       // La zone peut avoir changé entretemps (utilisateur ayant cliqué ailleurs) : on
       // vérifie que le conteneur existe toujours avant de s'y attacher.
@@ -2712,8 +2799,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function afficherLecteurVideoPlateforme_(v) {
     const zone = document.getElementById("lecteurVideoZone");
     zone.style.display = "block";
-    zone.scrollIntoView({ behavior: "smooth", block: "start" });
-    const entete = '<div class="lecteur-entete"><div><div class="item-nom">' + escapeHtml(v.titre) + '</div>' +
+    const entete = '<button class="lecteur-fermer" onclick="fermerLecteurVideo_()" title="Fermer le lecteur">✕</button><div class="lecteur-entete"><div><div class="item-nom">' + escapeHtml(v.titre) + '</div>' +
       (v.auteur ? '<div class="item-desc">Par ' + escapeHtml(v.auteur) + '</div>' : '') + '</div></div>';
 
     if (v.type === "Payant" && !videosDeverrouillees[v.id]) {
@@ -3017,6 +3103,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function changerLangueBible(langue) {
+    arreterLectureBible();
     langueBibleActuelle = langue;
     document.getElementById("bibleBtnFr").className = langue === "fr" ? "secondary" : "";
     document.getElementById("bibleBtnEn").className = langue === "en" ? "secondary" : "";
@@ -3028,6 +3115,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const livreId = document.getElementById("bibleLivre").value;
     const chapitre = document.getElementById("bibleChapitre").value;
     if (!livreId || !chapitre) return;
+    // Une navigation manuelle (menu déroulant, ◀ ▶ cliqués par l'utilisateur) coupe tout,
+    // y compris l'enchaînement automatique. Ce n'est PAS le cas quand ce chargement vient de
+    // l'enchaînement lui-même (avancementAutomatiqueBible_ === true) : on préserve alors
+    // l'intention de continuer à lire, posée juste avant par lireChapitreBibleActuel_.
+    if (!avancementAutomatiqueBible_) arreterLectureBible();
     const zone = document.getElementById("bibleContenuZone");
     zone.innerHTML = '<div class="loading">Chargement…</div>';
     appelServeur("getChapitreBiblique", Number(livreId), Number(chapitre), langueBibleActuelle).then(function (res) {
@@ -3035,12 +3127,84 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         // "Suivant" a dépassé le dernier chapitre du livre : on passe au livre suivant, chapitre 1.
         if (window._bibleAllerLivreSuivant) { window._bibleAllerLivreSuivant = false; changerLivreBible(1); return; }
         afficherErreurZone("bibleContenuZone", { message: res.message });
+        avancementAutomatiqueBible_ = false;
+        lectureBibleContinue = false;
+        mettreAJourBoutonLectureBible_();
         return;
       }
-      zone.innerHTML = res.versets.map(function (v) {
+      versetsBibleActuels = res.versets || [];
+      zone.innerHTML = versetsBibleActuels.map(function (v) {
         return '<div class="bible-verset"><span class="num">' + v.numero + '</span>' + escapeHtml(v.texte) + '</div>';
       }).join("");
-    }).catch(function (err) { afficherErreurZone("bibleContenuZone", err); });
+      // Le chapitre précédent vient de se terminer et l'enchaînement automatique est actif :
+      // on démarre directement la lecture de celui-ci, sans action de l'utilisateur.
+      if (avancementAutomatiqueBible_) {
+        avancementAutomatiqueBible_ = false;
+        lireChapitreBibleActuel_();
+      }
+    }).catch(function (err) {
+      afficherErreurZone("bibleContenuZone", err);
+      avancementAutomatiqueBible_ = false;
+      lectureBibleContinue = false;
+      mettreAJourBoutonLectureBible_();
+    });
+  }
+
+  // ==================== BIBLE — LECTURE À VOIX HAUTE ====================
+  // Utilise la synthèse vocale intégrée au navigateur (gratuite, aucun fichier audio à
+  // héberger) pour lire le chapitre affiché, dans la langue actuellement choisie (FR/EN),
+  // avec enchaînement automatique sur le chapitre suivant une fois celui-ci terminé.
+  let versetsBibleActuels = [];
+  let lectureBibleEnCours = false;
+  let lectureBibleContinue = false; // enchaînement automatique activé par l'utilisateur
+  let avancementAutomatiqueBible_ = false; // usage interne, le temps du chargement du chapitre suivant
+
+  function toggleLectureBible() {
+    if (!("speechSynthesis" in window)) {
+      alert("La lecture à voix haute n'est pas prise en charge par ce navigateur.");
+      return;
+    }
+    const synth = window.speechSynthesis;
+    if (synth.speaking && !synth.paused) { synth.pause(); lectureBibleEnCours = false; mettreAJourBoutonLectureBible_(); return; }
+    if (synth.paused) { synth.resume(); lectureBibleEnCours = true; mettreAJourBoutonLectureBible_(); return; }
+    if (!versetsBibleActuels.length) return;
+    lectureBibleContinue = true;
+    lireChapitreBibleActuel_();
+  }
+
+  function lireChapitreBibleActuel_() {
+    const synth = window.speechSynthesis;
+    const texte = versetsBibleActuels.map(function (v) { return v.texte; }).join(" ");
+    const utterance = new SpeechSynthesisUtterance(texte);
+    utterance.lang = langueBibleActuelle === "en" ? "en-US" : "fr-FR";
+    utterance.rate = 0.95;
+    utterance.onend = function () {
+      lectureBibleEnCours = false;
+      if (lectureBibleContinue) {
+        avancementAutomatiqueBible_ = true;
+        chapitreBibleSuivant();
+      } else {
+        mettreAJourBoutonLectureBible_();
+      }
+    };
+    utterance.onerror = function () { lectureBibleEnCours = false; lectureBibleContinue = false; mettreAJourBoutonLectureBible_(); };
+    synth.speak(utterance);
+    lectureBibleEnCours = true;
+    mettreAJourBoutonLectureBible_();
+  }
+
+  // Arrêt volontaire (bouton, changement de langue, navigation manuelle, changement d'onglet)
+  // — coupe aussi bien la lecture en cours que l'intention d'enchaîner sur la suite.
+  function arreterLectureBible() {
+    lectureBibleContinue = false;
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    lectureBibleEnCours = false;
+    mettreAJourBoutonLectureBible_();
+  }
+
+  function mettreAJourBoutonLectureBible_() {
+    const btn = document.getElementById("btnEcouterBible");
+    if (btn) btn.textContent = lectureBibleEnCours ? "⏸️ Pause" : "🔊 Écouter";
   }
 
   function chapitreBibleSuivant() {
@@ -3373,8 +3537,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   let nomPlaylistCourante = "";
 
   function chargerPlaylists() {
-    document.getElementById("lecteurVideoZone").style.display = "none";
-    document.getElementById("lecteurVideoZone").innerHTML = "";
+    // Le lecteur vidéo n'est plus réinitialisé ici : il reste visible et continue de jouer
+    // même en changeant de rubrique — voir fermerLecteurVideo_() pour l'arrêt volontaire.
     document.getElementById("listeVideosPlaylist").style.display = "none";
     document.getElementById("rechercheVideos").value = "";
     Promise.all([appelServeur("getPlaylists"), appelServeur("getVideos")]).then(function (resultats) {
