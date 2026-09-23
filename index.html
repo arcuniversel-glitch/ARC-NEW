@@ -238,7 +238,38 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <input id="loginMotDePasse" type="password" placeholder="Votre mot de passe">
         <div id="erreurConnexion" class="error" style="display:none;"></div>
         <button onclick="seConnecter()">Se connecter</button>
-        <button class="ghost-link" onclick="afficherEcran('accueil')">← Retour</button>
+        <button class="ghost-link" onclick="afficherEcranMotDePasseOublie()">Mot de passe oublié ?</button>
+        <button class="ghost-link" onclick="demarrerInscription()">Pas encore de compte ? Créer un compte</button>
+        <button class="ghost-link" onclick="retourVersVisiteur_()">← Retour</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MOT DE PASSE OUBLIÉ ===== -->
+  <div id="ecranMotDePasseOublie" class="center-screen auth-screen">
+    <div class="wrap">
+      <div class="card" id="mdpOublieEtapeTelephone">
+        <h1 class="titre left">Mot de passe oublié</h1>
+        <p class="subtitle left">Entrez votre numéro de téléphone. Si un e-mail est associé à votre compte, un code de réinitialisation vous y sera envoyé.</p>
+        <label class="field-label">Téléphone</label>
+        <input id="mdpOublieTelephone" type="tel" placeholder="Le numéro utilisé pour vous connecter">
+        <div id="erreurMdpOublieTelephone" class="error" style="display:none;"></div>
+        <button onclick="demarrerReinitialisation()">Envoyer le code</button>
+        <button class="ghost-link" onclick="afficherEcran('connexionForm')">← Retour</button>
+      </div>
+
+      <div class="card" id="mdpOublieEtapeCode" style="display:none;">
+        <h1 class="titre left">Entrez le code reçu</h1>
+        <p class="subtitle left">Vérifiez votre boîte e-mail (et vos indésirables). Le code est valable 30 minutes.</p>
+        <label class="field-label">Code reçu par e-mail</label>
+        <input id="mdpOublieCode" type="text" inputmode="numeric" placeholder="Ex : 123456" style="text-align:center;letter-spacing:3px;font-weight:800;">
+        <label class="field-label">Nouveau mot de passe</label>
+        <input id="mdpOublieNouveauMdp" type="password" placeholder="Au moins 4 caractères">
+        <label class="field-label">Confirmer le mot de passe</label>
+        <input id="mdpOublieConfirmation" type="password" placeholder="Retapez le mot de passe">
+        <div id="erreurMdpOublieCode" class="error" style="display:none;"></div>
+        <button onclick="validerReinitialisation()">Réinitialiser mon mot de passe</button>
+        <button class="ghost-link" onclick="afficherEcran('connexionForm')">← Retour</button>
       </div>
     </div>
   </div>
@@ -281,7 +312,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <input id="codeInscription" type="text" autocomplete="off" placeholder="Ex : ARC-AB12CD34" style="text-transform:uppercase;letter-spacing:1.5px;font-weight:800;text-align:center;">
         <div id="erreurCodeInscription" class="error" style="display:none;"></div>
         <button onclick="validerCodeInscription()">Vérifier le code</button>
-        <button class="ghost-link" onclick="afficherEcran('accueil')">← Retour</button>
+        <button class="ghost-link" onclick="retourVersVisiteur_()">← Retour</button>
       </div>
     </div>
   </div>
@@ -319,7 +350,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
         <div id="erreurInscription1" class="error" style="display:none;"></div>
         <button onclick="allerInscriptionEtape2()">Continuer</button>
-        <button class="ghost-link" onclick="afficherEcran('accueil')">← Retour</button>
+        <button class="ghost-link" onclick="retourVersVisiteur_()">← Retour</button>
       </div>
     </div>
   </div>
@@ -330,9 +361,9 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div class="card">
         <p class="field-label" style="margin-bottom:14px;">Étape 2 sur 2 — Vie d'église, contact & sécurité</p>
         <h1 class="titre left">Presque terminé</h1>
-        <p class="subtitle left">Dernières informations avant de finaliser votre inscription. Tous les champs sont obligatoires, sauf l'e-mail.</p>
+        <p class="subtitle left">Dernières informations avant de finaliser votre inscription. Tous les champs sont obligatoires.</p>
 
-        <label class="field-label">Ma photo</label>
+        <label class="field-label">Ma photo *</label>
         <div class="photo-upload-preview" id="insPhotoPreview">👤</div>
         <label class="file-btn-label" style="display:block; text-align:center; margin-bottom:14px;">
           Choisir une photo
@@ -359,8 +390,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <input id="insAdresse" type="text" placeholder="Quartier, ville">
         <label class="field-label">Téléphone *</label>
         <input id="insTelephone" type="tel" placeholder="Ce numéro servira à vous connecter">
-        <label class="field-label">Email (facultatif)</label>
-        <input id="insEmail" type="email" placeholder="Email">
+        <label class="field-label">Email *</label>
+        <input id="insEmail" type="email" placeholder="Email — utile pour réinitialiser votre mot de passe">
         <label class="field-label">Créer un mot de passe *</label>
         <input id="insMotDePasse" type="password" placeholder="Au moins 4 caractères">
         <label class="field-label">Confirmer le mot de passe *</label>
@@ -587,7 +618,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div class="card">
         <p class="subtitle left">Vous avez le statut Auteur : vous pouvez soumettre un document, un audio ou une vidéo dont vous êtes l'auteur. Après vérification, l'administration valide ou rejette votre soumission ; si validée, des frais de publication de <strong>2000 FCFA</strong> vous seront demandés avant la mise en ligne.</p>
         <label class="field-label">Type de contenu</label>
-        <select id="subType">
+        <select id="subType" onchange="document.getElementById('subParolesZone').style.display = (this.value === 'Audio' || this.value === 'Video') ? 'block' : 'none';">
           <option value="Document">Document</option>
           <option value="Audio">Audio</option>
           <option value="Video">Vidéo</option>
@@ -606,6 +637,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <label class="field-label">Couverture (facultative)</label>
         <div id="subCoverPreviewZone" style="display:none;margin-bottom:10px;"><img id="subCoverPreviewImg" style="width:100px;height:60px;object-fit:cover;border-radius:10px;"></div>
         <label class="file-btn-label">🖼️ Choisir une image<input type="file" id="subCoverFichier" accept="image/*" style="display:none;" onchange="previsualiserCoverGenerique(event,'subCoverPreviewImg','subCoverPreviewZone','soumission')"></label>
+        <div id="subParolesZone" style="display:none;">
+          <label class="field-label" style="margin-top:14px;">Paroles (facultatif — pour un audio ou une vidéo musicale)</label>
+          <p class="subtitle left" style="margin:-4px 0 8px;font-size:11px;">Écrivez-les directement, ou importez un fichier (PDF...) — l'un ou l'autre, ou les deux.</p>
+          <textarea id="subParoles" rows="4" placeholder="Paroles…"></textarea>
+          <label class="file-btn-label" style="margin-top:8px;">📎 Importer un fichier (PDF...)<input type="file" id="subParolesFichier" accept=".pdf,.doc,.docx,.txt" style="display:none;" onchange="document.getElementById('subParolesFichierNom').textContent = this.files[0] ? '📎 ' + this.files[0].name : '';"></label>
+          <div id="subParolesFichierNom" class="item-desc" style="margin-top:4px;"></div>
+        </div>
         <div id="erreurSoumission" class="error" style="display:none;margin-top:10px;"></div>
         <button class="flame full-mt" onclick="envoyerSoumissionClick()">Soumettre pour vérification</button>
       </div>
@@ -916,8 +954,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           </div>
           <label class="field-label">Couverture (facultative)</label>
           <div id="recCoverPreviewZone" style="display:none;margin-bottom:10px;"><img id="recCoverPreviewImg" style="width:80px;height:80px;object-fit:cover;border-radius:10px;"></div>
-          <label class="file-btn-label">🖼️ Choisir une image<input type="file" id="recCoverFichier" accept="image/*" style="display:none;" onchange="previsualiserCoverGenerique(event,'recCoverPreviewImg','recCoverPreviewZone','recCoverBase64')"></label>
-          <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">
+          <label class="file-btn-label">🖼️ Choisir une image<input type="file" id="recCoverFichier" accept="image/*" style="display:none;" onchange="previsualiserCoverGenerique(event,'recCoverPreviewImg','recCoverPreviewZone','audio')"></label>
+          <label class="field-label" style="margin-top:14px;">Paroles (facultatif)</label>
+          <p class="subtitle left" style="margin:-4px 0 8px;font-size:11px;">Écrivez-les directement, ou importez un fichier (PDF...) — l'un ou l'autre, ou les deux.</p>
+          <textarea id="recParoles" rows="4" placeholder="Paroles…"></textarea>
+          <label class="file-btn-label" style="margin-top:8px;">📎 Importer un fichier (PDF...)<input type="file" id="recParolesFichier" accept=".pdf,.doc,.docx,.txt" style="display:none;" onchange="document.getElementById('recParolesFichierNom').textContent = this.files[0] ? '📎 ' + this.files[0].name : '';"></label>
+          <div id="recParolesFichierNom" class="item-desc" style="margin-top:4px;"></div>
+          <p class="subtitle left" style="margin:10px 0 0;font-size:11px;">
             Uploadez d'abord le fichier sur Google Drive, clic droit > Partager > Copier le lien.
             <strong>Important</strong> : décochez "Les lecteurs peuvent télécharger, imprimer et copier" dans les options de partage.
           </p>
@@ -995,7 +1038,12 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <label class="field-label">Couverture (facultative)</label>
           <div id="vidCoverPreviewZone" style="display:none;margin-bottom:10px;"><img id="vidCoverPreviewImg" style="width:100px;height:60px;object-fit:cover;border-radius:10px;"></div>
           <label class="file-btn-label">🖼️ Choisir une image<input type="file" id="vidCoverFichier" accept="image/*" style="display:none;" onchange="previsualiserCoverGenerique(event,'vidCoverPreviewImg','vidCoverPreviewZone','video')"></label>
-          <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">Comme les Audios : n'activez pas la restriction "empêcher le téléchargement" sur ce fichier dans Google Drive.</p>
+          <label class="field-label" style="margin-top:14px;">Paroles (facultatif)</label>
+          <p class="subtitle left" style="margin:-4px 0 8px;font-size:11px;">Écrivez-les directement, ou importez un fichier (PDF...) — l'un ou l'autre, ou les deux.</p>
+          <textarea id="vidParoles" rows="4" placeholder="Paroles…"></textarea>
+          <label class="file-btn-label" style="margin-top:8px;">📎 Importer un fichier (PDF...)<input type="file" id="vidParolesFichier" accept=".pdf,.doc,.docx,.txt" style="display:none;" onchange="document.getElementById('vidParolesFichierNom').textContent = this.files[0] ? '📎 ' + this.files[0].name : '';"></label>
+          <div id="vidParolesFichierNom" class="item-desc" style="margin-top:4px;"></div>
+          <p class="subtitle left" style="margin:10px 0 0;font-size:11px;">Comme les Audios : n'activez pas la restriction "empêcher le téléchargement" sur ce fichier dans Google Drive.</p>
           <div id="erreurVideoPlateforme" class="error" style="display:none;"></div>
           <button onclick="creerVideoPlateformeAdmin()">Ajouter</button>
         </div>
@@ -1118,7 +1166,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // ==================== ADRESSE DE L'API (backend Apps Script) ====================
   // Collez ici l'URL de déploiement de votre Apps Script (celle qui se termine par /exec).
   // C'est la SEULE ligne à modifier après avoir déployé Code.gs comme API.
-  const API_URL = "https://script.google.com/macros/s/AKfycbyBOvScNdIsYbJlVfduCaSAkxC_-juQo-NjWqmWlE7ux27pBsBqQwxyow9DAdjEtT4o/exec";
+  const API_URL = "COLLEZ_ICI_VOTRE_URL_APPS_SCRIPT_SE_TERMINANT_PAR_/exec";
 
   // ==================== APPEL SERVEUR (via l'API Apps Script) ====================
   // Remplace l'ancien google.script.run : la page est maintenant hébergée séparément
@@ -1153,6 +1201,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     appelServeur("getConfig").then(appliquerBranding).catch(function (err) { console.error(err); });
     if (restaurerSessionSiRecente_()) {
       afficherDashboard();
+    } else {
+      entrerModeVisiteur();
     }
   });
 
@@ -1376,7 +1426,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       document.getElementById("ecranDashboard").style.display = "block";
       document.getElementById("topbar").style.display = "flex";
     } else {
-      afficherEcran("accueil");
+      retourVersVisiteur_();
     }
   }
 
@@ -1459,6 +1509,58 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     });
   }
 
+  // --- Mot de passe oublié ---
+  let telephoneReinitialisation = null;
+
+  function afficherEcranMotDePasseOublie() {
+    document.getElementById("mdpOublieEtapeTelephone").style.display = "block";
+    document.getElementById("mdpOublieEtapeCode").style.display = "none";
+    document.getElementById("mdpOublieTelephone").value = "";
+    document.getElementById("erreurMdpOublieTelephone").style.display = "none";
+    afficherEcran("motDePasseOublie");
+  }
+
+  function demarrerReinitialisation() {
+    const telephone = document.getElementById("mdpOublieTelephone").value.trim();
+    const err = document.getElementById("erreurMdpOublieTelephone");
+    err.style.display = "none";
+    if (!telephone) { err.textContent = "Le téléphone est requis."; err.style.display = "block"; return; }
+    appelServeur("demanderReinitialisationMotDePasse", telephone).then(function (res) {
+      telephoneReinitialisation = telephone;
+      document.getElementById("mdpOublieEtapeTelephone").style.display = "none";
+      document.getElementById("mdpOublieEtapeCode").style.display = "block";
+      document.getElementById("mdpOublieCode").value = "";
+      document.getElementById("mdpOublieNouveauMdp").value = "";
+      document.getElementById("mdpOublieConfirmation").value = "";
+      document.getElementById("erreurMdpOublieCode").style.display = "none";
+      // Le message est volontairement générique (voir backend) — on l'affiche tel quel.
+      alert(res.message);
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
+  function validerReinitialisation() {
+    const code = document.getElementById("mdpOublieCode").value.trim();
+    const nouveauMdp = document.getElementById("mdpOublieNouveauMdp").value;
+    const confirmation = document.getElementById("mdpOublieConfirmation").value;
+    const err = document.getElementById("erreurMdpOublieCode");
+    err.style.display = "none";
+    if (!code) { err.textContent = "Le code est requis."; err.style.display = "block"; return; }
+    if (!nouveauMdp || nouveauMdp.length < 4) { err.textContent = "Le mot de passe doit contenir au moins 4 caractères."; err.style.display = "block"; return; }
+    if (nouveauMdp !== confirmation) { err.textContent = "Les mots de passe ne correspondent pas."; err.style.display = "block"; return; }
+    appelServeur("reinitialiserMotDePasseAvecCode", telephoneReinitialisation, code, nouveauMdp).then(function (res) {
+      if (!res.succes) { err.textContent = res.message; err.style.display = "block"; return; }
+      alert("✓ Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter.");
+      document.getElementById("loginTelephone").value = telephoneReinitialisation;
+      afficherEcran("connexionForm");
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
+  }
+
   // ==================== INSCRIPTION (2 ETAPES) ====================
   function construireSelecteursNaissance() {
     const selectJour = document.getElementById("insNaissanceJour");
@@ -1535,10 +1637,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const eglise = document.getElementById("insEglise").value.trim();
     const roleEglise = document.getElementById("insRoleEglise").value.trim();
     const adresse = document.getElementById("insAdresse").value.trim();
+    const email = document.getElementById("insEmail").value.trim();
     const err = document.getElementById("erreurInscription2");
     err.style.display = "none";
 
-    if (!profession || !eglise || !roleEglise || !adresse) { err.textContent = "Tous les champs sont obligatoires (sauf l'e-mail)."; err.style.display = "block"; return; }
+    if (!profession || !eglise || !roleEglise || !adresse || !email) { err.textContent = "Tous les champs sont obligatoires."; err.style.display = "block"; return; }
+    if (!photoInscriptionBase64) { err.textContent = "Une photo est requise pour finaliser l'inscription."; err.style.display = "block"; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = "L'adresse e-mail n'est pas valide."; err.style.display = "block"; return; }
     if (!telephone) { err.textContent = "Le téléphone est requis."; err.style.display = "block"; return; }
     if (!motDePasse || motDePasse.length < 4) { err.textContent = "Le mot de passe doit contenir au moins 4 caractères."; err.style.display = "block"; return; }
     if (motDePasse !== confirmation) { err.textContent = "Les mots de passe ne correspondent pas."; err.style.display = "block"; return; }
@@ -1560,7 +1665,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       roleEglise: roleEglise,
       adresseActuelle: adresse,
       telephone: telephone,
-      email: document.getElementById("insEmail").value.trim(),
+      email: email,
       photoBase64: photoInscriptionBase64,
       motDePasse: motDePasse,
       codeAccesInscription: codeInvitationInscription
@@ -1639,6 +1744,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("topbar").style.display = "flex";
     document.getElementById("btnDeconnexion").style.display = "inline-flex";
     document.getElementById("btnDeconnexion").textContent = "Se déconnecter";
+    document.getElementById("btnDeconnexion").onclick = quitterSession;
+    document.getElementById("topbarSub").textContent = "Espace membres";
     document.getElementById("bonjourNom").textContent = "Bienvenue " + membreCourant.prenom + " — " + (membreCourant.statut || "Actif") + " 👋";
 
     construireTabs();
@@ -1658,13 +1765,29 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("topbar").style.display = "flex";
     document.getElementById("topbarSub").textContent = "Espace visiteur";
     document.getElementById("btnDeconnexion").style.display = "inline-flex";
-    document.getElementById("btnDeconnexion").textContent = "Quitter";
+    document.getElementById("btnDeconnexion").textContent = "Se connecter";
+    document.getElementById("btnDeconnexion").onclick = quitterVisiteurEtSeConnecter;
     document.getElementById("bonjourNom").textContent = "Bienvenue 👋";
     construireTabs();
     ongletActuel = null;
     afficherOnglet(ongletInitial || "prieres");
     chargerCompteursEtBadges();
     chargerEtAfficherSlider();
+  }
+
+  // Quitte proprement l'affichage "tableau de bord" (visiteur) pour montrer l'écran de
+  // connexion — le mode visiteur restant en arrière-plan comme option de repli via "Retour".
+  function quitterVisiteurEtSeConnecter() {
+    document.getElementById("ecranDashboard").style.display = "none";
+    document.getElementById("topbar").style.display = "none";
+    afficherEcran("connexionForm");
+  }
+
+  // Utilisé par les écrans de connexion/inscription pour revenir à l'espace visiteur
+  // (qui est désormais l'écran d'ouverture de l'application) plutôt qu'à un écran d'accueil
+  // séparé.
+  function retourVersVisiteur_() {
+    entrerModeVisiteur();
   }
 
   // ==================== NOTIFICATIONS "NOUVEAU" (points rouges sur les onglets) ====================
@@ -1738,16 +1861,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function quitterSession() {
-    if (!confirm(modeVisiteur ? "Quitter l'espace visiteur ?" : "Voulez-vous vraiment vous déconnecter ?")) return;
+    if (!confirm("Voulez-vous vraiment vous déconnecter ?")) return;
     effacerSession_();
     membreCourant = null;
-    modeVisiteur = false;
     historiqueOnglets = [];
     ongletActuel = null;
     document.getElementById("ecranDashboard").style.display = "none";
     document.getElementById("topbar").style.display = "none";
     masquerSliderAffiches();
-    afficherEcran("accueil");
+    entrerModeVisiteur();
   }
 
   // ==================== TRADUCTION (widget Google Translate gratuit) ====================
@@ -2377,7 +2499,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       const pillVisibilite = a.Visibilite === "Membres" ? '<span class="vis-pill">Membres</span>' : '';
       const badgePremium = a.Type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : '';
       const cover = a.CoverBase64 ? '<img class="lecteur-cover" src="data:image/jpeg;base64,' + a.CoverBase64 + '">' : '<div class="lecteur-cover" style="display:flex;align-items:center;justify-content:center;">🎧</div>';
-      const boutonLyrics = (a.Paroles && a.Paroles.trim())
+      const boutonLyrics = (a.Paroles && a.Paroles.trim()) || a.ParolesFichierLien
         ? '<button class="secondary small" style="width:auto;margin-top:6px;" onclick="event.stopPropagation();afficherParolesAudioClick_(' + i + ')">📜 Lyrics</button>' : '';
       return '<div class="contenu-item" style="display:flex;gap:12px;align-items:center;cursor:pointer;" onclick="jouerAudio(' + i + ')">' +
         cover +
@@ -2393,7 +2515,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function afficherParolesAudioClick_(index) {
     const a = listeAudioActuelle[index];
-    if (a) afficherParolesModal_(a.Titre, a.Paroles);
+    if (a) afficherParolesModal_(a.Titre, a.Paroles, a.ParolesFichierLien, a.ParolesFichierNom);
   }
 
   function filtrerAudios() {
@@ -2637,6 +2759,17 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     compteur.style.color = nbMots > 200 ? "#d71920" : "";
   }
 
+  // Lit un fichier quelconque (PDF, etc.) choisi dans un <input type="file"> et renvoie son
+  // contenu en base64 avec son nom et son type — callback(base64, nom, mimeType), ou
+  // callback(null, null, null) si aucun fichier n'a été choisi (champ facultatif).
+  function lireFichierGenerique_(inputId, callback) {
+    const fichier = document.getElementById(inputId).files[0];
+    if (!fichier) { callback(null, null, null); return; }
+    const lecteur = new FileReader();
+    lecteur.onload = function () { callback(lecteur.result.split(",")[1], fichier.name, fichier.type || "application/octet-stream"); };
+    lecteur.readAsDataURL(fichier);
+  }
+
   function envoyerSoumissionClick() {
     const err = document.getElementById("erreurSoumission");
     err.style.display = "none";
@@ -2647,6 +2780,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const prix = document.getElementById("subPrix").value || 0;
     const email = document.getElementById("subEmail").value.trim();
     const fichier = document.getElementById("subFichier").files[0];
+    const paroles = document.getElementById("subParoles").value.trim();
 
     if (!titre) { err.textContent = "Le titre est obligatoire."; err.style.display = "block"; return; }
     if (nbMots > 200) { err.textContent = "La description dépasse 200 mots."; err.style.display = "block"; return; }
@@ -2656,23 +2790,28 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const lecteur = new FileReader();
     lecteur.onload = function () {
       const base64 = lecteur.result.split(",")[1];
-      appelServeur("soumettreContenu", membreCourant.code, type, titre, description, prix, email, base64, fichier.name, fichier.type || "application/octet-stream", couverturesEnCours.soumission || "")
-        .then(function () {
-          alert("✓ Votre soumission a été envoyée pour vérification.");
-          document.getElementById("subTitre").value = "";
-          document.getElementById("subDescription").value = "";
-          document.getElementById("subPrix").value = "0";
-          document.getElementById("subEmail").value = "";
-          document.getElementById("subFichier").value = "";
-          document.getElementById("subCoverPreviewZone").style.display = "none";
-          document.getElementById("subCoverFichier").value = "";
-          delete couverturesEnCours.soumission;
-          compterMotsSoumission();
-          chargerMesSoumissions();
-        }).catch(function (e) {
-          err.textContent = "Erreur : " + e.message;
-          err.style.display = "block";
-        });
+      lireFichierGenerique_("subParolesFichier", function (parolesBase64, parolesNom, parolesMime) {
+        appelServeur("soumettreContenu", membreCourant.code, type, titre, description, prix, email, base64, fichier.name, fichier.type || "application/octet-stream", couverturesEnCours.soumission || "", paroles, parolesBase64, parolesNom, parolesMime)
+          .then(function () {
+            alert("✓ Votre soumission a été envoyée pour vérification.");
+            document.getElementById("subTitre").value = "";
+            document.getElementById("subDescription").value = "";
+            document.getElementById("subPrix").value = "0";
+            document.getElementById("subEmail").value = "";
+            document.getElementById("subFichier").value = "";
+            document.getElementById("subCoverPreviewZone").style.display = "none";
+            document.getElementById("subCoverFichier").value = "";
+            document.getElementById("subParoles").value = "";
+            document.getElementById("subParolesFichier").value = "";
+            document.getElementById("subParolesFichierNom").textContent = "";
+            delete couverturesEnCours.soumission;
+            compterMotsSoumission();
+            chargerMesSoumissions();
+          }).catch(function (e) {
+            err.textContent = "Erreur : " + e.message;
+            err.style.display = "block";
+          });
+      });
     };
     lecteur.readAsDataURL(fichier);
   }
@@ -3251,7 +3390,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // vidéo unifié (celui utilisé pour les Émissions), puis lance la lecture.
   function jouerVideoDepuisAccueil_(index) {
     videosPlaylistCourante = videosPlateformeCache.map(function (v) {
-      return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout, paroles: v.Paroles };
+      return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout, paroles: v.Paroles, parolesFichierLien: v.ParolesFichierLien, parolesFichierNom: v.ParolesFichierNom };
     });
     document.getElementById("videosSous-accueil").scrollIntoView({ behavior: "smooth", block: "start" });
     lireVideoUnifiee(index);
@@ -3305,7 +3444,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         return { source: "youtube", videoId: v.videoId, titre: v.titre, miniature: v.miniature, datePublication: v.datePublication };
       });
       const videosPlateforme = videosPlateformeCache.filter(function (v) { return v.Categorie === nom; }).map(function (v) {
-        return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout, paroles: v.Paroles };
+        return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout, paroles: v.Paroles, parolesFichierLien: v.ParolesFichierLien, parolesFichierNom: v.ParolesFichierNom };
       });
       videosPlaylistCourante = videosYoutube.concat(videosPlateforme);
       afficherVideosPlaylist(videosPlaylistCourante, nom);
@@ -3330,7 +3469,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       }
       const badgePremium = v.type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : '';
       const miniature = v.cover ? 'data:image/jpeg;base64,' + v.cover : '';
-      const boutonLyrics = (v.paroles && v.paroles.trim())
+      const boutonLyrics = (v.paroles && v.paroles.trim()) || v.parolesFichierLien
         ? '<button class="secondary small" style="width:auto;margin-top:4px;" onclick="event.stopPropagation();afficherParolesVideoClick_(' + i + ')">📜 Lyrics</button>' : '';
       return '<div class="video-item" onclick="lireVideoUnifiee(' + i + ')">' +
         (miniature ? '<img class="video-thumb" src="' + miniature + '" alt="">' : '<div class="video-thumb" style="display:flex;align-items:center;justify-content:center;">🎬</div>') +
@@ -3344,7 +3483,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function afficherParolesVideoClick_(index) {
     const v = videosPlaylistCourante[index];
-    if (v) afficherParolesModal_(v.titre, v.paroles);
+    if (v) afficherParolesModal_(v.titre, v.paroles, v.parolesFichierLien, v.parolesFichierNom);
   }
 
   function chargerPlaylistsEtRevenir() {
@@ -3584,9 +3723,75 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         '</div></div>' +
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
         actionsCompte + boutonAuteur +
+        '<button class="secondary small" onclick="ouvrirEditionBadge_(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">🪪 Badge</button>' +
         '<button class="danger-outline small" onclick="supprimerMembreClick(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">Retirer</button>' +
         '</div></div>';
     }).join("");
+  }
+
+  // --- Édition du badge d'un membre (Super Admin uniquement) ---
+  let badgeEditionCode = null;
+  let badgeEditionNouvellePhoto = null;
+
+  function ouvrirEditionBadge_(code, nomAffiche) {
+    badgeEditionCode = code;
+    badgeEditionNouvellePhoto = null;
+    const overlay = document.createElement("div");
+    overlay.className = "badge-edition-overlay";
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(10,20,40,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;";
+    overlay.onclick = function (e) { if (e.target === overlay) overlay.remove(); };
+    const box = document.createElement("div");
+    box.style.cssText = "background:#fff;border-radius:18px;max-width:400px;width:100%;max-height:85vh;overflow-y:auto;padding:20px;";
+    box.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:14px;">' +
+      '<div class="item-nom">🪪 Badge de ' + escapeHtml(nomAffiche) + '</div>' +
+      '<button class="secondary small" style="width:auto;flex-shrink:0;" onclick="this.closest(\'.badge-edition-overlay\').remove()">✕</button></div>' +
+      '<div id="badgeEditionPreviewZone" style="width:100px;height:100px;border-radius:50%;overflow:hidden;background:#eef3f9;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:32px;">👤</div>' +
+      '<label class="file-btn-label" style="display:block;text-align:center;">📷 Changer la photo<input type="file" id="badgeEditionFichier" accept="image/*" style="display:none;" onchange="previsualiserPhotoBadgeEdition_(event)"></label>' +
+      '<label class="field-label" style="margin-top:14px;">Nom</label>' +
+      '<input id="badgeEditionNom" type="text">' +
+      '<label class="field-label">Prénom</label>' +
+      '<input id="badgeEditionPrenom" type="text">' +
+      '<label class="field-label">Rôle dans l\'église</label>' +
+      '<input id="badgeEditionRole" type="text">' +
+      '<div id="erreurBadgeEdition" class="error" style="display:none;margin-top:10px;"></div>' +
+      '<button class="flame full-mt" onclick="enregistrerEditionBadge_()">Enregistrer</button>';
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    appelServeur("getMembreDetailAdmin", membreCourant.code, code).then(function (res) {
+      if (!res.succes) return;
+      document.getElementById("badgeEditionNom").value = res.nom || "";
+      document.getElementById("badgeEditionPrenom").value = res.prenom || "";
+      document.getElementById("badgeEditionRole").value = res.roleEglise || "";
+      if (res.photoBase64) {
+        document.getElementById("badgeEditionPreviewZone").innerHTML = '<img src="data:image/jpeg;base64,' + res.photoBase64 + '" style="width:100%;height:100%;object-fit:cover;">';
+      }
+    });
+  }
+
+  function previsualiserPhotoBadgeEdition_(event) {
+    const fichier = event.target.files[0];
+    if (!fichier) return;
+    traiterImageCarree(fichier, 400, function (base64) {
+      badgeEditionNouvellePhoto = base64;
+      document.getElementById("badgeEditionPreviewZone").innerHTML = '<img src="data:image/jpeg;base64,' + base64 + '" style="width:100%;height:100%;object-fit:cover;">';
+    });
+  }
+
+  function enregistrerEditionBadge_() {
+    const nom = document.getElementById("badgeEditionNom").value.trim();
+    const prenom = document.getElementById("badgeEditionPrenom").value.trim();
+    const role = document.getElementById("badgeEditionRole").value.trim();
+    const err = document.getElementById("erreurBadgeEdition");
+    err.style.display = "none";
+    appelServeur("modifierInfosBadgeMembre", membreCourant.code, badgeEditionCode, badgeEditionNouvellePhoto || "", nom, prenom, role).then(function () {
+      document.querySelector(".badge-edition-overlay").remove();
+      appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
+    }).catch(function (e) {
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
   }
 
   function changerRole(code, nouveauRole) {
@@ -4021,20 +4226,26 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     err.style.display = "none";
     if (!titre || !lien) { err.textContent = "Le titre et le lien Google Drive sont requis."; err.style.display = "block"; return; }
     if (type === "Payant" && (!prix || Number(prix) <= 0)) { err.textContent = "Indiquez un prix pour un audio payant."; err.style.display = "block"; return; }
-    appelServeur("ajouterEnregistrement", membreCourant.code, titre, description, lien, visibilite, categorie, type, prix, auteur, emailAuteur, couverturesEnCours.audio || "").then(function () {
-      document.getElementById("recTitre").value = "";
-      document.getElementById("recAuteur").value = "";
-      document.getElementById("recEmailAuteur").value = "";
-      document.getElementById("recDescription").value = "";
-      document.getElementById("recLienDrive").value = "";
-      document.getElementById("recPrix").value = "";
-      document.getElementById("recCoverPreviewZone").style.display = "none";
-      document.getElementById("recCoverFichier").value = "";
-      delete couverturesEnCours.audio;
-      appelServeur("getEnregistrements").then(afficherEnregistrementsAdmin);
-    }).catch(function (e) {
-      err.textContent = "Erreur : " + e.message;
-      err.style.display = "block";
+    const paroles = document.getElementById("recParoles").value.trim();
+    lireFichierGenerique_("recParolesFichier", function (parolesBase64, parolesNom, parolesMime) {
+      appelServeur("ajouterEnregistrement", membreCourant.code, titre, description, lien, visibilite, categorie, type, prix, auteur, emailAuteur, couverturesEnCours.audio || "", paroles, parolesBase64, parolesNom, parolesMime).then(function () {
+        document.getElementById("recTitre").value = "";
+        document.getElementById("recAuteur").value = "";
+        document.getElementById("recEmailAuteur").value = "";
+        document.getElementById("recDescription").value = "";
+        document.getElementById("recLienDrive").value = "";
+        document.getElementById("recPrix").value = "";
+        document.getElementById("recCoverPreviewZone").style.display = "none";
+        document.getElementById("recCoverFichier").value = "";
+        document.getElementById("recParoles").value = "";
+        document.getElementById("recParolesFichier").value = "";
+        document.getElementById("recParolesFichierNom").textContent = "";
+        delete couverturesEnCours.audio;
+        appelServeur("getEnregistrements").then(afficherEnregistrementsAdmin);
+      }).catch(function (e) {
+        err.textContent = "Erreur : " + e.message;
+        err.style.display = "block";
+      });
     });
   }
 
@@ -4191,20 +4402,26 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     err.style.display = "none";
     if (!titre || !lien) { err.textContent = "Le titre et le lien Google Drive sont requis."; err.style.display = "block"; return; }
     if (type === "Payant" && (!prix || Number(prix) <= 0)) { err.textContent = "Indiquez un prix pour une vidéo payante."; err.style.display = "block"; return; }
-    appelServeur("ajouterVideo", membreCourant.code, titre, description, lien, type, prix, auteur, emailAuteur, couverturesEnCours.video || "", categorie).then(function () {
-      document.getElementById("vidTitre").value = "";
-      document.getElementById("vidAuteur").value = "";
-      document.getElementById("vidEmailAuteur").value = "";
-      document.getElementById("vidDescription").value = "";
-      document.getElementById("vidLienDrive").value = "";
-      document.getElementById("vidPrix").value = "";
-      document.getElementById("vidCoverPreviewZone").style.display = "none";
-      document.getElementById("vidCoverFichier").value = "";
-      delete couverturesEnCours.video;
-      appelServeur("getVideos").then(afficherVideosPlateformeAdmin);
-    }).catch(function (e) {
-      err.textContent = "Erreur : " + e.message;
-      err.style.display = "block";
+    const paroles = document.getElementById("vidParoles").value.trim();
+    lireFichierGenerique_("vidParolesFichier", function (parolesBase64, parolesNom, parolesMime) {
+      appelServeur("ajouterVideo", membreCourant.code, titre, description, lien, type, prix, auteur, emailAuteur, couverturesEnCours.video || "", categorie, paroles, parolesBase64, parolesNom, parolesMime).then(function () {
+        document.getElementById("vidTitre").value = "";
+        document.getElementById("vidAuteur").value = "";
+        document.getElementById("vidEmailAuteur").value = "";
+        document.getElementById("vidDescription").value = "";
+        document.getElementById("vidLienDrive").value = "";
+        document.getElementById("vidPrix").value = "";
+        document.getElementById("vidCoverPreviewZone").style.display = "none";
+        document.getElementById("vidCoverFichier").value = "";
+        document.getElementById("vidParoles").value = "";
+        document.getElementById("vidParolesFichier").value = "";
+        document.getElementById("vidParolesFichierNom").textContent = "";
+        delete couverturesEnCours.video;
+        appelServeur("getVideos").then(afficherVideosPlateformeAdmin);
+      }).catch(function (e) {
+        err.textContent = "Erreur : " + e.message;
+        err.style.display = "block";
+      });
     });
   }
 
@@ -4675,7 +4892,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.body.appendChild(overlay);
   }
 
-  function afficherParolesModal_(titre, paroles) {
+  function afficherParolesModal_(titre, paroles, fichierLien, fichierNom) {
     const ancien = document.querySelector(".paroles-overlay");
     if (ancien) ancien.remove();
     const overlay = document.createElement("div");
@@ -4684,10 +4901,14 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     overlay.onclick = function (e) { if (e.target === overlay) overlay.remove(); };
     const box = document.createElement("div");
     box.style.cssText = "background:#fff;border-radius:18px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;padding:20px;";
+    const corpsTexte = (paroles && paroles.trim()) ? '<p style="font-size:13px;line-height:1.7;white-space:pre-wrap;">' + escapeHtml(paroles) + '</p>' : '';
+    const corpsFichier = fichierLien
+      ? '<a class="secondary small" style="display:block;text-align:center;text-decoration:none;margin-top:' + (corpsTexte ? '14px' : '0') + ';" href="' + fichierLien + '" target="_blank">📎 Voir le fichier des paroles' + (fichierNom ? ' (' + escapeHtml(fichierNom) + ')' : '') + '</a>'
+      : '';
     box.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;">' +
       '<div class="item-nom">📜 ' + escapeHtml(titre) + '</div>' +
       '<button class="secondary small" style="width:auto;flex-shrink:0;" onclick="this.closest(\'.paroles-overlay\').remove()">✕</button></div>' +
-      '<p style="font-size:13px;line-height:1.7;white-space:pre-wrap;">' + escapeHtml(paroles) + '</p>';
+      (corpsTexte || corpsFichier || '<p class="empty-state">Aucune parole disponible.</p>');
     overlay.appendChild(box);
     document.body.appendChild(overlay);
   }
