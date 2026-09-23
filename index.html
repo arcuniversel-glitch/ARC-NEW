@@ -73,7 +73,19 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 .zone-pub img{width:100%;border-radius:14px;display:block}
 /* Lecteurs persistants : flottent au-dessus du contenu, visibles quelle que soit la
    rubrique consultée, pour ne jamais interrompre la lecture en cours. */
-.lecteur-persistant{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;width:calc(100% - 24px);max-width:600px;z-index:700;background:#fff;border-radius:16px;box-shadow:0 -6px 30px rgba(12,47,104,.28);max-height:75vh;overflow-y:auto}
+.lecteur-persistant{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;width:calc(100% - 24px);max-width:380px;z-index:700;background:#fff;border-radius:16px;box-shadow:0 -6px 30px rgba(12,47,104,.28);max-height:75vh;overflow-y:auto;touch-action:none;user-select:none}
+.lecteur-persistant.lecteur-en-deplacement{opacity:.9;box-shadow:0 12px 40px rgba(12,47,104,.4);transition:none}
+#lecteurAudioZone.lecteur-persistant{max-width:290px}
+#lecteurAudioZone .lecteur-entete{padding:8px 10px;gap:8px}
+#lecteurAudioZone .lecteur-cover{width:36px;height:36px;border-radius:9px}
+#lecteurAudioZone .audio-frame{height:52px;margin-top:4px}
+#lecteurAudioZone .item-nom{font-size:12px}
+#lecteurAudioZone .item-desc{font-size:10px}
+#lecteurAudioZone .lecteur-controles{padding:0 10px 10px;gap:5px}
+#lecteurAudioZone .lecteur-controles button{padding:6px 9px;font-size:12px}
+#lecteurVideoZone.lecteur-persistant{max-width:340px}
+#lecteurVideoZone .lecteur-controles{padding:0 10px 10px;gap:5px}
+#lecteurVideoZone .lecteur-controles button{padding:6px 9px;font-size:12px}
 .lecteur-fermer{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(11,47,104,.08);color:var(--blue2);border:none;font-size:14px;font-weight:800;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0}
 .jeu-carte{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
 .jeu-boutons{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
@@ -1264,6 +1276,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   window.addEventListener("load", function () {
     appelServeur("getConfig").then(appliquerBranding).catch(function (err) { console.error(err); });
     initialiserGestionRetourTelephone_();
+    rendreLecteurDeplacable_("lecteurAudioZone");
+    rendreLecteurDeplacable_("lecteurVideoZone");
     if (restaurerSessionSiRecente_()) {
       afficherDashboard();
     } else {
@@ -1991,6 +2005,86 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     } else if (modeVisiteur) {
       quitterSession();
     }
+  }
+
+  // Rend un lecteur flottant déplaçable au doigt, par appui long (≈450ms sans bouger) suivi
+  // d'un glisser — pour ne jamais gêner un tap normal sur ses boutons (lecture, fermeture...).
+  // Fonctionne aussi à la souris, pour pouvoir tester depuis un ordinateur.
+  function rendreLecteurDeplacable_(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let minuteur = null;
+    let enDeplacement = false;
+    let aBouge = false;
+    let decalageX = 0, decalageY = 0;
+
+    function positionner(x, y) {
+      const largeur = el.offsetWidth, hauteur = el.offsetHeight;
+      let left = x - decalageX;
+      let top = y - decalageY;
+      left = Math.max(6, Math.min(window.innerWidth - largeur - 6, left));
+      top = Math.max(6, Math.min(window.innerHeight - hauteur - 6, top));
+      el.style.left = left + "px";
+      el.style.top = top + "px";
+      el.style.right = "auto";
+      el.style.bottom = "auto";
+      el.style.transform = "none";
+    }
+
+    function demarrerAppui(x, y) {
+      clearTimeout(minuteur);
+      minuteur = setTimeout(function () {
+        enDeplacement = true;
+        aBouge = false;
+        const rect = el.getBoundingClientRect();
+        decalageX = x - rect.left;
+        decalageY = y - rect.top;
+        el.classList.add("lecteur-en-deplacement");
+        if (navigator.vibrate) navigator.vibrate(15); // petit retour haptique si disponible
+      }, 450);
+    }
+
+    function terminerAppui() {
+      clearTimeout(minuteur);
+      if (enDeplacement) el.classList.remove("lecteur-en-deplacement");
+      enDeplacement = false;
+    }
+
+    el.addEventListener("touchstart", function (e) {
+      if (e.target.closest("button, a, select, input")) return; // ne gêne pas les taps normaux
+      const t = e.touches[0];
+      demarrerAppui(t.clientX, t.clientY);
+    }, { passive: true });
+
+    el.addEventListener("touchmove", function (e) {
+      if (!enDeplacement) { clearTimeout(minuteur); return; }
+      aBouge = true;
+      const t = e.touches[0];
+      positionner(t.clientX, t.clientY);
+      e.preventDefault(); // empêche le défilement de la page pendant le glisser
+    }, { passive: false });
+
+    el.addEventListener("touchend", function (e) {
+      if (enDeplacement && aBouge) e.preventDefault(); // évite qu'un clic parasite se déclenche après le glisser
+      terminerAppui();
+    });
+
+    el.addEventListener("mousedown", function (e) {
+      if (e.target.closest("button, a, select, input")) return;
+      demarrerAppui(e.clientX, e.clientY);
+      const onMove = function (e2) {
+        if (!enDeplacement) return;
+        aBouge = true;
+        positionner(e2.clientX, e2.clientY);
+      };
+      const onUp = function () {
+        terminerAppui();
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      };
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    });
   }
 
   // Relie le bouton/geste "Retour" physique du téléphone (et celui du navigateur) à notre
