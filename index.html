@@ -207,7 +207,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   </div>
 
   <!-- ===== ACCUEIL (branding centré) ===== -->
-  <div id="ecranAccueil" class="center-screen auth-screen active">
+  <div id="ecranAccueil" class="center-screen auth-screen">
     <div class="wrap">
       <div class="card">
         <div class="brand-center">
@@ -738,6 +738,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <p class="subtitle left" style="margin-top:-6px;">Quelques jeux chrétiens pour apprendre la Bible en vous amusant — téléchargeables gratuitement.</p>
       <div id="listeJeux">
 
+        <p class="item-desc" style="margin-bottom:14px;">ℹ️ "Verse Blitz" se joue directement ici. Les 3 autres sont des applications à installer sur votre téléphone — impossible techniquement de les faire tourner à l'intérieur d'un site web.</p>
+
         <div class="jeu-carte">
           <div class="item-nom">🎲 Game of Bible</div>
           <div class="item-desc">Jeu d'aventure et de questions rapides pour tester vos connaissances bibliques — par Spirit Games.</div>
@@ -769,8 +771,12 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <div class="item-nom">⚡ Verse Blitz</div>
           <div class="item-desc">Jeu d'arcade rapide pour mémoriser des versets bibliques en assemblant les mots dans le bon ordre.</div>
           <div class="jeu-boutons">
-            <a class="secondary small" href="https://play.google.com/store/apps/details?id=com.codeinfaith.verseblitz" target="_blank">🤖 Google Play</a>
-            <a class="secondary small" href="https://codeinfaith.com/projects/verse-blitz/" target="_blank">🌐 Jouer en ligne</a>
+            <button class="secondary small" onclick="toggleJeuIntegre_()">🎮 Jouer ici</button>
+            <a class="secondary small" href="https://codeinfaith.com/projects/verse-blitz/" target="_blank">🌐 Nouvel onglet</a>
+          </div>
+          <div id="jeuIntegreZone" style="display:none;margin-top:12px;">
+            <iframe src="https://codeinfaith.com/projects/verse-blitz/" style="width:100%;height:520px;border:none;border-radius:12px;background:#eef3f9;" allow="autoplay" title="Verse Blitz"></iframe>
+            <p class="item-desc" style="margin-top:6px;text-align:center;">Le jeu ne s'affiche pas ? Utilisez "Nouvel onglet" ci-dessus.</p>
           </div>
         </div>
 
@@ -1273,11 +1279,81 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     if (zone) zone.innerHTML = '<p class="error" style="margin:0;">⚠️ ' + escapeHtml(msg) + "</p>";
   }
 
-  window.addEventListener("load", function () {
+  // ==================== ALERTE SONORE — HEURE D'UNE SÉANCE ====================
+  // Vérifie périodiquement (tant que l'application reste ouverte) si l'heure d'une séance à
+  // venir vient de sonner, et déclenche alors un son + une bannière (+ notification système
+  // si autorisée). Les séances à date récurrente en texte libre ("tous les samedis") ne
+  // peuvent pas être évaluées ainsi et sont ignorées par cette alerte automatique.
+  const seancesAlerteesIds = new Set();
+
+  function verifierAlertesSeances_() {
+    const fonction = modeVisiteur ? "getSeancesPublic" : "getSeances";
+    appelServeur(fonction, codeActuel()).then(function (seances) {
+      const maintenant = Date.now();
+      (seances || []).forEach(function (s) {
+        if (!s.Date || !s.Heure || seancesAlerteesIds.has(s.ID)) return;
+        const dateSeance = new Date(s.Date);
+        if (isNaN(dateSeance.getTime())) return; // date récurrente en texte : pas évaluable
+        const heureMatch = String(s.Heure).match(/(\d{1,2}):(\d{2})/);
+        if (!heureMatch) return;
+        dateSeance.setHours(Number(heureMatch[1]), Number(heureMatch[2]), 0, 0);
+        const diffMs = maintenant - dateSeance.getTime();
+        if (diffMs >= 0 && diffMs < 90000) { // l'heure vient de sonner (marge d'1min30)
+          seancesAlerteesIds.add(s.ID);
+          declencherAlerteSeance_(s);
+        }
+      });
+    }).catch(function () { /* pas grave, nouvelle tentative au prochain cycle */ });
+  }
+
+  function declencherAlerteSeance_(s) {
+    jouerSonAlerte_();
+    if ("Notification" in window && Notification.permission === "granted") {
+      try { new Notification("🙏 " + s.Titre, { body: "La séance commence maintenant !", icon: "icon-192.png" }); } catch (e) { /* pas grave */ }
+    }
+    afficherBanniereAlerteSeance_(s);
+  }
+
+  // Génère un petit carillon (trois notes ascendantes) directement dans le navigateur —
+  // aucun fichier audio à héberger.
+  function jouerSonAlerte_() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [880, 1108.73, 1318.51].forEach(function (freq, i) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        const debut = ctx.currentTime + i * 0.18;
+        gain.gain.setValueAtTime(0, debut);
+        gain.gain.linearRampToValueAtTime(0.25, debut + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, debut + 0.6);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(debut);
+        osc.stop(debut + 0.65);
+      });
+    } catch (e) { /* audio non disponible sur cet appareil, pas grave */ }
+  }
+
+  function afficherBanniereAlerteSeance_(s) {
+    const banniere = document.createElement("div");
+    banniere.style.cssText = "position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;padding:14px 18px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:calc(100% - 24px);text-align:center;font-size:13px;font-weight:700;";
+    banniere.innerHTML = "🙏 La séance « " + escapeHtml(s.Titre) + " » commence maintenant !" +
+      '<button style="display:block;margin:8px auto 0;width:auto;padding:7px 16px;background:#fff;color:var(--blue2);border-radius:8px;font-size:12px;font-weight:800;border:none;" onclick="this.parentElement.remove()">OK</button>';
+    document.body.appendChild(banniere);
+    setTimeout(function () { if (banniere.parentElement) banniere.remove(); }, 20000);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
     appelServeur("getConfig").then(appliquerBranding).catch(function (err) { console.error(err); });
     initialiserGestionRetourTelephone_();
     rendreLecteurDeplacable_("lecteurAudioZone");
     rendreLecteurDeplacable_("lecteurVideoZone");
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission().catch(function () { /* pas grave si refusé */ });
+    }
+    verifierAlertesSeances_();
+    setInterval(verifierAlertesSeances_, 30000);
     if (restaurerSessionSiRecente_()) {
       afficherDashboard();
     } else {
@@ -2184,7 +2260,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.querySelectorAll(".admin-subtab").forEach(function (t) { t.classList.toggle("active", t.dataset.sub === nom); });
     document.querySelectorAll(".admin-section").forEach(function (s) { s.classList.toggle("active", s.id === "admin-" + nom); });
     if (nom === "groupes") { appelServeur("getGroupesAdmin", membreCourant.code).then(afficherGroupesAdmin).catch(function (err) { afficherErreurZone("adminListeGroupes", err); }); document.getElementById("ggpLien").value = (configApp && configApp.LienGroupePriere) || ""; }
-    else if (nom === "seances") appelServeur("getSeances", membreCourant.code).then(afficherSeancesAdmin).catch(function (err) { afficherErreurZone("adminListeSeances", err); });
+    else if (nom === "seances") appelServeur("getSeancesAdmin", membreCourant.code).then(afficherSeancesAdmin).catch(function (err) { afficherErreurZone("adminListeSeances", err); });
     else if (nom === "membres") appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin).catch(function (err) { afficherErreurZone("adminListeMembres", err); });
     else if (nom === "annonces") chargerMembresPourAnnonce();
     else if (nom === "paiements") appelServeur("getPaiementsAdmin", membreCourant.code).then(afficherPaiementsAdmin).catch(function (err) { afficherErreurZone("adminListePaiements", err); });
@@ -2832,6 +2908,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }
   }
 
+  // Affiche/masque le jeu Verse Blitz intégré directement dans la page (dans un cadre) —
+  // le seul des 4 jeux à être jouable au web, les 3 autres étant des applications mobiles
+  // natives, techniquement impossibles à faire tourner à l'intérieur d'un site.
+  function toggleJeuIntegre_() {
+    const zone = document.getElementById("jeuIntegreZone");
+    zone.style.display = zone.style.display === "none" ? "block" : "none";
+    if (zone.style.display === "block") zone.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   // Arrêt volontaire : coupe le lecteur (YouTube ou plateforme) et le masque, quelle que
   // soit la rubrique affichée.
   function fermerLecteurVideo_() {
@@ -3266,12 +3351,42 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     lireChapitreBibleActuel_();
   }
 
+  // Choisit, parmi les voix disponibles sur l'appareil, une voix masculine dans la bonne
+  // langue si possible (repérée par son nom — l'API du navigateur ne fournit pas de vrai
+  // indicateur de genre). Limite honnête : le ton "narratif et spirituel" en lui-même reste
+  // hors de portée d'une voix de synthèse, quelle qu'elle soit — c'est le mieux que la
+  // lecture à voix haute du navigateur puisse offrir.
+  function choisirVoixBible_(lang) {
+    if (!("speechSynthesis" in window)) return null;
+    const voix = window.speechSynthesis.getVoices();
+    if (!voix.length) return null;
+    const prefixe = lang === "en" ? "en" : "fr";
+    const candidates = voix.filter(function (v) { return v.lang && v.lang.toLowerCase().indexOf(prefixe) === 0; });
+    if (!candidates.length) return null;
+    const nomsMasculins = ["thomas", "paul", "daniel", "david", "mark", "nicolas", "henri", "guillaume", "male", "homme", "man"];
+    const masculine = candidates.find(function (v) {
+      const nom = v.name.toLowerCase();
+      return nomsMasculins.some(function (m) { return nom.indexOf(m) !== -1; });
+    });
+    return masculine || candidates[0];
+  }
+
+  // Précharge la liste des voix dès que possible : sur certains navigateurs, elle n'est
+  // disponible qu'après l'évènement "voiceschanged", pas immédiatement au chargement.
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = function () { window.speechSynthesis.getVoices(); };
+  }
+
   function lireChapitreBibleActuel_() {
     const synth = window.speechSynthesis;
     const texte = versetsBibleActuels.map(function (v) { return v.texte; }).join(" ");
     const utterance = new SpeechSynthesisUtterance(texte);
     utterance.lang = langueBibleActuelle === "en" ? "en-US" : "fr-FR";
-    utterance.rate = 0.95;
+    const voixChoisie = choisirVoixBible_(langueBibleActuelle);
+    if (voixChoisie) utterance.voice = voixChoisie;
+    utterance.rate = 0.92;
+    utterance.pitch = 0.85; // légèrement plus grave, pour un ton plus posé et narratif
     utterance.onend = function () {
       lectureBibleEnCours = false;
       if (lectureBibleContinue) {
@@ -3900,14 +4015,24 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     zone.innerHTML = seancesAdminCache.map(function (s) {
       const date = s.Date ? escapeHtml(String(s.Date)) : "Date à confirmer";
       const libellePrix = s.Type === "Payant" ? Number(s.Prix).toLocaleString("fr-FR") + " FCFA" : "Gratuite";
+      const dateObj = s.Date ? new Date(s.Date) : null;
+      const estPassee = dateObj && !isNaN(dateObj.getTime()) && dateObj.getTime() < Date.now() - 86400000;
+      const pillMasquee = s.Cachee ? ' <span class="role-pill" style="background:#fdeaea;color:#b0121a;">Masquée</span>' : (estPassee ? ' <span class="role-pill" style="background:#f0f0f0;color:#777;">Passée</span>' : '');
       return '<div class="item-row">' +
-        '<div><div class="item-nom">' + escapeHtml(s.Titre) + ' <span class="role-pill ' + (s.Type === "Payant" ? "role-admin" : "role-membre") + '">' + libellePrix + '</span></div>' +
+        '<div><div class="item-nom">' + escapeHtml(s.Titre) + ' <span class="role-pill ' + (s.Type === "Payant" ? "role-admin" : "role-membre") + '">' + libellePrix + '</span>' + pillMasquee + '</div>' +
         '<div class="item-desc">' + date + (s.Heure ? " à " + escapeHtml(formaterHeureSeance_(s.Heure)) : "") + " · " + escapeHtml(s.Visibilite) + '</div></div>' +
-        '<div style="display:flex;gap:6px;">' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+        '<button class="secondary small" onclick="toggleVisibiliteSeanceClick(\'' + s.ID + '\')">' + (s.Cachee ? "👁️ Afficher" : "🚫 Masquer") + '</button>' +
         '<button class="secondary small" onclick="editerSeanceAdmin(\'' + s.ID + '\')">Modifier</button>' +
         '<button class="danger-outline small" onclick="supprimerSeanceAdmin(\'' + s.ID + '\')">Supprimer</button>' +
         '</div></div>';
     }).join("");
+  }
+
+  function toggleVisibiliteSeanceClick(id) {
+    appelServeur("toggleVisibiliteSeance", membreCourant.code, id).then(function () {
+      appelServeur("getSeancesAdmin", membreCourant.code).then(afficherSeancesAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
   function editerSeanceAdmin(id) {
@@ -3961,7 +4086,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
     action.then(function () {
       annulerEditionSeance();
-      appelServeur("getSeances", membreCourant.code).then(afficherSeancesAdmin);
+      appelServeur("getSeancesAdmin", membreCourant.code).then(afficherSeancesAdmin);
     }).catch(function (e) {
       err.textContent = "Erreur : " + e.message;
       err.style.display = "block";
@@ -3972,7 +4097,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     if (!confirm("Supprimer cette séance ?")) return;
     appelServeur("supprimerSeance", membreCourant.code, id).then(function () {
       if (seanceEnEditionId === id) annulerEditionSeance();
-      appelServeur("getSeances", membreCourant.code).then(afficherSeancesAdmin);
+      appelServeur("getSeancesAdmin", membreCourant.code).then(afficherSeancesAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
