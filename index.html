@@ -90,6 +90,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 .jeu-carte{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
 .jeu-boutons{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .jeu-boutons a{width:auto;padding:9px 14px;border-radius:10px;background:#edf3fb;color:var(--blue2);font-size:12px;font-weight:800;text-decoration:none;display:inline-block}
+.barre-selection{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 4px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.case-select{width:17px;height:17px;flex-shrink:0;margin:0 2px 0 0;accent-color:var(--blue2)}
 /* Actualités — présentation façon blog (image, catégorie, auteur, extrait) */
 .blog-card{margin-bottom:22px;cursor:pointer}
 .blog-card-image-wrap{position:relative;border-radius:16px;overflow:hidden;margin-bottom:12px;background:#eef3f9}
@@ -741,6 +743,19 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <p class="item-desc" style="margin-bottom:14px;">ℹ️ "Verse Blitz" se joue directement ici. Les 3 autres sont des applications à installer sur votre téléphone — impossible techniquement de les faire tourner à l'intérieur d'un site web.</p>
 
         <div class="jeu-carte">
+          <div class="item-nom">⚡ Verse Blitz</div>
+          <div class="item-desc">Jeu d'arcade rapide pour mémoriser des versets bibliques en assemblant les mots dans le bon ordre.</div>
+          <div class="jeu-boutons">
+            <button class="secondary small" onclick="toggleJeuIntegre_()">🎮 Jouer ici</button>
+            <a class="secondary small" href="https://codeinfaith.com/projects/verse-blitz/" target="_blank">🌐 Nouvel onglet</a>
+          </div>
+          <div id="jeuIntegreZone" style="display:none;margin-top:12px;">
+            <iframe src="https://codeinfaith.com/projects/verse-blitz/" style="width:100%;height:520px;border:none;border-radius:12px;background:#eef3f9;" allow="autoplay" title="Verse Blitz"></iframe>
+            <p class="item-desc" style="margin-top:6px;text-align:center;">Le jeu ne s'affiche pas ? Utilisez "Nouvel onglet" ci-dessus.</p>
+          </div>
+        </div>
+
+        <div class="jeu-carte">
           <div class="item-nom">🎲 Game of Bible</div>
           <div class="item-desc">Jeu d'aventure et de questions rapides pour tester vos connaissances bibliques — par Spirit Games.</div>
           <div class="jeu-boutons">
@@ -764,19 +779,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <div class="jeu-boutons">
             <a class="secondary small" href="https://apps.apple.com/us/app/amen-christian-game/id1528445624" target="_blank">📱 App Store</a>
             <a class="secondary small" href="https://play.google.com/store/apps/details?id=com.rdgames.amengame" target="_blank">🤖 Google Play</a>
-          </div>
-        </div>
-
-        <div class="jeu-carte">
-          <div class="item-nom">⚡ Verse Blitz</div>
-          <div class="item-desc">Jeu d'arcade rapide pour mémoriser des versets bibliques en assemblant les mots dans le bon ordre.</div>
-          <div class="jeu-boutons">
-            <button class="secondary small" onclick="toggleJeuIntegre_()">🎮 Jouer ici</button>
-            <a class="secondary small" href="https://codeinfaith.com/projects/verse-blitz/" target="_blank">🌐 Nouvel onglet</a>
-          </div>
-          <div id="jeuIntegreZone" style="display:none;margin-top:12px;">
-            <iframe src="https://codeinfaith.com/projects/verse-blitz/" style="width:100%;height:520px;border:none;border-radius:12px;background:#eef3f9;" allow="autoplay" title="Verse Blitz"></iframe>
-            <p class="item-desc" style="margin-top:6px;text-align:center;">Le jeu ne s'affiche pas ? Utilisez "Nouvel onglet" ci-dessus.</p>
           </div>
         </div>
 
@@ -2832,12 +2834,14 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function afficherLecteurActif(entete, res) {
     const zone = document.getElementById("lecteurAudioZone");
-    // Lecteur audio natif du navigateur — aucune marque Google, aucune autorisation
-    // demandée, et la lecture démarre vraiment toute seule au clic. Le fichier transite par
-    // notre propre serveur (au lieu du lien public Google Drive) pour éviter l'écran
-    // d'avertissement de Google sur les gros fichiers.
+    // Lecteur audio natif du navigateur — le son est transmis directement en base64 (même
+    // procédé que pour vos images), donc aucune marque Google, aucune autorisation demandée,
+    // et une vraie lecture automatique au clic.
+    const srcAudio = res.audioBase64
+      ? "data:" + (res.audioMimeType || "audio/mpeg") + ";base64," + res.audioBase64
+      : res.lien; // repli si le fichier est trop volumineux pour ce canal (voir erreur ci-dessous)
     zone.innerHTML = '<button class="lecteur-fermer" onclick="fermerLecteurAudio_()" title="Fermer le lecteur">✕</button>' + entete +
-      '<audio id="audioElementActuel" style="width:calc(100% - 28px);margin:8px 14px 0;display:block;" src="' + res.lien + '" controls autoplay></audio>' +
+      '<audio id="audioElementActuel" style="width:calc(100% - 28px);margin:8px 14px 0;display:block;" src="' + srcAudio + '" controls autoplay></audio>' +
       '<div id="audioErreurZone"></div>' +
       '<div class="lecteur-controles">' +
       '<button onclick="audioPrecedent()">⏮️</button>' +
@@ -2853,10 +2857,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     // l'utilisateur restant dans la même chaîne d'évènement.
     element.play().catch(function () { /* certains navigateurs bloquent, les contrôles restent utilisables manuellement */ });
     element.addEventListener("ended", gererFinAudio_);
+    // Filet de sécurité : si la lecture directe échoue pour ce fichier précis (rare), on
+    // bascule automatiquement sur l'aperçu Google Drive, qui fonctionne toujours de façon
+    // fiable — l'auditeur n'est jamais bloqué par un message d'erreur sans solution.
     element.addEventListener("error", function () {
       document.getElementById("audioErreurZone").innerHTML =
-        '<p class="error" style="padding:0 14px 8px;">La lecture directe a échoué pour ce fichier. Vérifiez son partage sur Google Drive ("Tous les utilisateurs disposant du lien"), ou téléchargez-le ci-dessous.</p>';
-    });
+        '<p class="item-desc" style="padding:0 14px 8px;">Lecteur de secours (👉 cliquez sur ▶ ci-dessous) :</p>' +
+        '<iframe class="audio-frame" style="margin:0 14px;width:calc(100% - 28px);" src="' + res.apercu + '" allow="autoplay"></iframe>';
+      element.style.display = "none";
+    }, { once: true });
   }
 
   function gererFinAudio_() {
@@ -4129,14 +4138,74 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   const LIBELLES_ROLES = { Membre: "Membre", Admin_TG: "Admin TG", Admin_SG: "Admin SG", Admin_OG: "Admin OG", Admin_Super: "Super Admin" };
 
+  // ==================== SÉLECTION MULTIPLE (Audios, Vidéos, Documents, Membres) ====================
+  // Système réutilisable de cases à cocher + suppression groupée, commun aux 4 panneaux.
+  const selectionsAdmin_ = { audios: new Set(), videos: new Set(), documents: new Set(), membres: new Set() };
+
+  function construireBarreSelection_(cle) {
+    return '<div class="barre-selection">' +
+      '<label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;">' +
+      '<input type="checkbox" class="case-select" id="toutSelectionner-' + cle + '" onchange="toggleToutSelectionner_(\'' + cle + '\')"> Tout sélectionner</label>' +
+      '<button class="danger-outline small" style="width:auto;display:none;" id="btnSupprimerSelection-' + cle + '" onclick="supprimerSelection_(\'' + cle + '\')">🗑️ Supprimer la sélection (<span id="compteurSelection-' + cle + '">0</span>)</button>' +
+      '</div>';
+  }
+
+  function toggleCaseSelection_(cle, id) {
+    const set = selectionsAdmin_[cle];
+    if (set.has(id)) set.delete(id); else set.add(id);
+    mettreAJourBarreSelection_(cle);
+  }
+
+  function toggleToutSelectionner_(cle) {
+    const set = selectionsAdmin_[cle];
+    const toutCoche = document.getElementById("toutSelectionner-" + cle).checked;
+    set.clear();
+    document.querySelectorAll(".case-select-" + cle).forEach(function (c) {
+      c.checked = toutCoche;
+      if (toutCoche) set.add(c.dataset.id);
+    });
+    mettreAJourBarreSelection_(cle);
+  }
+
+  function mettreAJourBarreSelection_(cle) {
+    const set = selectionsAdmin_[cle];
+    const bouton = document.getElementById("btnSupprimerSelection-" + cle);
+    const compteur = document.getElementById("compteurSelection-" + cle);
+    if (compteur) compteur.textContent = set.size;
+    if (bouton) bouton.style.display = set.size > 0 ? "inline-flex" : "none";
+  }
+
+  const RECHARGEMENTS_SELECTION_ = {
+    audios: function () { appelServeur("getEnregistrements").then(afficherEnregistrementsAdmin); },
+    videos: function () { appelServeur("getVideos").then(afficherVideosPlateformeAdmin); },
+    documents: function () { appelServeur("getDocuments").then(afficherDocumentsAdmin); },
+    membres: function () { appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin); }
+  };
+  const FONCTIONS_SUPPRESSION_MULTIPLE_ = {
+    audios: "supprimerEnregistrementsMultiples", videos: "supprimerVideosMultiples",
+    documents: "supprimerDocumentsMultiples", membres: "supprimerMembresMultiples"
+  };
+  const LIBELLES_SELECTION_ = { audios: "audio(s)", videos: "vidéo(s)", documents: "document(s)", membres: "membre(s)" };
+
+  function supprimerSelection_(cle) {
+    const set = selectionsAdmin_[cle];
+    if (!set.size) return;
+    if (!confirm("Supprimer les " + set.size + " " + LIBELLES_SELECTION_[cle] + " sélectionné(s) ? Cette action est irréversible.")) return;
+    appelServeur(FONCTIONS_SUPPRESSION_MULTIPLE_[cle], membreCourant.code, Array.from(set)).then(function () {
+      set.clear();
+      RECHARGEMENTS_SELECTION_[cle]();
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
   function afficherMembresAdmin(data) {
     data = data || { total: 0, actifs: 0, liste: [] };
     document.getElementById("statTotal").textContent = data.total;
     document.getElementById("statActifs").textContent = data.actifs;
     const liste = data.liste || [];
+    selectionsAdmin_.membres.clear();
     const zone = document.getElementById("adminListeMembres");
     if (!liste.length) { zone.innerHTML = '<p class="empty-state">Aucun membre.</p>'; return; }
-    zone.innerHTML = liste.slice(0, 100).map(function (m) {
+    const cartes = liste.slice(0, 100).map(function (m) {
       const nomAff = (m.prenom || m.nom) ? (m.prenom + " " + m.nom) : m.telephone;
       const pillClass = m.role === "Membre" ? "role-membre" : "role-admin";
       const codeEchappe = m.code.replace(/'/g, "&#39;");
@@ -4154,6 +4223,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         : '<button class="secondary small" onclick="toggleAuteurClick(\'' + codeEchappe + '\', true)">✍️ Rendre Auteur</button>';
       return '<div class="item-block">' +
         '<div class="item-row" style="border:none;padding-bottom:8px;">' +
+        '<input type="checkbox" class="case-select case-select-membres" data-id="' + codeEchappe + '" onchange="toggleCaseSelection_(\'membres\',\'' + codeEchappe + '\')">' +
         '<div><div class="item-nom">' + escapeHtml(nomAff) + (m.estAuteur ? ' <span class="vis-pill">Auteur</span>' : '') + '</div>' +
         '<div class="item-desc">' + escapeHtml(m.telephone || "") + " · " + escapeHtml(statutAffiche) + '</div></div>' +
         '<div style="display:flex; align-items:center; gap:8px;">' +
@@ -4165,7 +4235,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         '<button class="secondary small" onclick="ouvrirEditionBadge_(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">🪪 Badge</button>' +
         '<button class="danger-outline small" onclick="supprimerMembreClick(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">Retirer</button>' +
         '</div></div>';
-    }).join("");
+    });
+    zone.innerHTML = construireBarreSelection_("membres") + cartes.join("");
   }
 
   // --- Édition du badge d'un membre (Super Admin uniquement) ---
@@ -4639,16 +4710,19 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function afficherEnregistrementsAdmin(enregistrements) {
     if (!categoriesAudioCache) { chargerCategoriesAudioAdmin(); } else { remplirSelecteurCategoriesAudio(); }
     enregistrements = enregistrements || [];
+    selectionsAdmin_.audios.clear();
     const zone = document.getElementById("adminListeEnregistrements");
     if (!enregistrements.length) { zone.innerHTML = '<p class="empty-state">Aucun audio.</p>'; return; }
-    zone.innerHTML = enregistrements.map(function (a) {
+    const cartes = enregistrements.map(function (a) {
       const libellePrix = a.Type === "Payant" ? Number(a.Prix).toLocaleString("fr-FR") + " FCFA" : "Gratuit";
       return '<div class="item-row">' +
+        '<input type="checkbox" class="case-select case-select-audios" data-id="' + a.ID + '" onchange="toggleCaseSelection_(\'audios\',\'' + a.ID + '\')">' +
         '<div><div class="item-nom">🎧 ' + escapeHtml(a.Titre) + ' <span class="role-pill ' + (a.Type === "Payant" ? "role-admin" : "role-membre") + '">' + libellePrix + '</span></div>' +
         '<div class="item-desc">' + (a.Auteur ? "Par " + escapeHtml(a.Auteur) + " · " : "") + escapeHtml(a.Categorie) + " · " + escapeHtml(a.Visibilite) + " · Ajouté le " + escapeHtml(a.DateAjout) + '</div></div>' +
         '<button class="danger-outline small" onclick="supprimerEnregistrementAdmin(\'' + a.ID + '\')">Supprimer</button>' +
         '</div>';
-    }).join("");
+    });
+    zone.innerHTML = construireBarreSelection_("audios") + cartes.join("");
   }
 
   function creerEnregistrementAdmin() {
@@ -4698,17 +4772,20 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // --- Nos écrits (admin) ---
   function afficherDocumentsAdmin(documents) {
     documents = documents || [];
+    selectionsAdmin_.documents.clear();
     const zone = document.getElementById("adminListeDocuments");
     if (!documents.length) { zone.innerHTML = '<p class="empty-state">Aucun document.</p>'; return; }
-    zone.innerHTML = documents.map(function (d) {
+    const cartes = documents.map(function (d) {
       const pillClass = d.Type === "Payant" ? "role-admin" : "role-membre";
       const libellePrix = d.Type === "Payant" ? Number(d.Prix).toLocaleString("fr-FR") + " FCFA" : "Gratuit";
       return '<div class="item-row">' +
+        '<input type="checkbox" class="case-select case-select-documents" data-id="' + d.ID + '" onchange="toggleCaseSelection_(\'documents\',\'' + d.ID + '\')">' +
         '<div><div class="item-nom">📄 ' + escapeHtml(d.Titre) + ' <span class="role-pill ' + pillClass + '">' + libellePrix + '</span></div>' +
         '<div class="item-desc">' + (d.Auteur ? "Par " + escapeHtml(d.Auteur) + " · " : "") + escapeHtml(d.Description || "") + " · Ajouté le " + escapeHtml(d.DateAjout) + '</div></div>' +
         '<button class="danger-outline small" onclick="supprimerDocumentAdmin(\'' + d.ID + '\')">Supprimer</button>' +
         '</div>';
-    }).join("");
+    });
+    zone.innerHTML = construireBarreSelection_("documents") + cartes.join("");
   }
 
   function creerDocumentAdmin() {
@@ -4812,20 +4889,23 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // --- Vidéos de la plateforme (admin) ---
   function afficherVideosPlateformeAdmin(videos) {
     videos = videos || [];
+    selectionsAdmin_.videos.clear();
     appelServeur("getPlaylists").then(function (playlists) {
       const select = document.getElementById("vidCategorie");
       select.innerHTML = (playlists || []).map(function (p) { return '<option value="' + escapeHtml(p.Nom) + '">' + escapeHtml(p.Nom) + '</option>'; }).join("");
     });
     const zone = document.getElementById("adminListeVideosPlateforme");
     if (!videos.length) { zone.innerHTML = '<p class="empty-state">Aucune vidéo.</p>'; return; }
-    zone.innerHTML = videos.map(function (v) {
+    const cartes = videos.map(function (v) {
       const libellePrix = v.Type === "Payant" ? Number(v.Prix).toLocaleString("fr-FR") + " FCFA" : "Gratuit";
       return '<div class="item-row">' +
+        '<input type="checkbox" class="case-select case-select-videos" data-id="' + v.ID + '" onchange="toggleCaseSelection_(\'videos\',\'' + v.ID + '\')">' +
         '<div><div class="item-nom">🎬 ' + escapeHtml(v.Titre) + ' <span class="role-pill ' + (v.Type === "Payant" ? "role-admin" : "role-membre") + '">' + libellePrix + '</span></div>' +
         '<div class="item-desc">' + (v.Auteur ? "Par " + escapeHtml(v.Auteur) + " · " : "") + (v.Categorie ? escapeHtml(v.Categorie) + " · " : "Sans catégorie · ") + "Ajouté le " + escapeHtml(v.DateAjout) + '</div></div>' +
         '<button class="danger-outline small" onclick="supprimerVideoPlateformeAdmin(\'' + v.ID + '\')">Supprimer</button>' +
         '</div>';
-    }).join("");
+    });
+    zone.innerHTML = construireBarreSelection_("videos") + cartes.join("");
   }
 
   function creerVideoPlateformeAdmin() {
