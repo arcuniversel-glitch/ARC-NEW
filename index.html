@@ -78,7 +78,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 #lecteurAudioZone.lecteur-persistant{max-width:290px}
 #lecteurAudioZone .lecteur-entete{padding:8px 10px;gap:8px}
 #lecteurAudioZone .lecteur-cover{width:36px;height:36px;border-radius:9px}
-#lecteurAudioZone .audio-frame{height:52px;margin-top:4px}
+#lecteurAudioZone audio{height:32px;width:calc(100% - 20px)!important;margin:4px 10px 0!important}
 #lecteurAudioZone .item-nom{font-size:12px}
 #lecteurAudioZone .item-desc{font-size:10px}
 #lecteurAudioZone .lecteur-controles{padding:0 10px 10px;gap:5px}
@@ -2832,21 +2832,45 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function afficherLecteurActif(entete, res) {
     const zone = document.getElementById("lecteurAudioZone");
-    // Lecteur intégré Google Drive : le plus fiable pour la lecture elle-même. Limite
-    // technique honnête (propre à Drive, sans solution côté navigateur) : la lecture ne
-    // démarre pas toute seule et il faut cliquer sur ▶ à l'intérieur du cadre ci-dessous —
-    // et comme Drive ne signale pas la fin de lecture à notre application, l'enchaînement
-    // automatique n'est pas possible ici (contrairement aux vidéos YouTube). Précédent et
-    // Suivant restent pleinement fonctionnels pour naviguer manuellement dans la liste.
+    // Lecteur audio natif du navigateur — aucune marque Google, aucune autorisation
+    // demandée, et la lecture démarre vraiment toute seule au clic. Le fichier transite par
+    // notre propre serveur (au lieu du lien public Google Drive) pour éviter l'écran
+    // d'avertissement de Google sur les gros fichiers.
     zone.innerHTML = '<button class="lecteur-fermer" onclick="fermerLecteurAudio_()" title="Fermer le lecteur">✕</button>' + entete +
-      '<p class="item-desc" style="padding:0 14px 8px;">👉 Cliquez sur ▶ dans le lecteur ci-dessous pour démarrer l\'écoute.</p>' +
-      '<iframe class="audio-frame" style="margin:0 14px;width:calc(100% - 28px);" src="' + res.apercu + '" allow="autoplay"></iframe>' +
+      '<audio id="audioElementActuel" style="width:calc(100% - 28px);margin:8px 14px 0;display:block;" src="' + res.lien + '" controls autoplay></audio>' +
+      '<div id="audioErreurZone"></div>' +
       '<div class="lecteur-controles">' +
       '<button onclick="audioPrecedent()">⏮️</button>' +
+      '<button id="btnRepeterUnAudio" class="' + (modeRepetitionAudio === "un" ? "actif" : "") + '" onclick="definirRepetitionAudio(\'un\')" title="Répéter cette piste">🔂 1</button>' +
       '<button id="btnRepeterToutAudio" class="' + (modeRepetitionAudio === "tout" ? "actif" : "") + '" onclick="definirRepetitionAudio(\'tout\')" title="Revenir au premier audio après le dernier">🔁 Tout</button>' +
       '<button onclick="audioSuivant()">⏭️</button>' +
       '</div>' +
-      '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + res.lien + '" target="_blank">⬇️ Télécharger</a></div>';
+      '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + res.lien + '" target="_blank" download>⬇️ Télécharger</a></div>';
+
+    const element = document.getElementById("audioElementActuel");
+    // Lance explicitement la lecture (en plus de l'attribut autoplay) : c'est ce qui garantit
+    // le démarrage automatique sur le plus grand nombre de navigateurs, le clic de
+    // l'utilisateur restant dans la même chaîne d'évènement.
+    element.play().catch(function () { /* certains navigateurs bloquent, les contrôles restent utilisables manuellement */ });
+    element.addEventListener("ended", gererFinAudio_);
+    element.addEventListener("error", function () {
+      document.getElementById("audioErreurZone").innerHTML =
+        '<p class="error" style="padding:0 14px 8px;">La lecture directe a échoué pour ce fichier. Vérifiez son partage sur Google Drive ("Tous les utilisateurs disposant du lien"), ou téléchargez-le ci-dessous.</p>';
+    });
+  }
+
+  function gererFinAudio_() {
+    if (modeRepetitionAudio === "un") {
+      const el = document.getElementById("audioElementActuel");
+      if (el) { el.currentTime = 0; el.play(); }
+      return;
+    }
+    if (indexAudioActuel < listeAudioActuelle.length - 1) {
+      jouerAudio(indexAudioActuel + 1);
+    } else if (modeRepetitionAudio === "tout" && listeAudioActuelle.length) {
+      jouerAudio(0);
+    }
+    // Sinon : fin de liste sans répétition, la lecture s'arrête simplement.
   }
 
   // Arrêt volontaire : coupe le lecteur et le masque, quelle que soit la rubrique affichée.
@@ -2869,7 +2893,9 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // Un seul mode actif à la fois : cliquer sur un mode déjà actif le désactive.
   function definirRepetitionAudio(mode) {
     modeRepetitionAudio = (modeRepetitionAudio === mode) ? "aucun" : mode;
+    const btnUn = document.getElementById("btnRepeterUnAudio");
     const btnTout = document.getElementById("btnRepeterToutAudio");
+    if (btnUn) btnUn.classList.toggle("actif", modeRepetitionAudio === "un");
     if (btnTout) btnTout.classList.toggle("actif", modeRepetitionAudio === "tout");
   }
 
