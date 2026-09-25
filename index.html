@@ -835,6 +835,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
             Normalement détecté automatiquement. Si la liste des vidéos ne s'affiche pas, trouvez-le sur
             YouTube Studio > Paramètres > Chaîne > Informations de base > "ID de la chaîne", et collez-le ici.
           </p>
+          <label class="field-label">Frais de publication d'une soumission d'auteur (FCFA)</label>
+          <input id="adminMontantPublication" type="number" min="0" placeholder="Ex : 2000">
           <div id="erreurApparence" class="error" style="display:none;"></div>
           <button onclick="sauvegarderApparence()">Enregistrer</button>
         </div>
@@ -905,6 +907,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <div class="stat-box"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Membres inscrits</div></div>
           <div class="stat-box"><div class="stat-num" id="statActifs">—</div><div class="stat-label">Comptes actifs</div></div>
         </div>
+        <input type="text" id="rechercheMembres" placeholder="🔎 Rechercher un membre (nom, téléphone, code)…" oninput="filtrerMembresAdmin()">
         <div class="card" id="adminListeMembres"><div class="loading">Chargement…</div></div>
       </div>
 
@@ -2796,13 +2799,38 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("listeCategoriesAudio").style.display = "none";
     document.getElementById("listeAudiosCategorie").style.display = "block";
     const resultats = audiosCache.filter(function (a) {
-      return (a.Titre || "").toLowerCase().indexOf(requete) !== -1 || (a.Description || "").toLowerCase().indexOf(requete) !== -1;
+      return (a.Titre || "").toLowerCase().indexOf(requete) !== -1 ||
+        (a.Description || "").toLowerCase().indexOf(requete) !== -1 ||
+        (a.Auteur || "").toLowerCase().indexOf(requete) !== -1;
     });
     afficherListeAudios(resultats, "Résultats pour \"" + document.getElementById("rechercheAudios").value.trim() + "\"");
   }
 
   // --- Lecteur audio : précédent / suivant / répétition 1 / répétition tout / achat des payants ---
   let modeRepetitionAudio = "aucun"; // "aucun" | "un" | "tout"
+
+  // Préchargement anticipé : pendant qu'un audio joue, on récupère déjà en arrière-plan
+  // celui qui viendra juste après — pour qu'au moment où l'un se termine, le suivant soit
+  // déjà prêt à jouer instantanément, au lieu d'attendre le chargement à ce moment-là.
+  let audioPrecharge_ = {};
+
+  function precalculerProchainIndexAudio_() {
+    if (indexAudioActuel < listeAudioActuelle.length - 1) return indexAudioActuel + 1;
+    if (modeRepetitionAudio === "tout" && listeAudioActuelle.length) return 0;
+    return -1;
+  }
+
+  function precharger_AudioSuivant_() {
+    const indexSuivant = precalculerProchainIndexAudio_();
+    if (indexSuivant < 0) return;
+    const audioSuivant = listeAudioActuelle[indexSuivant];
+    // Le contenu payant reste exclu du préchargement : son accès dépend d'une vérification
+    // de paiement au moment voulu, pas avant.
+    if (!audioSuivant || audioPrecharge_[audioSuivant.ID] || (audioSuivant.Type === "Payant" && !audiosDeverrouilles[audioSuivant.ID])) return;
+    appelServeur("getLienAudio", codeActuel(), audioSuivant.ID, null).then(function (res) {
+      if (res.succes) audioPrecharge_[audioSuivant.ID] = res;
+    }).catch(function () { /* tant pis, le chargement normal prendra le relais le moment venu */ });
+  }
 
   function jouerAudio(index) {
     indexAudioActuel = index;
@@ -2824,11 +2852,22 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       return;
     }
 
+    // Déjà préchargé pendant la piste précédente : lecture instantanée, sans nouvel appel.
+    if (audioPrecharge_[audio.ID]) {
+      const res = audioPrecharge_[audio.ID];
+      delete audioPrecharge_[audio.ID];
+      audiosDeverrouilles[audio.ID] = true;
+      afficherLecteurActif(entete, res);
+      precharger_AudioSuivant_();
+      return;
+    }
+
     zone.innerHTML = entete + '<div class="loading" style="padding:0 14px 14px;">Chargement…</div>';
     appelServeur("getLienAudio", codeActuel(), audio.ID, null).then(function (res) {
       if (!res.succes) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">' + escapeHtml(res.message) + '</p>'; return; }
       audiosDeverrouilles[audio.ID] = true;
       afficherLecteurActif(entete, res);
+      precharger_AudioSuivant_();
     }).catch(function (err) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">Erreur : ' + escapeHtml(err.message) + '</p>'; });
   }
 
@@ -2906,6 +2945,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const btnTout = document.getElementById("btnRepeterToutAudio");
     if (btnUn) btnUn.classList.toggle("actif", modeRepetitionAudio === "un");
     if (btnTout) btnTout.classList.toggle("actif", modeRepetitionAudio === "tout");
+    precharger_AudioSuivant_(); // le "suivant" a pu changer (ex : Répéter Tout activé près de la fin)
   }
 
   function acheterAudio(audioId, prix) {
@@ -3154,10 +3194,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     soumissions = soumissions || [];
     const zone = document.getElementById("listeMesSoumissions");
     if (!soumissions.length) { zone.innerHTML = '<p class="empty-state">Vous n\u2019avez pas encore soumis de contenu.</p>'; return; }
+    const montantPublication = (configApp && configApp.MontantPublication) || 2000;
     zone.innerHTML = soumissions.map(function (s) {
       const pillClass = s.Statut === "Publié" ? "role-membre" : s.Statut === "Rejeté" ? "role-admin" : "vis-pill";
       const actionPaiement = s.Statut === "Validé"
-        ? '<button class="flame small full-mt" onclick="payerPublicationClick(\'' + s.ID + '\')">💳 Payer 2000 FCFA pour publier</button>'
+        ? '<button class="flame small full-mt" onclick="payerPublicationClick(\'' + s.ID + '\')">💳 Payer ' + Number(montantPublication).toLocaleString("fr-FR") + ' FCFA pour publier</button>'
         : "";
       return '<div class="item-row">' +
         '<div><div class="item-nom">' + (LIBELLES_TYPE_SOUMISSION[s.TypeContenu] || s.TypeContenu) + " " + escapeHtml(s.Titre) + '</div>' +
@@ -3170,8 +3211,9 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function payerPublicationClick(idSoumission) {
     if (!configApp || !configApp.kkiapayPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
-    typeCotisationEnCours = { nom: idSoumission, montant: 2000, periodicite: "", categorie: "Publication" };
-    openKkiapayWidget({ amount: 2000, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
+    const montant = (configApp && configApp.MontantPublication) || 2000;
+    typeCotisationEnCours = { nom: idSoumission, montant: montant, periodicite: "", categorie: "Publication" };
+    openKkiapayWidget({ amount: montant, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
   }
 
   // ==================== NOS ÉCRITS (documents) ====================
@@ -3252,7 +3294,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const cover = d.CoverBase64 ? '<img src="data:image/jpeg;base64,' + d.CoverBase64 + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:10px;margin-bottom:8px;">' : '';
     const bouton = d.Type === "Payant"
       ? '<button class="flame small full-mt" onclick="acheterDocument(\'' + d.ID + '\',\'' + titreEchappe + '\',' + Number(d.Prix) + ')">💳 Acheter (' + Number(d.Prix).toLocaleString("fr-FR") + ' F) et télécharger</button>'
-      : '<button class="secondary small full-mt" onclick="telechargerDocument(\'' + d.ID + '\')">⬇️ Télécharger</button>';
+      : '<div class="jeu-boutons full-mt"><button class="secondary small" onclick="lireDocument(\'' + d.ID + '\')">📖 Lire</button><button class="secondary small" onclick="telechargerDocument(\'' + d.ID + '\')">⬇️ Télécharger</button></div>';
     return '<div class="contenu-item">' + cover +
       '<div class="item-nom">📄 ' + escapeHtml(d.Titre) + badgePremium + '</div>' +
       (d.Auteur ? '<div class="item-desc">Par ' + escapeHtml(d.Auteur) + '</div>' : '') +
@@ -3273,6 +3315,26 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     appelServeur("getLienDocument", codeActuel(), documentId, null).then(function (res) {
       if (!res.succes) { alert(res.message || "Téléchargement impossible."); return; }
       window.open(res.lien, "_blank");
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  // Ouvre le document directement dans un nouvel onglet (lecteur PDF natif du navigateur en
+  // général), sans jamais passer par l'interface de Google Drive ni forcer un téléchargement.
+  function lireDocument(documentId) {
+    appelServeur("getLienDocument", codeActuel(), documentId, null).then(function (res) {
+      if (!res.succes) { alert(res.message || "Lecture impossible."); return; }
+      if (res.docBase64) {
+        const fenetre = window.open("");
+        if (fenetre) {
+          fenetre.document.write(
+            '<iframe src="data:' + res.docMimeType + ';base64,' + res.docBase64 + '" style="position:fixed;inset:0;width:100%;height:100%;border:none;"></iframe>'
+          );
+          fenetre.document.title = res.titre || "Document";
+        }
+      } else {
+        // Fichier trop volumineux pour ce canal : repli sur le lien de téléchargement classique.
+        window.open(res.lien, "_blank");
+      }
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
@@ -3381,7 +3443,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const synth = window.speechSynthesis;
     if (synth.speaking && !synth.paused) { synth.pause(); lectureBibleEnCours = false; mettreAJourBoutonLectureBible_(); return; }
     if (synth.paused) { synth.resume(); lectureBibleEnCours = true; mettreAJourBoutonLectureBible_(); return; }
-    if (!versetsBibleActuels.length) return;
+    if (!versetsBibleActuels.length) { alert("Choisissez d'abord un livre et un chapitre à lire."); return; }
     lectureBibleContinue = true;
     lireChapitreBibleActuel_();
   }
@@ -3413,16 +3475,19 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     window.speechSynthesis.onvoiceschanged = function () { window.speechSynthesis.getVoices(); };
   }
 
+  // Lit le chapitre verset par verset (au lieu d'un seul long texte d'un coup) : Chrome et
+  // certains navigateurs mobiles interrompent silencieusement la synthèse vocale au-delà
+  // d'une quinzaine de secondes de lecture continue — découper en versets contourne ce
+  // problème et permet en plus une reprise plus précise en cas de pause.
+  let indexVersetLectureBible_ = 0;
+
   function lireChapitreBibleActuel_() {
-    const synth = window.speechSynthesis;
-    const texte = versetsBibleActuels.map(function (v) { return v.texte; }).join(" ");
-    const utterance = new SpeechSynthesisUtterance(texte);
-    utterance.lang = langueBibleActuelle === "en" ? "en-US" : "fr-FR";
-    const voixChoisie = choisirVoixBible_(langueBibleActuelle);
-    if (voixChoisie) utterance.voice = voixChoisie;
-    utterance.rate = 0.92;
-    utterance.pitch = 0.85; // légèrement plus grave, pour un ton plus posé et narratif
-    utterance.onend = function () {
+    indexVersetLectureBible_ = 0;
+    lireVersetSuivant_();
+  }
+
+  function lireVersetSuivant_() {
+    if (indexVersetLectureBible_ >= versetsBibleActuels.length) {
       lectureBibleEnCours = false;
       if (lectureBibleContinue) {
         avancementAutomatiqueBible_ = true;
@@ -3430,6 +3495,20 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       } else {
         mettreAJourBoutonLectureBible_();
       }
+      return;
+    }
+    const synth = window.speechSynthesis;
+    const verset = versetsBibleActuels[indexVersetLectureBible_];
+    const utterance = new SpeechSynthesisUtterance(verset.texte);
+    utterance.lang = langueBibleActuelle === "en" ? "en-US" : "fr-FR";
+    const voixChoisie = choisirVoixBible_(langueBibleActuelle);
+    if (voixChoisie) utterance.voice = voixChoisie;
+    utterance.rate = 0.92;
+    utterance.pitch = 0.85; // légèrement plus grave, pour un ton plus posé et narratif
+    utterance.onend = function () {
+      if (!lectureBibleEnCours) return; // lecture arrêtée volontairement entretemps
+      indexVersetLectureBible_++;
+      lireVersetSuivant_();
     };
     utterance.onerror = function () { lectureBibleEnCours = false; lectureBibleContinue = false; mettreAJourBoutonLectureBible_(); };
     synth.speak(utterance);
@@ -3441,8 +3520,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // — coupe aussi bien la lecture en cours que l'intention d'enchaîner sur la suite.
   function arreterLectureBible() {
     lectureBibleContinue = false;
+    lectureBibleEnCours = false; // avant cancel() : empêche le onend du verset en cours d'enchaîner sur le suivant
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-    lectureBibleEnCours = false;
     mettreAJourBoutonLectureBible_();
   }
 
@@ -3828,7 +3907,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // vidéo unifié (celui utilisé pour les Émissions), puis lance la lecture.
   function jouerVideoDepuisAccueil_(index) {
     videosPlaylistCourante = videosPlateformeCache.map(function (v) {
-      return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout, paroles: v.Paroles, parolesFichierLien: v.ParolesFichierLien, parolesFichierNom: v.ParolesFichierNom };
+      return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, description: v.Description, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout, paroles: v.Paroles, parolesFichierLien: v.ParolesFichierLien, parolesFichierNom: v.ParolesFichierNom };
     });
     document.getElementById("videosSous-accueil").scrollIntoView({ behavior: "smooth", block: "start" });
     lireVideoUnifiee(index);
@@ -3882,7 +3961,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         return { source: "youtube", videoId: v.videoId, titre: v.titre, miniature: v.miniature, datePublication: v.datePublication };
       });
       const videosPlateforme = videosPlateformeCache.filter(function (v) { return v.Categorie === nom; }).map(function (v) {
-        return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout, paroles: v.Paroles, parolesFichierLien: v.ParolesFichierLien, parolesFichierNom: v.ParolesFichierNom };
+        return { source: "plateforme", id: v.ID, titre: v.Titre, auteur: v.Auteur, description: v.Description, cover: v.CoverBase64, type: v.Type, prix: v.Prix, dateAjout: v.DateAjout, paroles: v.Paroles, parolesFichierLien: v.ParolesFichierLien, parolesFichierNom: v.ParolesFichierNom };
       });
       videosPlaylistCourante = videosYoutube.concat(videosPlateforme);
       afficherVideosPlaylist(videosPlaylistCourante, nom);
@@ -3932,7 +4011,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const requete = document.getElementById("rechercheVideos").value.trim().toLowerCase();
     if (document.getElementById("listeVideosPlaylist").style.display === "none") return; // aucune catégorie ouverte
     if (!requete) { afficherVideosPlaylist(videosPlaylistCourante, nomPlaylistCourante); return; }
-    const resultats = videosPlaylistCourante.filter(function (v) { return (v.titre || "").toLowerCase().indexOf(requete) !== -1; });
+    const resultats = videosPlaylistCourante.filter(function (v) {
+      return (v.titre || "").toLowerCase().indexOf(requete) !== -1 ||
+        (v.auteur || "").toLowerCase().indexOf(requete) !== -1 ||
+        (v.description || "").toLowerCase().indexOf(requete) !== -1;
+    });
     afficherVideosPlaylist(resultats, nomPlaylistCourante);
   }
 
@@ -3941,6 +4024,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("adminNomAssoc").value = (configApp && configApp.NomAssociation) || "";
     document.getElementById("adminYoutube").value = (configApp && configApp.LienYoutube) || "";
     document.getElementById("adminYoutubeChannelId").value = (configApp && configApp.YoutubeChannelId) || "";
+    document.getElementById("adminMontantPublication").value = (configApp && configApp.MontantPublication) || 2000;
     if (configApp && configApp.LogoBase64) {
       document.getElementById("logoPreview").innerHTML = '<img src="data:image/png;base64,' + configApp.LogoBase64 + '">';
     }
@@ -3968,16 +4052,19 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const nom = document.getElementById("adminNomAssoc").value.trim();
     const youtube = document.getElementById("adminYoutube").value.trim();
     const youtubeChannelId = document.getElementById("adminYoutubeChannelId").value.trim();
+    const montantPublication = document.getElementById("adminMontantPublication").value;
     const err = document.getElementById("erreurApparence");
     err.style.display = "none";
     Promise.all([
       nom ? appelServeur("mettreAJourConfig", membreCourant.code, "NomAssociation", nom) : Promise.resolve(),
       youtube ? appelServeur("mettreAJourConfig", membreCourant.code, "LienYoutube", youtube) : Promise.resolve(),
-      youtubeChannelId ? appelServeur("mettreAJourConfig", membreCourant.code, "YoutubeChannelId", youtubeChannelId) : Promise.resolve()
+      youtubeChannelId ? appelServeur("mettreAJourConfig", membreCourant.code, "YoutubeChannelId", youtubeChannelId) : Promise.resolve(),
+      montantPublication !== "" ? appelServeur("mettreAJourConfig", membreCourant.code, "MontantPublication", Number(montantPublication)) : Promise.resolve()
     ]).then(function () {
       if (nom) { configApp.NomAssociation = nom; appliquerBranding(configApp); }
       if (youtube) configApp.LienYoutube = youtube;
       if (youtubeChannelId) configApp.YoutubeChannelId = youtubeChannelId;
+      if (montantPublication !== "") configApp.MontantPublication = Number(montantPublication);
       alert("Informations enregistrées.");
     }).catch(function (e) {
       err.textContent = "Erreur : " + e.message;
@@ -4140,7 +4227,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   // ==================== SÉLECTION MULTIPLE (Audios, Vidéos, Documents, Membres) ====================
   // Système réutilisable de cases à cocher + suppression groupée, commun aux 4 panneaux.
-  const selectionsAdmin_ = { audios: new Set(), videos: new Set(), documents: new Set(), membres: new Set() };
+  const selectionsAdmin_ = { audios: new Set(), videos: new Set(), documents: new Set(), membres: new Set(), soumissions: new Set() };
 
   function construireBarreSelection_(cle) {
     return '<div class="barre-selection">' +
@@ -4179,13 +4266,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     audios: function () { appelServeur("getEnregistrements").then(afficherEnregistrementsAdmin); },
     videos: function () { appelServeur("getVideos").then(afficherVideosPlateformeAdmin); },
     documents: function () { appelServeur("getDocuments").then(afficherDocumentsAdmin); },
-    membres: function () { appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin); }
+    membres: function () { appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin); },
+    soumissions: function () { appelServeur("getSoumissionsAdmin", membreCourant.code).then(afficherSoumissionsAdmin); }
   };
   const FONCTIONS_SUPPRESSION_MULTIPLE_ = {
     audios: "supprimerEnregistrementsMultiples", videos: "supprimerVideosMultiples",
-    documents: "supprimerDocumentsMultiples", membres: "supprimerMembresMultiples"
+    documents: "supprimerDocumentsMultiples", membres: "supprimerMembresMultiples",
+    soumissions: "supprimerSoumissionsMultiples"
   };
-  const LIBELLES_SELECTION_ = { audios: "audio(s)", videos: "vidéo(s)", documents: "document(s)", membres: "membre(s)" };
+  const LIBELLES_SELECTION_ = { audios: "audio(s)", videos: "vidéo(s)", documents: "document(s)", membres: "membre(s)", soumissions: "soumission(s)" };
 
   function supprimerSelection_(cle) {
     const set = selectionsAdmin_[cle];
@@ -4197,11 +4286,31 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
+  let membresAdminCache_ = [];
+
   function afficherMembresAdmin(data) {
     data = data || { total: 0, actifs: 0, liste: [] };
     document.getElementById("statTotal").textContent = data.total;
     document.getElementById("statActifs").textContent = data.actifs;
-    const liste = data.liste || [];
+    document.getElementById("rechercheMembres").value = "";
+    membresAdminCache_ = data.liste || [];
+    afficherListeMembresAdmin_(membresAdminCache_);
+  }
+
+  function filtrerMembresAdmin() {
+    const requete = document.getElementById("rechercheMembres").value.trim().toLowerCase();
+    if (!requete) { afficherListeMembresAdmin_(membresAdminCache_); return; }
+    const resultats = membresAdminCache_.filter(function (m) {
+      const nomComplet = ((m.prenom || "") + " " + (m.nom || "")).toLowerCase();
+      return nomComplet.indexOf(requete) !== -1 ||
+        (m.telephone || "").toLowerCase().indexOf(requete) !== -1 ||
+        (m.code || "").toLowerCase().indexOf(requete) !== -1;
+    });
+    afficherListeMembresAdmin_(resultats);
+  }
+
+  function afficherListeMembresAdmin_(liste) {
+    liste = liste || [];
     selectionsAdmin_.membres.clear();
     const zone = document.getElementById("adminListeMembres");
     if (!liste.length) { zone.innerHTML = '<p class="empty-state">Aucun membre.</p>'; return; }
@@ -4221,22 +4330,33 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       const boutonAuteur = m.estAuteur
         ? '<button class="danger-outline small" onclick="toggleAuteurClick(\'' + codeEchappe + '\', false)">Retirer Auteur</button>'
         : '<button class="secondary small" onclick="toggleAuteurClick(\'' + codeEchappe + '\', true)">✍️ Rendre Auteur</button>';
+      const boutonExoneration = m.estAuteur
+        ? (m.exonerePublication
+          ? '<button class="danger-outline small" onclick="toggleExonerationClick(\'' + codeEchappe + '\')">Retirer l\'exonération</button>'
+          : '<button class="secondary small" onclick="toggleExonerationClick(\'' + codeEchappe + '\')">🆓 Exonérer des frais</button>')
+        : '';
       return '<div class="item-block">' +
         '<div class="item-row" style="border:none;padding-bottom:8px;">' +
         '<input type="checkbox" class="case-select case-select-membres" data-id="' + codeEchappe + '" onchange="toggleCaseSelection_(\'membres\',\'' + codeEchappe + '\')">' +
-        '<div><div class="item-nom">' + escapeHtml(nomAff) + (m.estAuteur ? ' <span class="vis-pill">Auteur</span>' : '') + '</div>' +
+        '<div><div class="item-nom">' + escapeHtml(nomAff) + (m.estAuteur ? ' <span class="vis-pill">Auteur</span>' : '') + (m.exonerePublication ? ' <span class="vis-pill" style="background:#e6f7ee;color:#168653;">Exonéré</span>' : '') + '</div>' +
         '<div class="item-desc">' + escapeHtml(m.telephone || "") + " · " + escapeHtml(statutAffiche) + '</div></div>' +
         '<div style="display:flex; align-items:center; gap:8px;">' +
         '<span class="role-pill ' + pillClass + '">' + escapeHtml(LIBELLES_ROLES[m.role] || m.role) + "</span>" +
         '<select style="width:auto;margin:0;padding:6px 8px;font-size:11px;" onchange="changerRole(\'' + codeEchappe + '\', this.value)">' + options + '</select>' +
         '</div></div>' +
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
-        actionsCompte + boutonAuteur +
+        actionsCompte + boutonAuteur + boutonExoneration +
         '<button class="secondary small" onclick="ouvrirEditionBadge_(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">🪪 Badge</button>' +
         '<button class="danger-outline small" onclick="supprimerMembreClick(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">Retirer</button>' +
         '</div></div>';
     });
     zone.innerHTML = construireBarreSelection_("membres") + cartes.join("");
+  }
+
+  function toggleExonerationClick(code) {
+    appelServeur("toggleExonerationPublication", membreCourant.code, code).then(function () {
+      appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
   // --- Édition du badge d'un membre (Super Admin uniquement) ---
@@ -5091,16 +5211,34 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     appelServeur("getAffiches").then(afficherAffichesAdmin).catch(function (err) { afficherErreurZone("adminListeAffiches", err); });
   }
 
+  let affichesAdminCache_ = [];
+
   function afficherAffichesAdmin(affiches) {
-    affiches = affiches || [];
+    affichesAdminCache_ = affiches || [];
     const zone = document.getElementById("adminListeAffiches");
-    if (!affiches.length) { zone.innerHTML = '<p class="empty-state">Aucune affiche pour le moment.</p>'; return; }
-    zone.innerHTML = affiches.map(function (a) {
+    if (!affichesAdminCache_.length) { zone.innerHTML = '<p class="empty-state">Aucune affiche pour le moment.</p>'; return; }
+    zone.innerHTML = affichesAdminCache_.map(function (a, i) {
       return '<div class="item-row">' +
         '<img src="data:image/png;base64,' + a.ImageBase64 + '" style="width:90px;height:30px;object-fit:cover;border-radius:6px;">' +
+        '<div style="display:flex;gap:6px;">' +
+        '<button class="secondary small" style="width:auto;" ' + (i === 0 ? "disabled" : "") + ' onclick="deplacerAffiche_(' + i + ',-1)" title="Monter">▲</button>' +
+        '<button class="secondary small" style="width:auto;" ' + (i === affichesAdminCache_.length - 1 ? "disabled" : "") + ' onclick="deplacerAffiche_(' + i + ',1)" title="Descendre">▼</button>' +
         '<button class="danger-outline small" onclick="supprimerAfficheClick(\'' + a.ID + '\')">Supprimer</button>' +
-        '</div>';
+        '</div></div>';
     }).join("");
+  }
+
+  // Échange la position de l'affiche avec sa voisine (haut/bas), puis enregistre le nouvel
+  // ordre complet côté serveur.
+  function deplacerAffiche_(index, direction) {
+    const cible = index + direction;
+    if (cible < 0 || cible >= affichesAdminCache_.length) return;
+    const temp = affichesAdminCache_[index];
+    affichesAdminCache_[index] = affichesAdminCache_[cible];
+    affichesAdminCache_[cible] = temp;
+    afficherAffichesAdmin(affichesAdminCache_);
+    appelServeur("definirOrdreAffiches", membreCourant.code, affichesAdminCache_.map(function (a) { return a.ID; }))
+      .catch(function (err) { alert("Erreur : " + err.message); });
   }
 
   function previsualiserAffiche(event) {
@@ -5186,9 +5324,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // --- Soumissions de contenu (admin) ---
   function afficherSoumissionsAdmin(soumissions) {
     soumissions = soumissions || [];
+    selectionsAdmin_.soumissions.clear();
     const zone = document.getElementById("adminListeSoumissions");
     if (!soumissions.length) { zone.innerHTML = '<p class="empty-state">Aucune soumission.</p>'; return; }
-    zone.innerHTML = soumissions.map(function (s) {
+    const cartes = soumissions.map(function (s) {
       const pillClass = s.Statut === "Publié" ? "statut-traite" : s.Statut === "Rejeté" ? "role-admin" : "statut-nouveau";
       const actions = s.Statut === "EnAttente"
         ? '<button class="secondary small" onclick="validerSoumissionClick(\'' + s.ID + '\')">✓ Valider</button>' +
@@ -5196,6 +5335,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         : "";
       return '<div class="admin-message-card">' +
         '<div class="item-row" style="padding-top:0;">' +
+        '<input type="checkbox" class="case-select case-select-soumissions" data-id="' + s.ID + '" onchange="toggleCaseSelection_(\'soumissions\',\'' + s.ID + '\')">' +
         '<div><div class="item-nom">' + (LIBELLES_TYPE_SOUMISSION[s.TypeContenu] || s.TypeContenu) + " " + escapeHtml(s.Titre) + '</div>' +
         '<div class="item-desc">Par ' + escapeHtml(s.NomAuteur) + " (" + escapeHtml(s.EmailAuteur) + ") · " + (s.Date ? new Date(s.Date).toLocaleDateString("fr-FR") : "") + '</div></div>' +
         '<span class="statut-pill ' + pillClass + '">' + (LIBELLES_STATUT_SOUMISSION[s.Statut] || s.Statut) + "</span>" +
@@ -5205,8 +5345,17 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
         '<button class="secondary small" onclick="telechargerSoumissionAdmin(\'' + s.ID + '\')">⬇️ Télécharger pour vérification</button>' +
         actions +
+        '<button class="danger-outline small" onclick="supprimerSoumissionClick(\'' + s.ID + '\')">🗑️ Supprimer</button>' +
         "</div></div>";
-    }).join("");
+    });
+    zone.innerHTML = construireBarreSelection_("soumissions") + cartes.join("");
+  }
+
+  function supprimerSoumissionClick(id) {
+    if (!confirm("Supprimer définitivement cette soumission ?")) return;
+    appelServeur("supprimerSoumission", membreCourant.code, id).then(function () {
+      appelServeur("getSoumissionsAdmin", membreCourant.code).then(afficherSoumissionsAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
   function telechargerSoumissionAdmin(id) {
