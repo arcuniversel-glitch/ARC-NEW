@@ -171,6 +171,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 .recu-ligne strong{color:var(--ink);}
 .recu-montant{text-align:center;font-family:Montserrat;font-weight:800;font-size:26px;color:var(--blue2);margin:18px 0;}
 .recu-footer{text-align:center;font-size:11px;color:var(--muted);margin-top:16px;}
+/* ===== TV ===== */
+#section-tv .section-title{color:#be185d}
+#section-tv .section-title .ic{background:linear-gradient(135deg,#ec4899,#be185d);color:#fff;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+#section-tv .sub-nav-btn.active{background:linear-gradient(135deg,#be185d,#ec4899)}
+.tv-ecran{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden}
+.tv-ecran iframe{width:100%;height:100%;border:0;display:block;pointer-events:none}
+.tv-vide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;text-align:center;padding:20px;background:linear-gradient(135deg,#1f2937,#111827)}
+.tv-badge-live{display:inline-block;background:#d71920;color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:999px;margin-left:6px;vertical-align:middle;animation:pulse-mic 1.6s infinite}
+.tv-logo{width:52px;height:52px;border-radius:14px;object-fit:cover;background:#eef3f9;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}
   </style>
 </head>
 <body>
@@ -810,6 +819,112 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       </div>
     </div>
 
+    <!-- ===== TV ===== -->
+    <div class="section" id="section-tv">
+      <div class="section-title"><span class="ic">📺</span> TV</div>
+
+      <div id="tvLecteurZone" style="display:none;margin-bottom:16px;">
+        <div class="tv-ecran" id="tvEcran"><div id="tvEcranInterieur"></div></div>
+        <div class="item-row" style="padding:10px 0;">
+          <div><div class="item-nom" id="tvInfoNom"></div><div class="item-desc" id="tvInfoDetail"></div></div>
+          <div style="display:flex;gap:6px;">
+            <button class="secondary small" onclick="tvPleinEcran_()">⛶</button>
+            <button class="danger-outline small" onclick="arreterTv_()">✕ Fermer</button>
+          </div>
+        </div>
+        <div id="tvGrilleZone"></div>
+      </div>
+
+      <div class="sub-nav" id="subNavTv">
+        <button class="sub-nav-btn active" data-sub="chaines" onclick="afficherSousTv('chaines')">Chaînes</button>
+        <button class="sub-nav-btn" data-sub="favoris" onclick="afficherSousTv('favoris')">⭐ Mes chaînes</button>
+        <button class="sub-nav-btn" data-sub="studio" id="btnSubTvStudio" style="display:none;" onclick="afficherSousTv('studio')">🎛️ Mon studio</button>
+      </div>
+
+      <div class="sub-section active" id="tvSous-chaines">
+        <div id="listeChainesTv"><div class="loading">Chargement…</div></div>
+      </div>
+
+      <div class="sub-section" id="tvSous-studio">
+        <div class="card">
+          <p class="field-label">Ma chaîne</p>
+          <div class="logo-upload-preview" id="tvChLogoPreview">📺</div>
+          <label class="file-btn-label">Choisir un logo<input type="file" accept="image/*" style="display:none;" onchange="gererLogoChaineTv_(event)"></label>
+          <label class="field-label" style="margin-top:12px;">Nom de la chaîne</label>
+          <input id="tvChNom" type="text" placeholder="Ex : TV Réveil Bénin">
+          <label class="field-label">Description</label>
+          <textarea id="tvChDesc" rows="2" placeholder="De quoi parle votre chaîne ?"></textarea>
+          <div id="erreurTvChaine" class="error" style="display:none;"></div>
+          <button class="flame" onclick="sauvegarderChaineTvClick()">Enregistrer ma chaîne</button>
+        </div>
+
+        <div id="tvStudioSuspendue" class="error" style="display:none;margin:10px 0;"></div>
+
+        <div id="tvStudioSuite" style="display:none;">
+          <div class="card">
+            <p class="field-label">Mes vidéos (bibliothèque et diffusion en boucle)</p>
+            <p class="subtitle left" style="margin-top:-4px;">Collez un lien YouTube (vidéo publique ou non répertoriée). La durée est détectée automatiquement. Ces vidéos passent en boucle quand aucun créneau n'est programmé.</p>
+            <input id="tvProgLien" type="text" placeholder="https://www.youtube.com/watch?v=...">
+            <div id="erreurTvProg" class="error" style="display:none;"></div>
+            <button onclick="ajouterProgrammeTvClick()">Ajouter à ma bibliothèque</button>
+            <div id="tvListeProgrammes" style="margin-top:12px;"></div>
+          </div>
+
+          <div class="card">
+            <p class="field-label">Grille horaire</p>
+            <p class="subtitle left" style="margin-top:-4px;">Planifiez une vidéo ou un live à une heure précise (selon l'heure de votre appareil). Pour un live : préparez-le à l'avance avec « Préparer mon live » ci-dessous.</p>
+            <label class="field-label">Type</label>
+            <select id="tvCrType" onchange="tvCrChangerType_()">
+              <option value="video">🎬 Vidéo de ma bibliothèque</option>
+              <option value="live">🔴 Live</option>
+            </select>
+            <div id="tvCrVideoZone">
+              <label class="field-label">Vidéo</label>
+              <select id="tvCrProgramme"></select>
+            </div>
+            <div id="tvCrLiveZone" style="display:none;">
+              <label class="field-label">Titre du live</label>
+              <input id="tvCrTitreLive" type="text" placeholder="Ex : Soirée de louange">
+              <label class="field-label">Durée prévue (minutes)</label>
+              <input id="tvCrDuree" type="number" min="5" max="720" value="60">
+            </div>
+            <label class="field-label">Début</label>
+            <input id="tvCrDebut" type="datetime-local">
+            <label class="field-label">Répétition</label>
+            <select id="tvCrRepetition">
+              <option value="Aucune">Une seule fois</option>
+              <option value="Quotidienne">Tous les jours</option>
+              <option value="Hebdomadaire">Toutes les semaines</option>
+            </select>
+            <div id="erreurTvCreneau" class="error" style="display:none;"></div>
+            <button onclick="ajouterCreneauTvClick()">Ajouter à la grille</button>
+            <div id="tvListeCreneaux" style="margin-top:12px;"></div>
+          </div>
+
+          <div class="card">
+            <p class="field-label">Mon live</p>
+            <div id="tvLiveFormZone">
+              <input id="tvLiveTitre" type="text" placeholder="Titre du live">
+              <div id="erreurTvLive" class="error" style="display:none;"></div>
+              <button class="flame" onclick="demarrerLiveTvClick()">🔴 Préparer mon live</button>
+            </div>
+            <div id="tvLiveInfosZone" style="display:none;">
+              <p class="item-nom" id="tvLiveStatut"></p>
+              <p class="item-desc">Dans OBS (ordinateur) : Paramètres › Diffusion › Service « Personnalisé ». Sur téléphone : une appli comme Larix Broadcaster. Collez l'adresse et la clé ci-dessous, puis lancez la diffusion : votre chaîne bascule en direct toute seule.</p>
+              <label class="field-label">Adresse du serveur</label>
+              <div class="codes-box" id="tvLiveAdresse"></div>
+              <button class="secondary small full-mt" onclick="copierTexte_(document.getElementById('tvLiveAdresse').textContent)">📋 Copier l'adresse</button>
+              <label class="field-label" style="margin-top:12px;">Clé de diffusion (à ne jamais partager)</label>
+              <div class="codes-box" id="tvLiveCle"></div>
+              <button class="secondary small full-mt" onclick="copierTexte_(document.getElementById('tvLiveCle').textContent)">📋 Copier la clé</button>
+              <button class="secondary full-mt" onclick="chargerStudioTv_()">🔄 Actualiser le statut</button>
+              <button class="danger-outline full-mt" onclick="arreterLiveTvClick()">⏹ Terminer le live</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== ADMINISTRATION ===== -->
     <div class="section" id="section-admin">
       <div class="admin-subtabs" id="adminSubtabs"></div>
@@ -1221,6 +1336,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <div class="card" id="adminListeAffiches"><div class="loading">Chargement…</div></div>
       </div>
 
+      <div class="admin-section" id="admin-tv">
+        <div class="card" id="adminListeTv"><div class="loading">Chargement…</div></div>
+      </div>
+
       <div class="admin-section" id="admin-codes">
         <div class="card">
           <div class="section-title"><span class="ic">🔐</span> Générer des codes d'inscription</div>
@@ -1359,6 +1478,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }
     verifierAlertesSeances_();
     setInterval(verifierAlertesSeances_, 30000);
+    setTimeout(verifierAlertesTv_, 8000);
+    setInterval(verifierAlertesTv_, 60000);
     if (restaurerSessionSiRecente_()) {
       afficherDashboard();
     } else {
@@ -1870,6 +1991,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       onglets = [
         { id: "bible", label: "📖 Bible" },
         { id: "prieres", label: "🙏 Séances directes" },
+        { id: "tv", label: "📺 TV" },
         { id: "audios", label: "🎧 Audios" },
         { id: "documents", label: "📄 Documents" },
         { id: "videos", label: "▶️ Vidéos" },
@@ -1886,6 +2008,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         { id: "offrandes", label: "Offrandes" },
         { id: "bible", label: "📖 Bible" },
         { id: "prieres", label: "🙏 Séances directes" },
+        { id: "tv", label: "📺 TV" },
         { id: "audios", label: "🎧 Audios" },
         { id: "documents", label: "📄 Documents" },
         { id: "videos", label: "▶️ Vidéos" },
@@ -2203,6 +2326,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function afficherOnglet(nom, depuisHistorique) {
     if (!depuisHistorique && ongletActuel && ongletActuel !== nom) historiqueOnglets.push(ongletActuel);
     if (ongletActuel === "bible" && nom !== "bible") arreterLectureBible(); // ne pas laisser la voix continuer en arrière-plan
+    if (ongletActuel === "tv" && nom !== "tv") arreterTv_(); // la TV ne continue pas en arrière-plan
     ongletActuel = nom;
     if (!modeVisiteur) sauvegarderSession_(); // prolonge la session tant que le membre navigue activement
     document.getElementById("btnPrecedent").style.display = (historiqueOnglets.length || modeVisiteur) ? "inline-flex" : "none";
@@ -2218,6 +2342,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     else if (nom === "messages") { chargerMesMessages(); chargerMesAnnonces(); }
     else if (nom === "videos") chargerPlaylists();
     else if (nom === "prieres") chargerSeances();
+    else if (nom === "tv") chargerTv();
     else if (nom === "soumissions") chargerMesSoumissions();
     else if (nom === "admin") chargerDonneesAdmin();
     marquerOngletVu_(nom);
@@ -2243,6 +2368,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       { id: "cotisation", label: "Cotisations", permission: "finances" },
       { id: "demandesPriere", label: "Demandes de prière", permission: "demandesPriere" },
       { id: "soumissions", label: "✍️ Soumissions", permission: "contenus" },
+      { id: "tv", label: "📺 TV", permission: "contenus" },
       { id: "messages", label: "Messages", permission: "systeme" },
       { id: "codes", label: "🔐 Codes d'accès", permission: "systeme" }
     ];
@@ -2282,6 +2408,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     else if (nom === "actualites") appelServeur("getActualitesAdmin").then(afficherActualitesAdmin).catch(function (err) { afficherErreurZone("adminListeActualites", err); });
     else if (nom === "espacesPub") appelServeur("getEspacesPubAdmin").then(afficherEspacesPubAdmin).catch(function (err) { afficherErreurZone("adminListeEspacesPub", err); });
     else if (nom === "demandesPriere") appelServeur("getDemandesPriereAdmin", membreCourant.code).then(afficherDemandesPriereAdmin).catch(function (err) { afficherErreurZone("adminListeDemandesPriere", err); });
+    else if (nom === "tv") rechargerTvAdmin_();
     else if (nom === "soumissions") appelServeur("getSoumissionsAdmin", membreCourant.code).then(afficherSoumissionsAdmin).catch(function (err) { afficherErreurZone("adminListeSoumissions", err); });
     else if (nom === "codes") appelServeur("getCodesInscriptionAdmin", membreCourant.code).then(afficherCodesInscriptionAdmin).catch(function (err) { afficherErreurZone("adminListeCodesInscription", err); });
   }
@@ -3707,7 +3834,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   // ==================== YOUTUBE ====================
   function ouvrirYoutube() {
-    const lien = (configApp && configApp.LienYoutube) || "https://www.youtube.com/@REVEILCOMMUNICATION";
+    const lien = (configApp && configApp.LienYoutube) || "https://www.youtube.com/channel/UCghjqe8HGH6b8GRj8EUD-UA";
     window.open(lien, "_blank");
   }
 
@@ -4335,17 +4462,20 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           ? '<button class="danger-outline small" onclick="toggleExonerationClick(\'' + codeEchappe + '\')">Retirer l\'exonération</button>'
           : '<button class="secondary small" onclick="toggleExonerationClick(\'' + codeEchappe + '\')">🆓 Exonérer des frais</button>')
         : '';
+      const boutonTv = m.estTvOwner
+        ? '<button class="danger-outline small" onclick="toggleTvOwnerClick(\'' + codeEchappe + '\', false)">Retirer TV owner</button>'
+        : '<button class="secondary small" onclick="toggleTvOwnerClick(\'' + codeEchappe + '\', true)">📺 Rendre TV owner</button>';
       return '<div class="item-block">' +
         '<div class="item-row" style="border:none;padding-bottom:8px;">' +
         '<input type="checkbox" class="case-select case-select-membres" data-id="' + codeEchappe + '" onchange="toggleCaseSelection_(\'membres\',\'' + codeEchappe + '\')">' +
-        '<div><div class="item-nom">' + escapeHtml(nomAff) + (m.estAuteur ? ' <span class="vis-pill">Auteur</span>' : '') + (m.exonerePublication ? ' <span class="vis-pill" style="background:#e6f7ee;color:#168653;">Exonéré</span>' : '') + '</div>' +
+        '<div><div class="item-nom">' + escapeHtml(nomAff) + (m.estAuteur ? ' <span class="vis-pill">Auteur</span>' : '') + (m.estTvOwner ? ' <span class="vis-pill">TV</span>' : '') + (m.exonerePublication ? ' <span class="vis-pill" style="background:#e6f7ee;color:#168653;">Exonéré</span>' : '') + '</div>' +
         '<div class="item-desc">' + escapeHtml(m.telephone || "") + " · " + escapeHtml(statutAffiche) + '</div></div>' +
         '<div style="display:flex; align-items:center; gap:8px;">' +
         '<span class="role-pill ' + pillClass + '">' + escapeHtml(LIBELLES_ROLES[m.role] || m.role) + "</span>" +
         '<select style="width:auto;margin:0;padding:6px 8px;font-size:11px;" onchange="changerRole(\'' + codeEchappe + '\', this.value)">' + options + '</select>' +
         '</div></div>' +
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
-        actionsCompte + boutonAuteur + boutonExoneration +
+        actionsCompte + boutonAuteur + boutonExoneration + boutonTv +
         '<button class="secondary small" onclick="ouvrirEditionBadge_(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">🪪 Badge</button>' +
         '<button class="danger-outline small" onclick="supprimerMembreClick(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">Retirer</button>' +
         '</div></div>';
@@ -5579,6 +5709,427 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       (corpsTexte || corpsFichier || '<p class="empty-state">Aucune parole disponible.</p>');
     overlay.appendChild(box);
     document.body.appendChild(overlay);
+  }
+
+
+  // ==================== TV ====================
+  let tvChainesCache = [];
+  let tvSousOnglet = "chaines";
+  let tvChaineActuelle = null;
+  let tvTimer_ = null;
+  let tvSignature_ = "";
+  let tvFinProgramme_ = 0;
+  let tvLogoBase64_ = "";
+  let tvProgrammesStudio_ = [];
+
+  function tvFavoris_() {
+    try { return JSON.parse(localStorage.getItem("arc_tv_favoris") || "[]"); } catch (e) { return []; }
+  }
+
+  function tvToggleFavori_(id) {
+    const f = tvFavoris_();
+    const i = f.indexOf(id);
+    if (i === -1) f.push(id); else f.splice(i, 1);
+    try { localStorage.setItem("arc_tv_favoris", JSON.stringify(f)); } catch (e) {}
+    afficherChainesTv_(tvSousOnglet === "favoris");
+  }
+
+  function chargerTv() {
+    const estOwner = !!(membreCourant && membreCourant.estTvOwner);
+    document.getElementById("btnSubTvStudio").style.display = estOwner ? "inline-block" : "none";
+    if (!estOwner && tvSousOnglet === "studio") tvSousOnglet = "chaines";
+    appelServeur("getTvChaines").then(function (liste) {
+      tvChainesCache = liste || [];
+      afficherSousTv(tvSousOnglet);
+    }).catch(function (err) { afficherErreurZone("listeChainesTv", err); });
+  }
+
+  function afficherSousTv(nom) {
+    tvSousOnglet = nom;
+    document.querySelectorAll("#subNavTv .sub-nav-btn").forEach(function (b) { b.classList.toggle("active", b.dataset.sub === nom); });
+    document.getElementById("tvSous-chaines").classList.toggle("active", nom !== "studio");
+    document.getElementById("tvSous-studio").classList.toggle("active", nom === "studio");
+    if (nom === "studio") chargerStudioTv_();
+    else afficherChainesTv_(nom === "favoris");
+  }
+
+  function afficherChainesTv_(favorisSeulement) {
+    const zone = document.getElementById("listeChainesTv");
+    const favoris = tvFavoris_();
+    let liste = tvChainesCache;
+    if (favorisSeulement) liste = liste.filter(function (c) { return favoris.indexOf(c.ID) !== -1; });
+    if (!liste.length) {
+      zone.innerHTML = '<p class="empty-state">' + (favorisSeulement ? "Vous ne suivez encore aucune chaîne." : "Aucune chaîne pour le moment.") + '</p>';
+      return;
+    }
+    zone.innerHTML = liste.map(function (c) {
+      const logo = c.LogoBase64 ? '<img class="tv-logo" src="data:image/png;base64,' + c.LogoBase64 + '">' : '<div class="tv-logo">📺</div>';
+      const live = c.EnDirect ? '<span class="tv-badge-live">● EN DIRECT</span>' : '';
+      const suivie = favoris.indexOf(c.ID) !== -1;
+      return '<div class="contenu-item" style="display:flex;gap:12px;align-items:center;">' + logo +
+        '<div style="flex:1;min-width:0;"><div class="item-nom">' + escapeHtml(c.Nom) + live + '</div>' +
+        '<div class="item-desc">' + escapeHtml(c.Description) + '</div></div>' +
+        '<div style="display:flex;flex-direction:column;gap:6px;">' +
+        '<button class="flame small" onclick="regarderChaineTv(\'' + c.ID + '\')">▶ Regarder</button>' +
+        '<button class="secondary small" onclick="tvToggleFavori_(\'' + c.ID + '\')">' + (suivie ? "⭐ Suivie" : "☆ Suivre") + '</button>' +
+        '</div></div>';
+    }).join("");
+  }
+
+  // --- Lecteur TV : tous les spectateurs voient la même chose au même moment ---
+  function regarderChaineTv(id) {
+    const c = tvChainesCache.find(function (x) { return x.ID === id; });
+    if (!c) return;
+    tvChaineActuelle = c;
+    tvSignature_ = "";
+    tvFinProgramme_ = 0;
+    document.getElementById("tvLecteurZone").style.display = "block";
+    document.getElementById("tvInfoNom").textContent = c.Nom;
+    document.getElementById("tvInfoDetail").textContent = "Connexion à la chaîne…";
+    document.getElementById("tvEcranInterieur").innerHTML = "";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    chargerGrilleTv_(id);
+    rafraichirTv_();
+  }
+
+  function rafraichirTv_() {
+    clearTimeout(tvTimer_);
+    if (!tvChaineActuelle) return;
+    const id = tvChaineActuelle.ID;
+    appelServeur("getTvEnCours", id).then(function (r) {
+      if (!tvChaineActuelle || tvChaineActuelle.ID !== id) return;
+      const ecran = document.getElementById("tvEcranInterieur");
+      const detail = document.getElementById("tvInfoDetail");
+      if (!r.succes) { ecran.innerHTML = '<div class="tv-vide">' + escapeHtml(r.message || "Chaîne indisponible.") + '</div>'; return; }
+
+      const heure = r.prochainTs ? " à " + new Date(r.prochainTs).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "";
+      const suite = r.prochainTitre ? " · Ensuite : " + r.prochainTitre + heure : "";
+
+      if (r.mode === "vide") {
+        tvSignature_ = "";
+        tvFinProgramme_ = 0;
+        ecran.innerHTML = '<div class="tv-vide">📺 ' + escapeHtml(r.nom) + '<br>' + (r.liveAttendu ? "Le live va bientôt démarrer." : "Les programmes arrivent bientôt.") + '</div>';
+        detail.textContent = (r.liveAttendu ? "🔴 Le live va bientôt démarrer" : "Aucun programme en ce moment") + suite;
+        tvTimer_ = setTimeout(rafraichirTv_, r.restant ? Math.min(60000, Math.max(2, r.restant) * 1000) : 60000);
+        return;
+      }
+
+      const forcer = r.mode === "programme" && tvFinProgramme_ && Date.now() >= tvFinProgramme_ - 1500;
+      const signature = r.mode + ":" + r.videoId;
+      if (signature !== tvSignature_ || forcer) {
+        tvSignature_ = signature;
+        let src = "https://www.youtube-nocookie.com/embed/" + r.videoId +
+          "?autoplay=1&controls=0&disablekb=1&rel=0&modestbranding=1&playsinline=1&fs=0";
+        if (r.mode === "programme" && r.offset > 0) src += "&start=" + Math.floor(r.offset);
+        ecran.innerHTML = '<iframe src="' + src + '" allow="autoplay; encrypted-media; picture-in-picture" title="TV"></iframe>';
+      }
+
+      let delai = 30000; // vérifie toutes les 30 s si un live démarre ou se termine
+      if (r.mode === "live") {
+        tvFinProgramme_ = 0;
+        detail.innerHTML = '<span class="tv-badge-live" style="margin:0;">● EN DIRECT</span> ' + escapeHtml(r.titre || "");
+      } else {
+        tvFinProgramme_ = Date.now() + r.restant * 1000;
+        detail.textContent = (r.liveAttendu ? "🔴 Le live va bientôt démarrer — en attendant : " : "En ce moment : ") + r.titre + suite;
+        delai = Math.min(delai, Math.max(2, r.restant) * 1000);
+      }
+      tvTimer_ = setTimeout(rafraichirTv_, delai);
+    }).catch(function () { tvTimer_ = setTimeout(rafraichirTv_, 30000); });
+  }
+
+  function arreterTv_() {
+    clearTimeout(tvTimer_);
+    tvChaineActuelle = null;
+    tvSignature_ = "";
+    const ecran = document.getElementById("tvEcranInterieur");
+    if (ecran) ecran.innerHTML = "";
+    const zone = document.getElementById("tvLecteurZone");
+    if (zone) zone.style.display = "none";
+  }
+
+  function tvPleinEcran_() {
+    const el = document.getElementById("tvEcran");
+    const f = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (f) f.call(el);
+  }
+
+  // --- Grille publique ---
+  function chargerGrilleTv_(id) {
+    const zone = document.getElementById("tvGrilleZone");
+    zone.innerHTML = '<div class="loading">Chargement de la grille…</div>';
+    appelServeur("getGrilleTv", id).then(function (liste) {
+      if (!tvChaineActuelle || tvChaineActuelle.ID !== id) return;
+      if (!liste.length) { zone.innerHTML = '<p class="item-desc">Aucun créneau programmé cette semaine — les vidéos passent en boucle.</p>'; return; }
+      zone.innerHTML = '<p class="field-label">📅 Grille des 7 prochains jours</p>' + liste.map(function (g) {
+        const quand = new Date(g.Debut).toLocaleString("fr-FR", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+        return '<div class="item-row" style="padding:8px 0;"><div><div class="item-nom">' + (g.Type === "live" ? "🔴 " : "🎬 ") + escapeHtml(g.Titre) + '</div><div class="item-desc">' + quand + '</div></div></div>';
+      }).join("");
+    }).catch(function (err) { afficherErreurZone("tvGrilleZone", err); });
+  }
+
+  // --- Studio du TV owner ---
+  function chargerStudioTv_() {
+    appelServeur("getMaChaineTv", membreCourant.code).then(afficherStudioTv_)
+      .catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  function afficherStudioTv_(res) {
+    const c = res.chaine;
+    document.getElementById("tvChNom").value = c ? c.Nom : "";
+    document.getElementById("tvChDesc").value = c ? c.Description : "";
+    document.getElementById("tvChLogoPreview").innerHTML = (c && c.LogoBase64) ? '<img src="data:image/png;base64,' + c.LogoBase64 + '">' : "📺";
+    tvLogoBase64_ = "";
+    document.getElementById("tvStudioSuite").style.display = (c && !c.Suspendue) ? "block" : "none";
+    const bandeau = document.getElementById("tvStudioSuspendue");
+    bandeau.style.display = (c && c.Suspendue) ? "block" : "none";
+    if (c && c.Suspendue) bandeau.textContent = "⛔ Votre chaîne est suspendue" + (c.Motif ? " : " + c.Motif : ".");
+    if (!c) return;
+
+    tvProgrammesStudio_ = res.programmes || [];
+    const zoneProg = document.getElementById("tvListeProgrammes");
+    if (!tvProgrammesStudio_.length) {
+      zoneProg.innerHTML = '<p class="empty-state">Aucune vidéo. Ajoutez votre première vidéo ci-dessus.</p>';
+    } else {
+      zoneProg.innerHTML = tvProgrammesStudio_.map(function (p, i) {
+        const min = Math.floor(p.Duree / 60), sec = String(p.Duree % 60).padStart(2, "0");
+        return '<div class="item-row"><div style="min-width:0;"><div class="item-nom">' + (i + 1) + '. ' + escapeHtml(p.Titre) + '</div>' +
+          '<div class="item-desc">' + min + ' min ' + sec + ' s</div></div>' +
+          '<div style="display:flex;gap:6px;">' +
+          '<button class="secondary small" ' + (i === 0 ? "disabled" : "") + ' onclick="deplacerProgrammeTv_(' + i + ',-1)">▲</button>' +
+          '<button class="secondary small" ' + (i === tvProgrammesStudio_.length - 1 ? "disabled" : "") + ' onclick="deplacerProgrammeTv_(' + i + ',1)">▼</button>' +
+          '<button class="danger-outline small" onclick="supprimerProgrammeTvClick(\'' + p.ID + '\')">🗑️</button></div></div>';
+      }).join("");
+    }
+
+    afficherCreneauxStudio_(res);
+
+    const live = res.live || {};
+    document.getElementById("tvLiveFormZone").style.display = live.prepare ? "none" : "block";
+    document.getElementById("tvLiveInfosZone").style.display = live.prepare ? "block" : "none";
+    if (live.prepare) {
+      document.getElementById("tvLiveStatut").textContent = live.enDirect ? "🔴 Vous êtes en direct" : "⏳ Live prêt — en attente de votre signal vidéo";
+      document.getElementById("tvLiveAdresse").textContent = live.adresse;
+      document.getElementById("tvLiveCle").textContent = live.cle;
+    }
+  }
+
+  function gererLogoChaineTv_(evt) {
+    const f = evt.target.files[0];
+    if (!f) return;
+    traiterImageCarree(f, 200, function (base64) {
+      tvLogoBase64_ = base64;
+      document.getElementById("tvChLogoPreview").innerHTML = '<img src="data:image/png;base64,' + base64 + '">';
+    });
+  }
+
+  function sauvegarderChaineTvClick() {
+    const err = document.getElementById("erreurTvChaine");
+    err.style.display = "none";
+    appelServeur("creerOuModifierChaineTv", membreCourant.code,
+      document.getElementById("tvChNom").value.trim(), document.getElementById("tvChDesc").value.trim(), tvLogoBase64_)
+      .then(function () { alert("✓ Chaîne enregistrée."); chargerStudioTv_(); })
+      .catch(function (e) { err.textContent = "Erreur : " + e.message; err.style.display = "block"; });
+  }
+
+  function ajouterProgrammeTvClick() {
+    const err = document.getElementById("erreurTvProg");
+    err.style.display = "none";
+    const lien = document.getElementById("tvProgLien").value.trim();
+    if (!lien) { err.textContent = "Collez un lien YouTube."; err.style.display = "block"; return; }
+    appelServeur("ajouterProgrammeTv", membreCourant.code, lien)
+      .then(function () { document.getElementById("tvProgLien").value = ""; chargerStudioTv_(); })
+      .catch(function (e) { err.textContent = "Erreur : " + e.message; err.style.display = "block"; });
+  }
+
+  function supprimerProgrammeTvClick(id) {
+    if (!confirm("Retirer cette vidéo de la bibliothèque ?")) return;
+    appelServeur("supprimerProgrammeTv", membreCourant.code, id).then(chargerStudioTv_)
+      .catch(function (e) { alert("Erreur : " + e.message); });
+  }
+
+  function deplacerProgrammeTv_(index, direction) {
+    const cible = index + direction;
+    if (cible < 0 || cible >= tvProgrammesStudio_.length) return;
+    const tmp = tvProgrammesStudio_[index];
+    tvProgrammesStudio_[index] = tvProgrammesStudio_[cible];
+    tvProgrammesStudio_[cible] = tmp;
+    appelServeur("definirOrdreProgrammesTv", membreCourant.code, tvProgrammesStudio_.map(function (p) { return p.ID; }))
+      .then(chargerStudioTv_).catch(function (e) { alert("Erreur : " + e.message); });
+  }
+
+  // --- Studio : créneaux de la grille ---
+  function tvCrChangerType_() {
+    const live = document.getElementById("tvCrType").value === "live";
+    document.getElementById("tvCrVideoZone").style.display = live ? "none" : "block";
+    document.getElementById("tvCrLiveZone").style.display = live ? "block" : "none";
+  }
+
+  function afficherCreneauxStudio_(res) {
+    const select = document.getElementById("tvCrProgramme");
+    select.innerHTML = tvProgrammesStudio_.length
+      ? tvProgrammesStudio_.map(function (p) { return '<option value="' + p.ID + '">' + escapeHtml(p.Titre) + '</option>'; }).join("")
+      : '<option value="">Ajoutez d\'abord une vidéo ci-dessus</option>';
+    const zone = document.getElementById("tvListeCreneaux");
+    const liste = res.creneaux || [];
+    if (!liste.length) { zone.innerHTML = '<p class="empty-state">Aucun créneau programmé.</p>'; return; }
+    zone.innerHTML = liste.map(function (g) {
+      const quand = new Date(g.DebutTs).toLocaleString("fr-FR", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+      const rep = g.Repetition === "Quotidienne" ? " · chaque jour" : (g.Repetition === "Hebdomadaire" ? " · chaque semaine" : "");
+      return '<div class="item-row"><div style="min-width:0;"><div class="item-nom">' + (g.Type === "live" ? "🔴 " : "🎬 ") + escapeHtml(g.Titre) + '</div>' +
+        '<div class="item-desc">' + quand + rep + ' · ' + Math.round(g.Duree / 60) + ' min</div></div>' +
+        '<button class="danger-outline small" onclick="supprimerCreneauTvClick(\'' + g.ID + '\')">🗑️</button></div>';
+    }).join("");
+  }
+
+  function ajouterCreneauTvClick() {
+    const err = document.getElementById("erreurTvCreneau");
+    err.style.display = "none";
+    const type = document.getElementById("tvCrType").value;
+    const debutVal = document.getElementById("tvCrDebut").value;
+    if (!debutVal) { err.textContent = "Choisissez la date et l'heure de début."; err.style.display = "block"; return; }
+    appelServeur("ajouterCreneauTv", membreCourant.code, type,
+      document.getElementById("tvCrTitreLive").value.trim(),
+      document.getElementById("tvCrProgramme").value,
+      new Date(debutVal).getTime(),
+      document.getElementById("tvCrDuree").value,
+      document.getElementById("tvCrRepetition").value)
+      .then(function () { document.getElementById("tvCrDebut").value = ""; document.getElementById("tvCrTitreLive").value = ""; chargerStudioTv_(); })
+      .catch(function (e) { err.textContent = "Erreur : " + e.message; err.style.display = "block"; });
+  }
+
+  function supprimerCreneauTvClick(id) {
+    if (!confirm("Retirer ce créneau de la grille ?")) return;
+    appelServeur("supprimerCreneauTv", membreCourant.code, id).then(chargerStudioTv_)
+      .catch(function (e) { alert("Erreur : " + e.message); });
+  }
+
+  // --- Studio : live ---
+  function demarrerLiveTvClick() {
+    const err = document.getElementById("erreurTvLive");
+    err.style.display = "none";
+    appelServeur("demarrerLiveTv", membreCourant.code, document.getElementById("tvLiveTitre").value.trim())
+      .then(chargerStudioTv_)
+      .catch(function (e) { err.textContent = "Erreur : " + e.message; err.style.display = "block"; });
+  }
+
+  function arreterLiveTvClick() {
+    if (!confirm("Terminer le live ? L'enregistrement sera conservé sur YouTube.")) return;
+    appelServeur("arreterLiveTv", membreCourant.code).then(chargerStudioTv_)
+      .catch(function (e) { alert("Erreur : " + e.message); });
+  }
+
+  function toggleTvOwnerClick(code, estTvOwner) {
+    appelServeur("definirStatutTvOwner", membreCourant.code, code, estTvOwner).then(function () {
+      appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  // --- Alertes : chaîne suivie en direct / live imminent (appli ouverte) ---
+  let tvEtatPrecedent_ = null;
+  const tvRappelsFaits_ = {};
+
+  function verifierAlertesTv_() {
+    if (document.visibilityState === "hidden") return;
+    const favoris = tvFavoris_();
+    if (!favoris.length) { tvEtatPrecedent_ = null; return; }
+    appelServeur("getTvChaines", true).then(function (liste) {
+      const maintenant = Date.now();
+      const etat = {};
+      (liste || []).forEach(function (c) {
+        etat[c.ID] = c.EnDirect;
+        const existante = tvChainesCache.find(function (x) { return x.ID === c.ID; });
+        if (existante) { existante.EnDirect = c.EnDirect; existante.ProchainLive = c.ProchainLive; }
+        if (favoris.indexOf(c.ID) === -1) return;
+        if (tvChaineActuelle && tvChaineActuelle.ID === c.ID) return; // déjà en train de la regarder
+        if (tvEtatPrecedent_ && c.EnDirect && !tvEtatPrecedent_[c.ID]) alerterTv_(c, "est maintenant en direct !");
+        if (c.ProchainLive && c.ProchainLive > maintenant && c.ProchainLive - maintenant <= 600000) {
+          const cle = c.ID + ":" + c.ProchainLive;
+          if (!tvRappelsFaits_[cle]) {
+            tvRappelsFaits_[cle] = true;
+            alerterTv_(c, "démarre un live dans " + Math.max(1, Math.round((c.ProchainLive - maintenant) / 60000)) + " min.");
+          }
+        }
+      });
+      tvEtatPrecedent_ = etat;
+    }).catch(function () { /* nouvelle tentative au prochain cycle */ });
+  }
+
+  function alerterTv_(c, message) {
+    jouerSonAlerte_();
+    if ("Notification" in window && Notification.permission === "granted") {
+      try { new Notification("📺 " + c.Nom, { body: "La chaîne " + message, icon: "icon-192.png" }); } catch (e) { /* pas grave */ }
+    }
+    const b = document.createElement("div");
+    b.style.cssText = "position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,#be185d,#ec4899);color:#fff;padding:14px 18px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:calc(100% - 24px);text-align:center;font-size:13px;font-weight:700;";
+    b.innerHTML = "📺 La chaîne « " + escapeHtml(c.Nom) + " » " + message +
+      '<div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">' +
+      '<button style="width:auto;padding:7px 16px;background:#fff;color:#be185d;border-radius:8px;font-size:12px;font-weight:800;border:none;" onclick="ouvrirChaineTvDepuisAlerte_(\'' + c.ID + '\');this.closest(\'div\').parentElement.remove()">▶ Regarder</button>' +
+      '<button style="width:auto;padding:7px 16px;background:rgba(255,255,255,.25);color:#fff;border-radius:8px;font-size:12px;font-weight:800;border:none;" onclick="this.closest(\'div\').parentElement.remove()">OK</button></div>';
+    document.body.appendChild(b);
+    setTimeout(function () { if (b.parentElement) b.remove(); }, 20000);
+  }
+
+  function ouvrirChaineTvDepuisAlerte_(id) {
+    afficherOnglet("tv");
+    appelServeur("getTvChaines").then(function (liste) {
+      tvChainesCache = liste || [];
+      regarderChaineTv(id);
+    });
+  }
+
+  // --- Admin > TV ---
+  function afficherTvAdmin(liste) {
+    liste = liste || [];
+    const zone = document.getElementById("adminListeTv");
+    if (!liste.length) { zone.innerHTML = '<p class="empty-state">Aucune chaîne TV pour le moment.</p>'; return; }
+    zone.innerHTML = liste.map(function (c) {
+      const logo = c.LogoBase64 ? '<img class="tv-logo" src="data:image/png;base64,' + c.LogoBase64 + '">' : '<div class="tv-logo">📺</div>';
+      const suspendue = c.Statut === "Suspendue";
+      const pill = suspendue ? '<span class="role-pill role-admin">Suspendue</span>'
+        : (c.EnDirect ? '<span class="tv-badge-live" style="margin:0;">● EN DIRECT</span>' : '<span class="role-pill role-membre">Active</span>');
+      const motif = suspendue ? '<div class="item-desc">Motif : ' + escapeHtml(c.Motif === "STATUT_RETIRE" ? "statut TV owner retiré" : (c.Motif || "—")) + '</div>' : "";
+      const voirLive = (c.EnDirect && c.LiveVideoId)
+        ? '<a class="secondary small" style="text-decoration:none;display:inline-block;width:auto;" href="https://www.youtube.com/watch?v=' + c.LiveVideoId + '" target="_blank">👁 Voir le live</a>' : "";
+      const couper = c.LivePrepare ? '<button class="danger-outline small" onclick="couperLiveChaineTvClick(\'' + c.ID + '\')">⏹ Couper le live</button>' : "";
+      const bascule = suspendue
+        ? '<button class="secondary small" onclick="reactiverChaineTvClick(\'' + c.ID + '\')">Réactiver</button>'
+        : '<button class="danger-outline small" onclick="suspendreChaineTvClick(\'' + c.ID + '\')">Suspendre</button>';
+      return '<div class="item-block"><div class="item-row" style="border:none;padding:0;">' +
+        '<div style="display:flex;gap:12px;align-items:center;min-width:0;">' + logo +
+        '<div style="min-width:0;"><div class="item-nom">' + escapeHtml(c.Nom) + '</div>' +
+        '<div class="item-desc">Par ' + escapeHtml(c.Proprietaire) + (c.ProprietaireTel ? " · " + escapeHtml(c.ProprietaireTel) : "") + '</div>' +
+        '<div class="item-desc">' + c.NbProgrammes + ' vidéo(s) · ' + c.NbCreneaux + ' créneau(x)</div>' + motif + '</div></div>' +
+        pill + '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">' + voirLive + couper + bascule +
+        '<button class="danger-outline small" onclick="supprimerChaineTvClick(\'' + c.ID + '\')">🗑️ Supprimer</button></div></div>';
+    }).join("");
+  }
+
+  function rechargerTvAdmin_() {
+    appelServeur("getTvChainesAdmin", membreCourant.code).then(afficherTvAdmin).catch(function (err) { afficherErreurZone("adminListeTv", err); });
+  }
+
+  function suspendreChaineTvClick(id) {
+    const motif = prompt("Motif de la suspension (visible par le TV owner) :", "");
+    if (motif === null) return;
+    appelServeur("suspendreChaineTv", membreCourant.code, id, motif).then(rechargerTvAdmin_).catch(function (e) { alert("Erreur : " + e.message); });
+  }
+
+  function reactiverChaineTvClick(id) {
+    appelServeur("reactiverChaineTv", membreCourant.code, id).then(function (res) {
+      if (res && res.succes === false) alert(res.message);
+      rechargerTvAdmin_();
+    }).catch(function (e) { alert("Erreur : " + e.message); });
+  }
+
+  function couperLiveChaineTvClick(id) {
+    if (!confirm("Couper le live de cette chaîne maintenant ?")) return;
+    appelServeur("couperLiveChaineTv", membreCourant.code, id).then(rechargerTvAdmin_).catch(function (e) { alert("Erreur : " + e.message); });
+  }
+
+  function supprimerChaineTvClick(id) {
+    if (!confirm("Supprimer définitivement cette chaîne, ses vidéos et sa grille ? (Les replays YouTube restent sur votre chaîne.)")) return;
+    appelServeur("supprimerChaineTv", membreCourant.code, id).then(rechargerTvAdmin_).catch(function (e) { alert("Erreur : " + e.message); });
   }
 
   function escapeHtml(str) {
