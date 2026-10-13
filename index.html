@@ -175,20 +175,39 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 #section-tv .section-title{color:#be185d}
 #section-tv .section-title .ic{background:linear-gradient(135deg,#ec4899,#be185d);color:#fff;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
 #section-tv .sub-nav-btn.active{background:linear-gradient(135deg,#be185d,#ec4899)}
-.tv-ecran{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden}
+/* Lecteur TV flottant : reste affiché quand on change de rubrique, et se déplace par appui long puis glissement */
+#lecteurTvZone.lecteur-persistant{left:auto;right:12px;bottom:12px;transform:none;width:min(320px,calc(100% - 24px));max-width:320px;max-height:none;padding:0;overflow:hidden;z-index:720;cursor:grab;background:#000;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#lecteurTvZone.tv-deplacement{transform:scale(1.04)!important;box-shadow:0 14px 40px rgba(0,0,0,.45);cursor:grabbing;transition:box-shadow .15s}
+.tv-entete{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px 6px 12px;background:linear-gradient(135deg,#be185d,#ec4899);color:#fff;font-size:12px;font-weight:800}
+.tv-entete .tv-titre{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.tv-fermer{width:24px;height:24px;padding:0;border-radius:50%;background:rgba(255,255,255,.25);box-shadow:none;font-size:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transform:none}
+.tv-fermer:hover{transform:none;box-shadow:none}
+.tv-ecran{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:0;overflow:hidden}
 #tvEcranInterieur{position:absolute;top:0;left:0;right:0;bottom:0}
 .tv-ecran iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;display:block;pointer-events:none}
-.tv-vide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;text-align:center;padding:20px;background:linear-gradient(135deg,#1f2937,#111827)}
+.tv-vide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;text-align:center;padding:20px;background:linear-gradient(135deg,#1f2937,#111827)}
 .tv-badge-live{display:inline-block;background:#d71920;color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:999px;margin-left:6px;vertical-align:middle;animation:pulse-mic 1.6s infinite}
 .tv-logo{width:52px;height:52px;border-radius:14px;object-fit:cover;background:#eef3f9;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}
-.tv-logo-coin{position:absolute;top:10px;right:10px;width:clamp(34px,9%,72px);aspect-ratio:1/1;object-fit:cover;border-radius:12px;border:2px solid rgba(255,255,255,.85);background:#fff;z-index:4;opacity:.93;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.45)}
-.tv-num-coin{position:absolute;top:10px;right:10px;z-index:4;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;pointer-events:none}
-.tv-btn-plein{width:auto;position:absolute;right:10px;bottom:10px;z-index:5;padding:8px 12px;font-size:16px;background:rgba(0,0,0,.55);box-shadow:none;border-radius:10px;transform:none}
+.tv-logo-coin{position:absolute;top:8px;right:8px;width:clamp(30px,13%,64px);aspect-ratio:1/1;object-fit:cover;border-radius:10px;border:2px solid rgba(255,255,255,.85);background:#fff;z-index:4;opacity:.93;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+.tv-num-coin{position:absolute;top:8px;right:8px;z-index:4;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;pointer-events:none}
+.tv-btn-plein{width:auto;position:absolute;right:8px;bottom:8px;z-index:5;padding:6px 10px;font-size:15px;background:rgba(0,0,0,.55);box-shadow:none;border-radius:10px;transform:none}
 .tv-btn-plein:hover{transform:none;box-shadow:none}
-.tv-num{display:inline-block;background:#fdeaf3;color:#be185d;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;margin-right:6px;vertical-align:middle}
+.tv-num{display:inline-block;background:#fdeaf3;color:#be185d;font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px;margin-right:6px;vertical-align:middle;letter-spacing:.5px}
 .tv-ecran:fullscreen{aspect-ratio:auto;border-radius:0;width:100%;height:100%}
 .tv-ecran:-webkit-full-screen{aspect-ratio:auto;border-radius:0;width:100%;height:100%}
-.tv-ecran.tv-plein-ecran-css{position:fixed;top:0;left:0;width:100vw;height:100vh;height:100dvh;aspect-ratio:auto;border-radius:0;z-index:99999}
+#lecteurTvZone.tv-plein-ecran-css{left:0!important;top:0!important;right:0!important;bottom:0!important;transform:none!important;width:100vw!important;max-width:none!important;height:100vh;height:100dvh;border-radius:0;z-index:99999;cursor:default}
+#lecteurTvZone.tv-plein-ecran-css .tv-entete{display:none}
+#lecteurTvZone.tv-plein-ecran-css .tv-ecran{width:100%;height:100%;aspect-ratio:auto}
+.btn-boucle.actif{background:linear-gradient(135deg,#be185d,#ec4899);color:#fff}
+.tv-groupe{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:#fff}
+.tv-groupe summary{cursor:pointer}
+/* Fenêtres de dialogue de l'application (remplacent celles du navigateur, qui affichent le nom du site) */
+.dlg-overlay{position:fixed;inset:0;background:rgba(10,20,40,.55);z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px}
+.dlg-boite{background:#fff;border-radius:18px;max-width:420px;width:100%;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.dlg-texte{font-size:14px;line-height:1.55;white-space:pre-line;margin-bottom:14px;color:var(--ink)}
+.dlg-champ{margin-bottom:12px}
+.dlg-actions{display:flex;gap:8px;justify-content:flex-end}
+.dlg-actions button{width:auto;flex:1}
   </style>
 </head>
 <body>
@@ -465,6 +484,17 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
          vidéo reste la plus visible des deux. -->
     <div class="lecteur-persistant" id="lecteurVideoZone" style="display:none;padding:0;overflow:hidden;"></div>
     <div class="lecteur-persistant" id="lecteurAudioZone" style="display:none;"></div>
+    <!-- Lecteur TV flottant : placé hors de toute rubrique, il continue de jouer quand on change de page -->
+    <div class="lecteur-persistant" id="lecteurTvZone" style="display:none;">
+      <div class="tv-entete"><span class="tv-titre" id="tvInfoNom"></span><span id="tvBadgeLive"></span><button class="tv-fermer" onclick="arreterTv_()" title="Fermer la TV">✕</button></div>
+      <div class="tv-ecran" id="tvEcran">
+        <div id="tvEcranInterieur"></div>
+        <img id="tvLogoCoin" class="tv-logo-coin" alt="" style="display:none;">
+        <div id="tvNumCoin" class="tv-num-coin" style="display:none;"></div>
+        <div id="tvTapPlay" class="tv-vide" style="display:none;cursor:pointer;background:rgba(0,0,0,.6);z-index:3;font-size:13px;" onclick="tvLancerLecture_()">▶ Touchez pour lancer la lecture</div>
+        <button id="tvBtnPleinEcran" class="tv-btn-plein" onclick="tvPleinEcran_()" title="Plein écran">⛶</button>
+      </div>
+    </div>
 
     <div class="section active" id="section-groupes">
       <div class="section-title"><span class="ic">💬</span> Groupes WhatsApp</div>
@@ -832,23 +862,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     <div class="section" id="section-tv">
       <div class="section-title"><span class="ic">📺</span> TV</div>
 
-      <div id="tvLecteurZone" style="display:none;margin-bottom:16px;">
-        <div class="tv-ecran" id="tvEcran">
-          <div id="tvEcranInterieur"></div>
-          <img id="tvLogoCoin" class="tv-logo-coin" alt="" style="display:none;">
-          <div id="tvNumCoin" class="tv-num-coin" style="display:none;"></div>
-          <div id="tvTapPlay" class="tv-vide" style="display:none;cursor:pointer;background:rgba(0,0,0,.6);z-index:3;" onclick="tvLancerLecture_()">▶ Touchez pour lancer la lecture</div>
-          <button id="tvBtnPleinEcran" class="tv-btn-plein" onclick="tvPleinEcran_()" title="Plein écran">⛶</button>
-        </div>
-        <div class="item-row" style="padding:10px 0;">
-          <div><div class="item-nom" id="tvInfoNom"></div><div class="item-desc" id="tvInfoDetail"></div></div>
-          <div style="display:flex;gap:6px;">
-            <button class="danger-outline small" onclick="arreterTv_()">✕ Fermer</button>
-          </div>
-        </div>
-        <div id="tvGrilleZone" style="display:none;"></div>
-      </div>
-
       <div class="sub-nav" id="subNavTv">
         <button class="sub-nav-btn active" data-sub="chaines" onclick="afficherSousTv('chaines')">Chaînes</button>
         <button class="sub-nav-btn" data-sub="favoris" onclick="afficherSousTv('favoris')">⭐ Mes chaînes</button>
@@ -869,10 +882,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <input id="tvChNom" type="text" placeholder="Ex : TV Réveil Bénin">
           <label class="field-label">Description</label>
           <textarea id="tvChDesc" rows="2" placeholder="De quoi parle votre chaîne ?"></textarea>
-          <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;margin-bottom:12px;cursor:pointer;">
-            <input type="checkbox" id="tvChBoucle" style="width:auto;margin:3px 0 0;">
-            <span>Quand rien n'est programmé dans la grille, diffuser ma bibliothèque de vidéos en boucle. <strong>Décoché</strong> : la chaîne reste en attente et ne diffuse que ce que vous programmez.</span>
-          </label>
           <div id="erreurTvChaine" class="error" style="display:none;"></div>
           <button class="flame" onclick="sauvegarderChaineTvClick()">Enregistrer ma chaîne</button>
         </div>
@@ -881,12 +890,18 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
         <div id="tvStudioSuite" style="display:none;">
           <div class="card">
-            <p class="field-label">Ma bibliothèque de vidéos</p>
-            <p class="subtitle left" style="margin-top:-4px;">Collez un lien YouTube (vidéo publique ou non répertoriée). La durée est détectée automatiquement. Ces vidéos ne sont diffusées que lorsque vous les placez dans la grille horaire (ou en boucle si vous l'avez activé plus haut).</p>
+            <p class="field-label">Ma bibliothèque (vidéos et playlists)</p>
+            <p class="subtitle left" style="margin-top:-4px;">Ajoutez des vidéos ou des playlists YouTube (publiques ou non répertoriées). Elles ne sont diffusées que lorsque vous les placez dans la grille horaire, ou si vous les mettez dans la boucle des temps morts avec le bouton 🔁.</p>
+            <label class="field-label">Une vidéo</label>
             <input id="tvProgLien" type="text" placeholder="https://www.youtube.com/watch?v=...">
+            <button onclick="ajouterProgrammeTvClick()">Ajouter la vidéo</button>
+            <label class="field-label" style="margin-top:14px;">Une playlist (50 vidéos maximum à l'import)</label>
+            <input id="tvPlLien" type="text" placeholder="https://www.youtube.com/playlist?list=...">
+            <button onclick="ajouterPlaylistTvClick()">Ajouter la playlist</button>
+            <div id="tvPlStatut" class="item-desc" style="margin-top:8px;"></div>
             <div id="erreurTvProg" class="error" style="display:none;"></div>
-            <button onclick="ajouterProgrammeTvClick()">Ajouter à ma bibliothèque</button>
-            <div id="tvListeProgrammes" style="margin-top:12px;"></div>
+            <div id="tvResumeBoucle" class="item-desc" style="margin-top:12px;"></div>
+            <div id="tvListeProgrammes" style="margin-top:8px;"></div>
           </div>
 
           <div class="card">
@@ -894,12 +909,17 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
             <p class="subtitle left" style="margin-top:-4px;">Planifiez une vidéo ou un live à une heure précise (selon l'heure de votre appareil). Pour un live : préparez-le à l'avance avec « Préparer mon live » ci-dessous.</p>
             <label class="field-label">Type</label>
             <select id="tvCrType" onchange="tvCrChangerType_()">
-              <option value="video">🎬 Vidéo de ma bibliothèque</option>
-              <option value="live">🔴 Live</option>
+              <option value="video">🎬 Une vidéo de ma bibliothèque</option>
+              <option value="playlist">🎞️ Une playlist de ma bibliothèque</option>
+              <option value="live">🔴 Un live</option>
             </select>
             <div id="tvCrVideoZone">
               <label class="field-label">Vidéo</label>
               <select id="tvCrProgramme"></select>
+            </div>
+            <div id="tvCrGroupeZone" style="display:none;">
+              <label class="field-label">Playlist (les vidéos s'enchaînent)</label>
+              <select id="tvCrGroupe"></select>
             </div>
             <div id="tvCrLiveZone" style="display:none;">
               <label class="field-label">Titre du live</label>
@@ -942,7 +962,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           </div>
         </div>
       </div>
-      <p class="item-desc" style="text-align:center;opacity:.5;margin-top:18px;">Version TV 6</p>
+      <p class="item-desc" style="text-align:center;opacity:.5;margin-top:18px;">Version TV 8</p>
     </div>
 
     <!-- ===== ADMINISTRATION ===== -->
@@ -1493,6 +1513,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     initialiserGestionRetourTelephone_();
     rendreLecteurDeplacable_("lecteurAudioZone");
     rendreLecteurDeplacable_("lecteurVideoZone");
+    rendreTvDeplacable_();
     if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission().catch(function () { /* pas grave si refusé */ });
     }
@@ -1611,7 +1632,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function diagnostiquerPWA() {
     const lignes = [];
     lignes.push("URL actuelle : " + window.location.href);
-    lignes.push("Version de l'interface TV : 6");
+    lignes.push("Version de l'interface TV : 8");
     lignes.push("Déjà en mode application : " + estDejaInstallee());
     lignes.push("Proposition d'installation reçue du navigateur : " + (promptInstallDiffere ? "OUI" : "NON"));
     lignes.push("Adresse API configurée : " + API_URL);
@@ -2194,7 +2215,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function quitterSession() {
-    if (!confirm("Voulez-vous vraiment vous déconnecter ?")) return;
+    confirmerApp_("Voulez-vous vraiment vous déconnecter ?", function () {
+    arreterTv_();
     effacerSession_();
     membreCourant = null;
     historiqueOnglets = [];
@@ -2203,6 +2225,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("topbar").style.display = "none";
     masquerSliderAffiches();
     entrerModeVisiteur();
+    });
   }
 
   // ==================== TRADUCTION (widget Google Translate gratuit) ====================
@@ -2356,7 +2379,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function afficherOnglet(nom, depuisHistorique) {
     if (!depuisHistorique && ongletActuel && ongletActuel !== nom) historiqueOnglets.push(ongletActuel);
     if (ongletActuel === "bible" && nom !== "bible") arreterLectureBible(); // ne pas laisser la voix continuer en arrière-plan
-    if (ongletActuel === "tv" && nom !== "tv") arreterTv_(); // la TV ne continue pas en arrière-plan
     ongletActuel = nom;
     if (!modeVisiteur) sauvegarderSession_(); // prolonge la session tant que le membre navigue activement
     document.getElementById("btnPrecedent").style.display = (historiqueOnglets.length || modeVisiteur) ? "inline-flex" : "none";
@@ -3864,7 +3886,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   // ==================== YOUTUBE ====================
   function ouvrirYoutube() {
-    const lien = (configApp && configApp.LienYoutube) || "https://www.youtube.com/channel/UCghjqe8HGH6b8GRj8EUD-UA";
+    const lien = (configApp && configApp.LienYoutube) || "https://www.youtube.com/channel/UCy2Wg6p-U2vXaj2tCPX7EFQ";
     window.open(lien, "_blank");
   }
 
@@ -4278,10 +4300,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerGroupeAdmin(id) {
-    if (!confirm("Supprimer ce groupe ?")) return;
+    confirmerApp_("Supprimer ce groupe ?", function () {
     appelServeur("supprimerGroupe", membreCourant.code, id).then(function () {
       appelServeur("getGroupesAdmin", membreCourant.code).then(afficherGroupesAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   let seancesAdminCache = [];
@@ -4373,11 +4396,12 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerSeanceAdmin(id) {
-    if (!confirm("Supprimer cette séance ?")) return;
+    confirmerApp_("Supprimer cette séance ?", function () {
     appelServeur("supprimerSeance", membreCourant.code, id).then(function () {
       if (seanceEnEditionId === id) annulerEditionSeance();
       appelServeur("getSeancesAdmin", membreCourant.code).then(afficherSeancesAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   const LIBELLES_ROLES = { Membre: "Membre", Admin_TG: "Admin TG", Admin_SG: "Admin SG", Admin_OG: "Admin OG", Admin_Super: "Super Admin" };
@@ -4436,11 +4460,12 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function supprimerSelection_(cle) {
     const set = selectionsAdmin_[cle];
     if (!set.size) return;
-    if (!confirm("Supprimer les " + set.size + " " + LIBELLES_SELECTION_[cle] + " sélectionné(s) ? Cette action est irréversible.")) return;
+    confirmerApp_("Supprimer les " + set.size + " " + LIBELLES_SELECTION_[cle] + " sélectionné(s) ? Cette action est irréversible.", function () {
     appelServeur(FONCTIONS_SUPPRESSION_MULTIPLE_[cle], membreCourant.code, Array.from(set)).then(function () {
       set.clear();
       RECHARGEMENTS_SELECTION_[cle]();
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   let membresAdminCache_ = [];
@@ -4593,10 +4618,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function suspendreMembreClick(code) {
     const inputJours = document.getElementById("joursSuspension-" + code);
     const jours = inputJours ? Number(inputJours.value) || 7 : 7;
-    if (!confirm("Suspendre ce membre pour " + jours + " jour(s) ? Il ne pourra plus se connecter pendant cette période.")) return;
+    confirmerApp_("Suspendre ce membre pour " + jours + " jour(s) ? Il ne pourra plus se connecter pendant cette période.", function () {
     appelServeur("suspendreMembre", membreCourant.code, code, jours).then(function () {
       appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   function reactiverMembreClick(code) {
@@ -4606,10 +4632,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerMembreClick(code, nom) {
-    if (!confirm('Retirer définitivement "' + nom + '" de la plateforme ? Cette action est irréversible (son historique de paiements est conservé pour la comptabilité).')) return;
+    confirmerApp_('Retirer définitivement "' + nom + '" de la plateforme ? Cette action est irréversible (son historique de paiements est conservé pour la comptabilité).', function () {
     appelServeur("supprimerMembre", membreCourant.code, code).then(function () {
       appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   function toggleAuteurClick(code, estAuteur) {
@@ -4752,10 +4779,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function validerPaiementAdminClick(transactionId) {
-    if (!confirm("Confirmer que ce paiement a bien été reçu ?")) return;
+    confirmerApp_("Confirmer que ce paiement a bien été reçu ?", function () {
     appelServeur("validerPaiementAdmin", membreCourant.code, transactionId).then(function () {
       appelServeur("getPaiementsAdmin", membreCourant.code).then(afficherPaiementsAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   function enregistrerPaiementManuelAdmin() {
@@ -4880,10 +4908,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerTypeCotisationAdmin(id) {
-    if (!confirm("Supprimer cette campagne de cotisation ?")) return;
+    confirmerApp_("Supprimer cette campagne de cotisation ?", function () {
     appelServeur("supprimerTypeCotisation", membreCourant.code, id).then(function () {
       appelServeur("getTypesCotisation").then(afficherTypesCotisationAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   // ==================== AUDIOS (admin) ====================
@@ -4981,10 +5010,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerCategorieAudioClick(id) {
-    if (!confirm("Supprimer cette catégorie ?")) return;
+    confirmerApp_("Supprimer cette catégorie ?", function () {
     appelServeur("supprimerCategorieAudio", membreCourant.code, id).then(function () {
       chargerCategoriesAudioAdmin();
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   function afficherEnregistrementsAdmin(enregistrements) {
@@ -5043,10 +5073,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerEnregistrementAdmin(id) {
-    if (!confirm("Supprimer cet audio ?")) return;
+    confirmerApp_("Supprimer cet audio ?", function () {
     appelServeur("supprimerEnregistrement", membreCourant.code, id).then(function () {
       appelServeur("getEnregistrements").then(afficherEnregistrementsAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   // --- Nos écrits (admin) ---
@@ -5098,10 +5129,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerDocumentAdmin(id) {
-    if (!confirm("Supprimer ce document ?")) return;
+    confirmerApp_("Supprimer ce document ?", function () {
     appelServeur("supprimerDocument", membreCourant.code, id).then(function () {
       appelServeur("getDocuments").then(afficherDocumentsAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   // --- Playlists (admin) ---
@@ -5160,10 +5192,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerPlaylistAdmin(id) {
-    if (!confirm("Supprimer cette playlist ?")) return;
+    confirmerApp_("Supprimer cette playlist ?", function () {
     appelServeur("supprimerPlaylist", membreCourant.code, id).then(function () {
       appelServeur("getPlaylists").then(afficherPlaylistsAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   // --- Vidéos de la plateforme (admin) ---
@@ -5225,10 +5258,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerVideoPlateformeAdmin(id) {
-    if (!confirm("Supprimer cette vidéo ?")) return;
+    confirmerApp_("Supprimer cette vidéo ?", function () {
     appelServeur("supprimerVideo", membreCourant.code, id).then(function () {
       appelServeur("getVideos").then(afficherVideosPlateformeAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   // --- Espaces publicitaires internes (admin) ---
@@ -5310,10 +5344,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerActualiteClick(id) {
-    if (!confirm("Supprimer cette actualité ?")) return;
+    confirmerApp_("Supprimer cette actualité ?", function () {
     appelServeur("supprimerActualite", membreCourant.code, id).then(function () {
       appelServeur("getActualitesAdmin").then(afficherActualitesAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   // --- Espaces pub (admin) ---
@@ -5353,10 +5388,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerEspacePubAdmin(id) {
-    if (!confirm("Supprimer cet espace publicitaire ?")) return;
+    confirmerApp_("Supprimer cet espace publicitaire ?", function () {
     appelServeur("supprimerEspacePub", membreCourant.code, id).then(function () {
       appelServeur("getEspacesPubAdmin").then(afficherEspacesPubAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   // --- Affiche publicitaire (admin) ---
@@ -5445,10 +5481,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerAfficheClick(id) {
-    if (!confirm("Supprimer cette affiche du slider ?")) return;
+    confirmerApp_("Supprimer cette affiche du slider ?", function () {
     appelServeur("supprimerAffiche", membreCourant.code, id).then(function () {
       appelServeur("getAffiches").then(afficherAffichesAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   // --- Demandes de prière (admin) ---
@@ -5512,10 +5549,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerSoumissionClick(id) {
-    if (!confirm("Supprimer définitivement cette soumission ?")) return;
+    confirmerApp_("Supprimer définitivement cette soumission ?", function () {
     appelServeur("supprimerSoumission", membreCourant.code, id).then(function () {
       appelServeur("getSoumissionsAdmin", membreCourant.code).then(afficherSoumissionsAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   function telechargerSoumissionAdmin(id) {
@@ -5532,10 +5570,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function rejeterSoumissionClick(id) {
-    if (!confirm("Rejeter cette soumission ?")) return;
+    confirmerApp_("Rejeter cette soumission ?", function () {
     appelServeur("rejeterSoumission", membreCourant.code, id).then(function () {
       appelServeur("getSoumissionsAdmin", membreCourant.code).then(afficherSoumissionsAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
+    });
   }
 
   // ==================== CODES D'INSCRIPTION ====================
@@ -5632,11 +5671,12 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function desactiverCodeAdmin(code) {
-    if (!confirm("Désactiver le code " + code + " ?")) return;
+    confirmerApp_("Désactiver le code " + code + " ?", function () {
     appelServeur("desactiverCodeInscription", membreCourant.code, code).then(function(res) {
       if (!res.succes) { alert(res.message || "Impossible de désactiver le code."); return; }
       appelServeur("getCodesInscriptionAdmin", membreCourant.code).then(afficherCodesInscriptionAdmin);
     }).catch(function(e) { alert("Erreur : " + e.message); });
+    });
   }
 
   // Icône par défaut d'une playlist/catégorie selon son nom, tant qu'aucune image
@@ -5793,9 +5833,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const champ = document.getElementById("rechercheChainesTv");
     const q = champ ? champ.value.trim().toLowerCase().replace(/^n\s*[°o]?\s*(?=\d)/, "") : "";
     if (q) {
+      const numero = /^\d+$/.test(q) ? Number(q) : null;
       liste = liste.filter(function (c) {
-        return String(c.Numero) === q ||
-          (c.Nom || "").toLowerCase().indexOf(q) !== -1 ||
+        return (numero !== null && c.Numero === numero) ||
+          tvLibelle_(c).toLowerCase().indexOf(q) !== -1 ||
           (c.Description || "").toLowerCase().indexOf(q) !== -1;
       });
     }
@@ -5806,7 +5847,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     zone.innerHTML = liste.map(function (c) {
       const logo = c.LogoBase64 ? '<img class="tv-logo" src="data:image/png;base64,' + c.LogoBase64 + '">' : '<div class="tv-logo">📺</div>';
       const live = c.EnDirect ? '<span class="tv-badge-live">● EN DIRECT</span>' : '';
-      const num = c.Numero ? '<span class="tv-num">N° ' + c.Numero + '</span>' : '';
+      const num = c.Numero ? '<span class="tv-num">' + tvNumeroFmt_(c.Numero) + '</span>' : '';
       const suivie = favoris.indexOf(c.ID) !== -1;
       return '<div class="contenu-item" style="display:flex;gap:12px;align-items:center;">' + logo +
         '<div style="flex:1;min-width:0;"><div class="item-nom">' + num + escapeHtml(c.Nom) + live + '</div>' +
@@ -5819,20 +5860,24 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   // --- Lecteur TV : tous les spectateurs voient la même chose au même moment ---
+  // --- Aides d'affichage : numéro sur 3 chiffres ("001 JEC TV") ---
+  function tvNumeroFmt_(n) { return String(n).padStart(3, "0"); }
+  function tvLibelle_(c) { return (c && c.Numero ? tvNumeroFmt_(c.Numero) + " " : "") + ((c && c.Nom) || ""); }
+  function tvIcone_(type) { return type === "live" ? "🔴 " : (type === "playlist" ? "🎞️ " : "🎬 "); }
+
   function regarderChaineTv(id) {
     const c = tvChainesCache.find(function (x) { return x.ID === id; });
     if (!c) return;
     tvDetruireLecteur_();
     tvQuitterPleinEcran_();
     tvChaineActuelle = c;
-    document.getElementById("tvLecteurZone").style.display = "block";
-    document.getElementById("tvInfoNom").textContent = (c.Numero ? "N° " + c.Numero + " · " : "") + c.Nom;
-    document.getElementById("tvInfoDetail").textContent = "Connexion à la chaîne…";
+    document.getElementById("lecteurTvZone").style.display = "block";
+    document.getElementById("tvInfoNom").textContent = tvLibelle_(c);
+    document.getElementById("tvBadgeLive").innerHTML = "";
     document.getElementById("tvEcranInterieur").innerHTML = "";
     tvAfficherLogoCoin_(c);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    tvMeilleurRtt_ = Infinity;
     tvSynchroniserHorloge_();
-    chargerGrilleTv_(id);
     rafraichirTv_();
   }
 
@@ -5846,27 +5891,32 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       puce.style.display = "none";
     } else {
       img.style.display = "none";
-      puce.textContent = c.Numero ? "N° " + c.Numero : "";
+      puce.textContent = c.Numero ? tvNumeroFmt_(c.Numero) : "";
       puce.style.display = c.Numero ? "block" : "none";
     }
   }
 
   // --- Synchronisation : tous les spectateurs doivent être au même point de la vidéo ---
-  // On mesure l'écart entre l'horloge du serveur et celle de l'appareil (3 essais, on garde
-  // le plus rapide), puis on calcule en continu la position "attendue" et on recale le lecteur
-  // s'il dérive de plus de 2,5 secondes.
+  // 1. On mesure l'écart entre l'horloge du serveur et celle de l'appareil (5 essais, on garde le
+  //    plus rapide, puis on recommence toutes les 3 minutes).
+  // 2. Toutes les secondes, on compare la position réelle de la vidéo à la position attendue :
+  //    - petit retard ou petite avance (jusqu'à 4 s) : on accélère ou ralentit très légèrement
+  //      la lecture, sans coupure, jusqu'à rattraper ;
+  //    - grand écart : on saute à la bonne position, avec une avance qui compense le temps de
+  //      chargement (mesuré puis ajusté automatiquement).
   let tvPlayer_ = null, tvPlayerPret_ = false, tvPlayerVideoId_ = "", tvCreation_ = false;
-  let tvVideoDemandee_ = "", tvModeDemande_ = "", tvRef_ = null, tvSyncInterval_ = null;
-  let tvDecalage_ = 0, tvHorlogeSynchro_ = false, tvDernierSeek_ = 0, tvDebutLecture_ = 0;
+  let tvVideoDemandee_ = "", tvModeDemande_ = "", tvRef_ = null, tvSyncInterval_ = null, tvIntervalHorloge_ = null;
+  let tvDecalage_ = 0, tvHorlogeSynchro_ = false, tvMeilleurRtt_ = Infinity;
+  let tvDernierSeek_ = 0, tvDebutLecture_ = 0, tvTauxActuel_ = 1, tvAvanceSeek_ = 0.8, tvMesureApres_ = 0;
 
   function tvSynchroniserHorloge_() {
-    let meilleurRtt = Infinity, restants = 3;
+    let restants = 5;
     function essai() {
       const t0 = Date.now();
       appelServeur("getHeureServeur").then(function (serveur) {
         const rtt = Date.now() - t0;
-        if (rtt < meilleurRtt) { meilleurRtt = rtt; tvDecalage_ = serveur - (t0 + rtt / 2); tvHorlogeSynchro_ = true; }
-      }).catch(function () {}).then(function () { if (--restants > 0) essai(); });
+        if (rtt < tvMeilleurRtt_) { tvMeilleurRtt_ = rtt; tvDecalage_ = serveur - (t0 + rtt / 2); tvHorlogeSynchro_ = true; }
+      }).catch(function () {}).then(function () { if (--restants > 0 && tvChaineActuelle) essai(); });
     }
     essai();
   }
@@ -5879,24 +5929,27 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function tvDetruireLecteur_() {
-    clearInterval(tvSyncInterval_);
-    tvSyncInterval_ = null;
+    clearInterval(tvSyncInterval_); tvSyncInterval_ = null;
+    clearInterval(tvIntervalHorloge_); tvIntervalHorloge_ = null;
     if (tvPlayer_) { try { tvPlayer_.destroy(); } catch (e) { /* déjà détruit */ } }
     tvPlayer_ = null; tvPlayerPret_ = false; tvPlayerVideoId_ = ""; tvCreation_ = false;
-    tvVideoDemandee_ = ""; tvModeDemande_ = ""; tvRef_ = null;
+    tvVideoDemandee_ = ""; tvModeDemande_ = ""; tvRef_ = null; tvTauxActuel_ = 1; tvMesureApres_ = 0;
     const tap = document.getElementById("tvTapPlay");
     if (tap) tap.style.display = "none";
   }
 
   function tvAppliquerDemande_() {
     if (!tvPlayer_ || !tvPlayerPret_ || !tvVideoDemandee_) return;
-    const depart = tvModeDemande_ === "programme" ? Math.max(0, Math.floor(tvAttendu_()) || 0) : 0;
+    const depart = tvModeDemande_ === "programme" ? Math.max(0, Math.floor(tvAttendu_() + tvAvanceSeek_) || 0) : 0;
     const termine = tvPlayer_.getPlayerState && tvPlayer_.getPlayerState() === 0;
     if (tvPlayerVideoId_ !== tvVideoDemandee_ || termine) {
       tvPlayerVideoId_ = tvVideoDemandee_;
       tvPlayer_.loadVideoById({ videoId: tvPlayerVideoId_, startSeconds: depart });
+      try { tvPlayer_.setPlaybackRate(1); } catch (e) {}
+      tvTauxActuel_ = 1;
       tvDebutLecture_ = Date.now();
       tvDernierSeek_ = Date.now();
+      tvMesureApres_ = Date.now() + 3500; // une fois lancée, on mesure le retard de chargement
     }
   }
 
@@ -5916,9 +5969,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("tvEcranInterieur").innerHTML = '<div id="tvYtHost"></div>';
     chargerApiYoutube_(function () {
       if (!document.getElementById("tvYtHost") || !tvChaineActuelle) { tvCreation_ = false; return; }
-      const depart = tvModeDemande_ === "programme" ? Math.max(0, Math.floor(tvAttendu_()) || 0) : 0;
+      const depart = tvModeDemande_ === "programme" ? Math.max(0, Math.floor(tvAttendu_() + tvAvanceSeek_) || 0) : 0;
       tvPlayerVideoId_ = tvVideoDemandee_;
       tvDebutLecture_ = Date.now();
+      tvMesureApres_ = Date.now() + 3500;
       tvPlayer_ = new YT.Player("tvYtHost", {
         host: "https://www.youtube-nocookie.com",
         width: "100%", height: "100%",
@@ -5933,14 +5987,33 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           },
           onStateChange: function (e) {
             if (!tvPlayer_) return;
-            if (e.data === 0) rafraichirTv_();            // vidéo terminée : on enchaîne tout de suite
-            else if (e.data === 2) tvPlayer_.playVideo(); // pas de pause possible : la lecture reprend aussitôt
+            if (e.data === 0) rafraichirTv_();                     // vidéo terminée : on enchaîne tout de suite
+            else if (e.data === 2) tvPlayer_.playVideo();          // pas de pause possible : la lecture reprend aussitôt
+            else if (e.data === 1) setTimeout(tvBoucleSync_, 600); // la lecture démarre : on vérifie tout de suite la synchro
           }
         }
       });
       tvForcerTailleLecteur_();
-      if (!tvSyncInterval_) tvSyncInterval_ = setInterval(tvBoucleSync_, 4000);
+      if (!tvSyncInterval_) tvSyncInterval_ = setInterval(tvBoucleSync_, 1000);
+      if (!tvIntervalHorloge_) tvIntervalHorloge_ = setInterval(tvSynchroniserHorloge_, 180000);
     });
+  }
+
+  // Choisit parmi les vitesses proposées par YouTube la plus proche de 1 dans le sens voulu
+  function tvTauxProche_(sens) {
+    let taux = [0.5, 0.75, 1, 1.25, 1.5];
+    try { taux = tvPlayer_.getAvailablePlaybackRates() || taux; } catch (e) {}
+    let meilleur = 1;
+    taux.forEach(function (t) {
+      if (sens > 0 && t > 1 && (meilleur === 1 || t < meilleur)) meilleur = t;
+      if (sens < 0 && t < 1 && (meilleur === 1 || t > meilleur)) meilleur = t;
+    });
+    return meilleur;
+  }
+
+  function tvDefinirTaux_(taux) {
+    if (tvTauxActuel_ === taux) return;
+    try { tvPlayer_.setPlaybackRate(taux); tvTauxActuel_ = taux; } catch (e) { /* pas grave */ }
   }
 
   function tvBoucleSync_() {
@@ -5951,17 +6024,39 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     // Lecture bloquée par le navigateur (fréquent sur téléphone) : on propose un toucher
     if (etat === 1 || etat === 3) tap.style.display = "none";
     else if (etat !== 0 && Date.now() - tvDebutLecture_ > 4000) tap.style.display = "flex";
-    // Recalage sur la position attendue (programmes uniquement ; un live suit le direct)
-    if (tvRef_ && etat === 1 && Date.now() - tvDernierSeek_ > 6000) {
-      const attendu = tvAttendu_();
-      const duree = tvPlayer_.getDuration();
-      if (!isFinite(attendu) || (duree && attendu > duree - 1)) return;
-      if (Math.abs(tvPlayer_.getCurrentTime() - attendu) > 2.5) {
-        tvPlayer_.seekTo(Math.max(0, attendu), true);
-        tvDernierSeek_ = Date.now();
-      }
+    if (!tvRef_ || etat !== 1) return; // programmes seulement (un live suit le direct), et seulement en lecture
+
+    const attendu = tvAttendu_();
+    const duree = tvPlayer_.getDuration();
+    if (!isFinite(attendu) || (duree && attendu > duree - 1)) { tvDefinirTaux_(1); return; }
+    const ecart = tvPlayer_.getCurrentTime() - attendu; // négatif : la vidéo est en retard
+
+    // Mesure du retard de chargement après un saut : on ajuste l'avance pour le prochain
+    if (tvMesureApres_ && Date.now() > tvMesureApres_) {
+      tvMesureApres_ = 0;
+      tvAvanceSeek_ = Math.max(0, Math.min(6, tvAvanceSeek_ - ecart));
     }
+
+    if (Math.abs(ecart) > 4) {
+      if (Date.now() - tvDernierSeek_ < 3000) return;
+      tvPlayer_.seekTo(Math.max(0, attendu + tvAvanceSeek_), true);
+      tvDernierSeek_ = Date.now();
+      tvMesureApres_ = Date.now() + 3500;
+      tvDefinirTaux_(1);
+      return;
+    }
+    if (ecart < -0.7) tvDefinirTaux_(tvTauxProche_(1));        // en retard : on accélère un peu
+    else if (ecart > 0.7) tvDefinirTaux_(tvTauxProche_(-1));   // en avance : on ralentit un peu
+    else if (Math.abs(ecart) < 0.25) tvDefinirTaux_(1);        // synchronisé : vitesse normale
   }
+
+  // Au retour sur l'appli (écran rallumé, autre application quittée) : on relance et on recale aussitôt
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState !== "visible" || !tvPlayer_ || !tvPlayerPret_) return;
+    try { tvPlayer_.playVideo(); } catch (e) {}
+    setTimeout(tvBoucleSync_, 500);
+    rafraichirTv_();
+  });
 
   function tvLancerLecture_() {
     if (!tvPlayer_ || !tvPlayerPret_) return;
@@ -5978,27 +6073,22 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     appelServeur("getTvEnCours", id).then(function (r) {
       if (!tvChaineActuelle || tvChaineActuelle.ID !== id) return;
       const ecran = document.getElementById("tvEcranInterieur");
-      const detail = document.getElementById("tvInfoDetail");
-      if (!r.succes) { tvDetruireLecteur_(); ecran.innerHTML = '<div class="tv-vide">' + escapeHtml(r.message || "Chaîne indisponible.") + '</div>'; return; }
+      const badge = document.getElementById("tvBadgeLive");
 
-      if (r.mode === "vide") {
+      // Chaîne indisponible, ou rien à diffuser : simple écran avec le nom de la chaîne, sans message
+      if (!r.succes || r.mode === "vide") {
         tvDetruireLecteur_();
-        ecran.innerHTML = '<div class="tv-vide">📺 ' + escapeHtml(r.nom) + '<br>' + (r.liveAttendu ? "Le live va bientôt démarrer." : "Aucune diffusion en ce moment.") + '</div>';
-        detail.textContent = r.liveAttendu ? "🔴 Le live va bientôt démarrer" : "Aucune diffusion en ce moment";
-        tvTimer_ = setTimeout(rafraichirTv_, r.restant ? Math.min(60000, Math.max(2, r.restant) * 1000) : 60000);
+        badge.innerHTML = "";
+        ecran.innerHTML = '<div class="tv-vide">📺 ' + escapeHtml(tvLibelle_(tvChaineActuelle)) + '</div>';
+        tvTimer_ = setTimeout(rafraichirTv_, (r.succes && r.restant) ? Math.min(60000, Math.max(2, r.restant) * 1000) : 60000);
         return;
       }
 
       tvRef_ = r.mode === "programme" ? { offset: r.offset, serverNow: r.serverNow, clientMid: (t0 + Date.now()) / 2 } : null;
+      badge.innerHTML = r.mode === "live" ? '<span class="tv-badge-live" style="margin:0;">● EN DIRECT</span>' : "";
       tvAfficherVideo_(r.videoId, r.mode);
 
-      let delai = 30000; // vérifie toutes les 30 s si un live démarre ou se termine
-      if (r.mode === "live") {
-        detail.innerHTML = '<span class="tv-badge-live" style="margin:0;">● EN DIRECT</span> ' + escapeHtml(r.titre || "");
-      } else {
-        detail.textContent = (r.liveAttendu ? "🔴 Le live va bientôt démarrer — en attendant : " : "En ce moment : ") + r.titre;
-        delai = Math.min(delai, Math.max(2, r.restant) * 1000);
-      }
+      const delai = r.mode === "live" ? 30000 : Math.min(30000, Math.max(2, r.restant) * 1000);
       tvTimer_ = setTimeout(rafraichirTv_, delai);
     }).catch(function () { tvTimer_ = setTimeout(rafraichirTv_, 30000); });
   }
@@ -6010,7 +6100,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     tvQuitterPleinEcran_();
     const ecran = document.getElementById("tvEcranInterieur");
     if (ecran) ecran.innerHTML = "";
-    const zone = document.getElementById("tvLecteurZone");
+    const zone = document.getElementById("lecteurTvZone");
     if (zone) zone.style.display = "none";
   }
 
@@ -6033,7 +6123,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function tvActiverPseudoPleinEcran_() {
     tvPseudoPleinEcran_ = true;
-    document.getElementById("tvEcran").classList.add("tv-plein-ecran-css");
+    document.getElementById("lecteurTvZone").classList.add("tv-plein-ecran-css");
     document.body.style.overflow = "hidden";
     tvMajBoutonPlein_();
   }
@@ -6044,7 +6134,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }
     if (tvPseudoPleinEcran_) {
       tvPseudoPleinEcran_ = false;
-      const el = document.getElementById("tvEcran");
+      const el = document.getElementById("lecteurTvZone");
       if (el) el.classList.remove("tv-plein-ecran-css");
       document.body.style.overflow = "";
     }
@@ -6070,28 +6160,78 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   document.addEventListener("fullscreenchange", tvMajBoutonPlein_);
   document.addEventListener("webkitfullscreenchange", tvMajBoutonPlein_);
 
+  // Déplacement du lecteur flottant : APPUI LONG (~0,4 s) sur le lecteur, puis on glisse (doigt ou souris).
+  // Un appui bref reste un appui normal ; si le doigt bouge avant la fin de l'appui long, rien ne se passe.
+  function rendreTvDeplacable_() {
+    const el = document.getElementById("lecteurTvZone");
+    if (!el) return;
+    const DUREE_APPUI_LONG = 400, TOLERANCE = 10;
+    let etat = null; // { x, y, dx, dy, actif, timer }
+
+    function annuler() {
+      if (etat && etat.timer) clearTimeout(etat.timer);
+      if (etat && etat.actif) el.classList.remove("tv-deplacement");
+      etat = null;
+    }
+
+    el.addEventListener("pointerdown", function (e) {
+      if (e.target.closest("button") || el.classList.contains("tv-plein-ecran-css")) return;
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      annuler();
+      const r = el.getBoundingClientRect();
+      etat = { x: e.clientX, y: e.clientY, dx: e.clientX - r.left, dy: e.clientY - r.top, actif: false, timer: null, id: e.pointerId };
+      etat.timer = setTimeout(function () {
+        if (!etat) return;
+        etat.actif = true;
+        el.classList.add("tv-deplacement");
+        try { el.setPointerCapture(etat.id); } catch (err) {}
+        try { if (navigator.vibrate) navigator.vibrate(25); } catch (err) {}
+      }, DUREE_APPUI_LONG);
+    });
+
+    el.addEventListener("pointermove", function (e) {
+      if (!etat) return;
+      if (!etat.actif) {
+        // Le doigt a bougé avant la fin de l'appui long : ce n'est pas un déplacement voulu
+        if (Math.abs(e.clientX - etat.x) + Math.abs(e.clientY - etat.y) > TOLERANCE) annuler();
+        return;
+      }
+      e.preventDefault();
+      const left = Math.max(6, Math.min(window.innerWidth - el.offsetWidth - 6, e.clientX - etat.dx));
+      const top = Math.max(6, Math.min(window.innerHeight - el.offsetHeight - 6, e.clientY - etat.dy));
+      el.style.left = left + "px";
+      el.style.top = top + "px";
+      el.style.right = "auto";
+      el.style.bottom = "auto";
+      el.style.transform = "none";
+    });
+
+    el.addEventListener("pointerup", annuler);
+    el.addEventListener("pointercancel", annuler);
+    el.addEventListener("contextmenu", function (e) { e.preventDefault(); }); // pas de menu système pendant l'appui long
+
+    // Si l'écran change de taille (rotation), on garde le lecteur dans la zone visible
+    window.addEventListener("resize", function () {
+      if (!el.style.left || el.classList.contains("tv-plein-ecran-css")) return;
+      const left = Math.max(6, Math.min(window.innerWidth - el.offsetWidth - 6, parseFloat(el.style.left) || 6));
+      const top = Math.max(6, Math.min(window.innerHeight - el.offsetHeight - 6, parseFloat(el.style.top) || 6));
+      el.style.left = left + "px";
+      el.style.top = top + "px";
+    });
+  }
+
   // --- Grille publique ---
   function tvHtmlGrille_(liste) {
     if (!liste.length) return '<p class="item-desc">Aucun créneau programmé cette semaine.</p>';
     return '<p class="field-label">📅 Grille des 7 prochains jours</p>' + liste.map(function (g) {
       const quand = new Date(g.Debut).toLocaleString("fr-FR", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
-      return '<div class="item-row" style="padding:8px 0;"><div><div class="item-nom">' + (g.Type === "live" ? "🔴 " : "🎬 ") + escapeHtml(g.Titre) + '</div><div class="item-desc">' + quand + '</div></div></div>';
+      return '<div class="item-row" style="padding:8px 0;"><div><div class="item-nom">' + tvIcone_(g.Type) + escapeHtml(g.Titre) + '</div><div class="item-desc">' + quand + '</div></div></div>';
     }).join("");
   }
 
   // La grille n'est visible que par les TV owner (sur leur chaîne) et les administrateurs de contenu ;
   // le serveur refuse l'accès à tous les autres.
-  function chargerGrilleTv_(id) {
-    const zone = document.getElementById("tvGrilleZone");
-    zone.style.display = "none";
-    zone.innerHTML = "";
-    if (!membreCourant || !(membreCourant.estTvOwner || PERMISSIONS_CLIENT[membreCourant.role])) return;
-    appelServeur("getGrilleTvAdmin", membreCourant.code, id).then(function (res) {
-      if (!res.succes || !tvChaineActuelle || tvChaineActuelle.ID !== id) return;
-      zone.innerHTML = tvHtmlGrille_(res.grille || []);
-      zone.style.display = "block";
-    }).catch(function () { /* pas autorisé ou erreur : la grille reste masquée */ });
-  }
+
 
   // --- Studio du TV owner ---
   function chargerStudioTv_() {
@@ -6103,8 +6243,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const c = res.chaine;
     document.getElementById("tvChNom").value = c ? c.Nom : "";
     document.getElementById("tvChDesc").value = c ? c.Description : "";
-    document.getElementById("tvChBoucle").checked = !!(c && c.Boucle);
-    document.getElementById("tvChNumero").textContent = (c && c.Numero) ? "— N° " + c.Numero : "";
+    document.getElementById("tvChNumero").textContent = (c && c.Numero) ? "— " + tvNumeroFmt_(c.Numero) : "";
     document.getElementById("tvChLogoPreview").innerHTML = (c && c.LogoBase64) ? '<img src="data:image/png;base64,' + c.LogoBase64 + '">' : "📺";
     tvLogoBase64_ = "";
     document.getElementById("tvStudioSuite").style.display = (c && !c.Suspendue) ? "block" : "none";
@@ -6114,21 +6253,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     if (!c) return;
 
     tvProgrammesStudio_ = res.programmes || [];
-    const zoneProg = document.getElementById("tvListeProgrammes");
-    if (!tvProgrammesStudio_.length) {
-      zoneProg.innerHTML = '<p class="empty-state">Aucune vidéo. Ajoutez votre première vidéo ci-dessus.</p>';
-    } else {
-      zoneProg.innerHTML = tvProgrammesStudio_.map(function (p, i) {
-        const min = Math.floor(p.Duree / 60), sec = String(p.Duree % 60).padStart(2, "0");
-        return '<div class="item-row"><div style="min-width:0;"><div class="item-nom">' + (i + 1) + '. ' + escapeHtml(p.Titre) + '</div>' +
-          '<div class="item-desc">' + min + ' min ' + sec + ' s</div></div>' +
-          '<div style="display:flex;gap:6px;">' +
-          '<button class="secondary small" ' + (i === 0 ? "disabled" : "") + ' onclick="deplacerProgrammeTv_(' + i + ',-1)">▲</button>' +
-          '<button class="secondary small" ' + (i === tvProgrammesStudio_.length - 1 ? "disabled" : "") + ' onclick="deplacerProgrammeTv_(' + i + ',1)">▼</button>' +
-          '<button class="danger-outline small" onclick="supprimerProgrammeTvClick(\'' + p.ID + '\')">🗑️</button></div></div>';
-      }).join("");
-    }
-
+    tvAfficherProgrammesStudio_();
     afficherCreneauxStudio_(res);
 
     const live = res.live || {};
@@ -6139,6 +6264,96 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       document.getElementById("tvLiveAdresse").textContent = live.adresse;
       document.getElementById("tvLiveCle").textContent = live.cle;
     }
+  }
+
+  function tvFmtDuree_(s) {
+    s = Number(s) || 0;
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+    return h ? h + " h " + String(m).padStart(2, "0") + " min" : m + " min " + String(sec).padStart(2, "0") + " s";
+  }
+
+  // Playlists de la bibliothèque, dans l'ordre d'ajout
+  function tvGroupesStudio_() {
+    const map = {}, ordre = [];
+    tvProgrammesStudio_.forEach(function (p) {
+      if (!p.GroupeId) return;
+      if (!map[p.GroupeId]) { map[p.GroupeId] = { id: p.GroupeId, titre: p.Groupe || "Playlist", items: [] }; ordre.push(p.GroupeId); }
+      map[p.GroupeId].items.push(p);
+    });
+    return ordre.map(function (id) { return map[id]; });
+  }
+
+  function tvBoutonBoucle_(actif, action, libelle) {
+    return '<button class="small secondary btn-boucle' + (actif ? " actif" : "") + '" onclick="' + action + '" title="Diffuser pendant les temps morts">' + libelle + '</button>';
+  }
+
+  function tvLigneProgramme_(p, avecOrdre) {
+    return '<div class="item-row"><div style="min-width:0;"><div class="item-nom">' + escapeHtml(p.Titre) + '</div>' +
+      '<div class="item-desc">' + tvFmtDuree_(p.Duree) + '</div></div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">' +
+      tvBoutonBoucle_(p.Boucle, "basculerBoucleProgrammeTv_('" + p.ID + "'," + (!p.Boucle) + ")", "🔁") +
+      (avecOrdre ? '<button class="secondary small" onclick="deplacerProgrammeTv_(\'' + p.ID + '\',-1)">▲</button><button class="secondary small" onclick="deplacerProgrammeTv_(\'' + p.ID + '\',1)">▼</button>' : "") +
+      '<button class="danger-outline small" onclick="supprimerProgrammeTvClick(\'' + p.ID + '\')">🗑️</button></div></div>';
+  }
+
+  function tvAfficherProgrammesStudio_() {
+    const zone = document.getElementById("tvListeProgrammes");
+    const resume = document.getElementById("tvResumeBoucle");
+    const enBoucle = tvProgrammesStudio_.filter(function (p) { return p.Boucle; });
+    const totalBoucle = enBoucle.reduce(function (a, p) { return a + Number(p.Duree); }, 0);
+    resume.textContent = enBoucle.length
+      ? "🔁 Temps morts : " + enBoucle.length + " vidéo(s) en boucle · " + tvFmtDuree_(totalBoucle)
+      : "🔁 Aucune vidéo en boucle : quand rien n'est programmé, votre chaîne reste en attente. Appuyez sur 🔁 à côté d'une vidéo pour la diffuser pendant les temps morts.";
+    if (!tvProgrammesStudio_.length) { zone.innerHTML = '<p class="empty-state">Aucune vidéo. Ajoutez votre première vidéo ou playlist ci-dessus.</p>'; return; }
+
+    let html = tvProgrammesStudio_.filter(function (p) { return !p.GroupeId; }).map(function (p) { return tvLigneProgramme_(p, true); }).join("");
+    tvGroupesStudio_().forEach(function (g) {
+      const total = g.items.reduce(function (a, p) { return a + Number(p.Duree); }, 0);
+      const toutes = g.items.every(function (p) { return p.Boucle; });
+      html += '<details class="tv-groupe"><summary><span class="item-nom">🎞️ ' + escapeHtml(g.titre) + '</span> <span class="item-desc">' + g.items.length + ' vidéo(s) · ' + tvFmtDuree_(total) + '</span></summary>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;">' +
+        tvBoutonBoucle_(toutes, "basculerBoucleGroupeTv_('" + g.id + "'," + (!toutes) + ")", "🔁 Toute la playlist en boucle") +
+        '<button class="danger-outline small" onclick="supprimerGroupeTvClick(\'' + g.id + '\')">🗑️ Retirer la playlist</button></div>' +
+        g.items.map(function (p) { return tvLigneProgramme_(p, false); }).join("") + '</details>';
+    });
+    zone.innerHTML = html;
+  }
+
+  function basculerBoucleProgrammeTv_(id, actif) {
+    appelServeur("definirBoucleProgrammeTv", membreCourant.code, id, actif).then(chargerStudioTv_)
+      .catch(function (e) { alert("Erreur : " + e.message); });
+  }
+
+  function basculerBoucleGroupeTv_(groupeId, actif) {
+    appelServeur("definirBoucleGroupeTv", membreCourant.code, groupeId, actif).then(chargerStudioTv_)
+      .catch(function (e) { alert("Erreur : " + e.message); });
+  }
+
+  function supprimerGroupeTvClick(groupeId) {
+    confirmerApp_("Retirer cette playlist et toutes ses vidéos de la bibliothèque ?", function () {
+    appelServeur("supprimerGroupeTv", membreCourant.code, groupeId).then(chargerStudioTv_)
+      .catch(function (e) { alert("Erreur : " + e.message); });
+    });
+  }
+
+  function ajouterPlaylistTvClick() {
+    const err = document.getElementById("erreurTvProg");
+    const statut = document.getElementById("tvPlStatut");
+    err.style.display = "none";
+    const lien = document.getElementById("tvPlLien").value.trim();
+    if (!lien) { err.textContent = "Collez un lien de playlist YouTube."; err.style.display = "block"; return; }
+    statut.textContent = "Import de la playlist en cours… (cela peut prendre une vingtaine de secondes)";
+    appelServeur("ajouterPlaylistTv", membreCourant.code, lien).then(function (res) {
+      statut.textContent = "";
+      document.getElementById("tvPlLien").value = "";
+      alert("✓ Playlist « " + res.titre + " » ajoutée : " + res.ajoutees + " vidéo(s)." +
+        (res.ignorees ? "\n" + res.ignorees + " vidéo(s) ignorée(s) (privées, non intégrables ou au-delà de la limite)." : ""));
+      chargerStudioTv_();
+    }).catch(function (e) {
+      statut.textContent = "";
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
   }
 
   function gererLogoChaineTv_(evt) {
@@ -6154,8 +6369,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const err = document.getElementById("erreurTvChaine");
     err.style.display = "none";
     appelServeur("creerOuModifierChaineTv", membreCourant.code,
-      document.getElementById("tvChNom").value.trim(), document.getElementById("tvChDesc").value.trim(), tvLogoBase64_,
-      document.getElementById("tvChBoucle").checked)
+      document.getElementById("tvChNom").value.trim(), document.getElementById("tvChDesc").value.trim(), tvLogoBase64_)
       .then(function () { alert("✓ Chaîne enregistrée."); chargerStudioTv_(); })
       .catch(function (e) { err.textContent = "Erreur : " + e.message; err.style.display = "block"; });
   }
@@ -6171,40 +6385,47 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerProgrammeTvClick(id) {
-    if (!confirm("Retirer cette vidéo de la bibliothèque ?")) return;
+    confirmerApp_("Retirer cette vidéo de la bibliothèque ?", function () {
     appelServeur("supprimerProgrammeTv", membreCourant.code, id).then(chargerStudioTv_)
       .catch(function (e) { alert("Erreur : " + e.message); });
+    });
   }
 
-  function deplacerProgrammeTv_(index, direction) {
-    const cible = index + direction;
-    if (cible < 0 || cible >= tvProgrammesStudio_.length) return;
-    const tmp = tvProgrammesStudio_[index];
-    tvProgrammesStudio_[index] = tvProgrammesStudio_[cible];
-    tvProgrammesStudio_[cible] = tmp;
-    appelServeur("definirOrdreProgrammesTv", membreCourant.code, tvProgrammesStudio_.map(function (p) { return p.ID; }))
+  function deplacerProgrammeTv_(id, direction) {
+    const singles = tvProgrammesStudio_.filter(function (p) { return !p.GroupeId; });
+    const groupes = tvProgrammesStudio_.filter(function (p) { return p.GroupeId; });
+    const i = singles.findIndex(function (p) { return p.ID === id; });
+    const j = i + direction;
+    if (i < 0 || j < 0 || j >= singles.length) return;
+    const tmp = singles[i]; singles[i] = singles[j]; singles[j] = tmp;
+    appelServeur("definirOrdreProgrammesTv", membreCourant.code, singles.concat(groupes).map(function (p) { return p.ID; }))
       .then(chargerStudioTv_).catch(function (e) { alert("Erreur : " + e.message); });
   }
 
   // --- Studio : créneaux de la grille ---
   function tvCrChangerType_() {
-    const live = document.getElementById("tvCrType").value === "live";
-    document.getElementById("tvCrVideoZone").style.display = live ? "none" : "block";
-    document.getElementById("tvCrLiveZone").style.display = live ? "block" : "none";
+    const type = document.getElementById("tvCrType").value;
+    document.getElementById("tvCrVideoZone").style.display = type === "video" ? "block" : "none";
+    document.getElementById("tvCrGroupeZone").style.display = type === "playlist" ? "block" : "none";
+    document.getElementById("tvCrLiveZone").style.display = type === "live" ? "block" : "none";
   }
 
   function afficherCreneauxStudio_(res) {
     const select = document.getElementById("tvCrProgramme");
     select.innerHTML = tvProgrammesStudio_.length
-      ? tvProgrammesStudio_.map(function (p) { return '<option value="' + p.ID + '">' + escapeHtml(p.Titre) + '</option>'; }).join("")
+      ? tvProgrammesStudio_.map(function (p) { return '<option value="' + p.ID + '">' + escapeHtml((p.Groupe ? p.Groupe + " › " : "") + p.Titre) + '</option>'; }).join("")
       : '<option value="">Ajoutez d\'abord une vidéo ci-dessus</option>';
+    const groupes = tvGroupesStudio_();
+    document.getElementById("tvCrGroupe").innerHTML = groupes.length
+      ? groupes.map(function (g) { return '<option value="' + escapeHtml(g.id) + '">' + escapeHtml(g.titre) + ' (' + g.items.length + ' vidéos)</option>'; }).join("")
+      : '<option value="">Ajoutez d\'abord une playlist ci-dessus</option>';
     const zone = document.getElementById("tvListeCreneaux");
     const liste = res.creneaux || [];
     if (!liste.length) { zone.innerHTML = '<p class="empty-state">Aucun créneau programmé.</p>'; return; }
     zone.innerHTML = liste.map(function (g) {
       const quand = new Date(g.DebutTs).toLocaleString("fr-FR", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
       const rep = g.Repetition === "Quotidienne" ? " · chaque jour" : (g.Repetition === "Hebdomadaire" ? " · chaque semaine" : "");
-      return '<div class="item-row"><div style="min-width:0;"><div class="item-nom">' + (g.Type === "live" ? "🔴 " : "🎬 ") + escapeHtml(g.Titre) + '</div>' +
+      return '<div class="item-row"><div style="min-width:0;"><div class="item-nom">' + tvIcone_(g.Type) + escapeHtml(g.Titre) + '</div>' +
         '<div class="item-desc">' + quand + rep + ' · ' + Math.round(g.Duree / 60) + ' min</div></div>' +
         '<button class="danger-outline small" onclick="supprimerCreneauTvClick(\'' + g.ID + '\')">🗑️</button></div>';
     }).join("");
@@ -6216,9 +6437,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     const type = document.getElementById("tvCrType").value;
     const debutVal = document.getElementById("tvCrDebut").value;
     if (!debutVal) { err.textContent = "Choisissez la date et l'heure de début."; err.style.display = "block"; return; }
+    const cible = type === "playlist" ? document.getElementById("tvCrGroupe").value : document.getElementById("tvCrProgramme").value;
     appelServeur("ajouterCreneauTv", membreCourant.code, type,
       document.getElementById("tvCrTitreLive").value.trim(),
-      document.getElementById("tvCrProgramme").value,
+      cible,
       new Date(debutVal).getTime(),
       document.getElementById("tvCrDuree").value,
       document.getElementById("tvCrRepetition").value)
@@ -6227,9 +6449,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function supprimerCreneauTvClick(id) {
-    if (!confirm("Retirer ce créneau de la grille ?")) return;
+    confirmerApp_("Retirer ce créneau de la grille ?", function () {
     appelServeur("supprimerCreneauTv", membreCourant.code, id).then(chargerStudioTv_)
       .catch(function (e) { alert("Erreur : " + e.message); });
+    });
   }
 
   // --- Studio : live ---
@@ -6242,9 +6465,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function arreterLiveTvClick() {
-    if (!confirm("Terminer le live ? L'enregistrement sera conservé sur YouTube.")) return;
+    confirmerApp_("Terminer le live ? L'enregistrement sera conservé sur YouTube.", function () {
     appelServeur("arreterLiveTv", membreCourant.code).then(chargerStudioTv_)
       .catch(function (e) { alert("Erreur : " + e.message); });
+    });
   }
 
   function toggleTvOwnerClick(code, estTvOwner) {
@@ -6286,11 +6510,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function alerterTv_(c, message) {
     jouerSonAlerte_();
     if ("Notification" in window && Notification.permission === "granted") {
-      try { new Notification("📺 " + c.Nom, { body: "La chaîne " + message, icon: "icon-192.png" }); } catch (e) { /* pas grave */ }
+      try { new Notification("📺 " + tvLibelle_(c), { body: "La chaîne " + message, icon: "icon-192.png" }); } catch (e) { /* pas grave */ }
     }
     const b = document.createElement("div");
     b.style.cssText = "position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,#be185d,#ec4899);color:#fff;padding:14px 18px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:calc(100% - 24px);text-align:center;font-size:13px;font-weight:700;";
-    b.innerHTML = "📺 La chaîne « " + escapeHtml(c.Nom) + " » " + message +
+    b.innerHTML = "📺 La chaîne « " + escapeHtml(tvLibelle_(c)) + " » " + message +
       '<div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">' +
       '<button style="width:auto;padding:7px 16px;background:#fff;color:#be185d;border-radius:8px;font-size:12px;font-weight:800;border:none;" onclick="ouvrirChaineTvDepuisAlerte_(\'' + c.ID + '\');this.closest(\'div\').parentElement.remove()">▶ Regarder</button>' +
       '<button style="width:auto;padding:7px 16px;background:rgba(255,255,255,.25);color:#fff;border-radius:8px;font-size:12px;font-weight:800;border:none;" onclick="this.closest(\'div\').parentElement.remove()">OK</button></div>';
@@ -6325,7 +6549,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         : '<button class="danger-outline small" onclick="suspendreChaineTvClick(\'' + c.ID + '\')">Suspendre</button>';
       return '<div class="item-block"><div class="item-row" style="border:none;padding:0;">' +
         '<div style="display:flex;gap:12px;align-items:center;min-width:0;">' + logo +
-        '<div style="min-width:0;"><div class="item-nom"><span class="tv-num">N° ' + (c.Numero || "?") + '</span>' + escapeHtml(c.Nom) + '</div>' +
+        '<div style="min-width:0;"><div class="item-nom"><span class="tv-num">' + (c.Numero ? tvNumeroFmt_(c.Numero) : "?") + '</span>' + escapeHtml(c.Nom) + '</div>' +
         '<div class="item-desc">Par ' + escapeHtml(c.Proprietaire) + (c.ProprietaireTel ? " · " + escapeHtml(c.ProprietaireTel) : "") + '</div>' +
         '<div class="item-desc">' + c.NbProgrammes + ' vidéo(s) · ' + c.NbCreneaux + ' créneau(x)</div>' + motif + '</div></div>' +
         pill + '</div>' +
@@ -6350,9 +6574,9 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function suspendreChaineTvClick(id) {
-    const motif = prompt("Motif de la suspension (visible par le TV owner) :", "");
-    if (motif === null) return;
-    appelServeur("suspendreChaineTv", membreCourant.code, id, motif).then(rechargerTvAdmin_).catch(function (e) { alert("Erreur : " + e.message); });
+    demanderTexteApp_("Motif de la suspension (visible par le TV owner) :", function (motif) {
+      appelServeur("suspendreChaineTv", membreCourant.code, id, motif).then(rechargerTvAdmin_).catch(function (e) { alert("Erreur : " + e.message); });
+    });
   }
 
   function reactiverChaineTvClick(id) {
@@ -6363,13 +6587,67 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   }
 
   function couperLiveChaineTvClick(id) {
-    if (!confirm("Couper le live de cette chaîne maintenant ?")) return;
+    confirmerApp_("Couper le live de cette chaîne maintenant ?", function () {
     appelServeur("couperLiveChaineTv", membreCourant.code, id).then(rechargerTvAdmin_).catch(function (e) { alert("Erreur : " + e.message); });
+    });
   }
 
   function supprimerChaineTvClick(id) {
-    if (!confirm("Supprimer définitivement cette chaîne, ses vidéos et sa grille ? (Les replays YouTube restent sur votre chaîne.)")) return;
+    confirmerApp_("Supprimer définitivement cette chaîne, ses vidéos et sa grille ? (Les replays YouTube restent sur votre chaîne.)", function () {
     appelServeur("supprimerChaineTv", membreCourant.code, id).then(rechargerTvAdmin_).catch(function (e) { alert("Erreur : " + e.message); });
+    });
+  }
+
+  // ==================== FENÊTRES DE DIALOGUE DE L'APPLICATION ====================
+  // Les fenêtres natives du navigateur (alert / confirm / prompt) affichent le nom du site
+  // ("xxx.github.io indique…"). On les remplace par des fenêtres de l'application, sans nom de site.
+  function creerDialogueApp_(message, boutons, avecChamp) {
+    const overlay = document.createElement("div");
+    overlay.className = "dlg-overlay";
+    const boite = document.createElement("div");
+    boite.className = "dlg-boite";
+    const texte = document.createElement("div");
+    texte.className = "dlg-texte";
+    texte.textContent = message;
+    boite.appendChild(texte);
+    let champ = null;
+    if (avecChamp) {
+      champ = document.createElement("textarea");
+      champ.rows = 3;
+      champ.className = "dlg-champ";
+      boite.appendChild(champ);
+    }
+    const actions = document.createElement("div");
+    actions.className = "dlg-actions";
+    boutons.forEach(function (b) {
+      const btn = document.createElement("button");
+      btn.textContent = b.libelle;
+      btn.className = b.classe || "";
+      btn.onclick = function () { overlay.remove(); if (b.action) b.action(champ ? champ.value : null); };
+      actions.appendChild(btn);
+    });
+    boite.appendChild(actions);
+    overlay.appendChild(boite);
+    document.body.appendChild(overlay);
+    if (champ) champ.focus();
+  }
+
+  window.alert = function (message) {
+    creerDialogueApp_(String(message === undefined ? "" : message), [{ libelle: "OK" }], false);
+  };
+
+  function confirmerApp_(message, onOui) {
+    creerDialogueApp_(message, [
+      { libelle: "Annuler", classe: "secondary" },
+      { libelle: "Confirmer", classe: "flame", action: function () { onOui(); } }
+    ], false);
+  }
+
+  function demanderTexteApp_(message, onValider) {
+    creerDialogueApp_(message, [
+      { libelle: "Annuler", classe: "secondary" },
+      { libelle: "Valider", classe: "flame", action: function (valeur) { onValider((valeur || "").trim()); } }
+    ], true);
   }
 
   function escapeHtml(str) {
