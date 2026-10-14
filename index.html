@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="ARC">
+  <meta name="apple-mobile-web-app-title" content="SUN">
   <meta name="theme-color" content="#0b2f68">
   <script src="https://cdn.kkiapay.me/k.js"></script>
   <style>
@@ -172,14 +173,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 .recu-montant{text-align:center;font-family:Montserrat;font-weight:800;font-size:26px;color:var(--blue2);margin:18px 0;}
 .recu-footer{text-align:center;font-size:11px;color:var(--muted);margin-top:16px;}
 /* ===== TV ===== */
-#section-tv .section-title{color:#be185d}
-#section-tv .section-title .ic{background:linear-gradient(135deg,#ec4899,#be185d);color:#fff;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
-#section-tv .sub-nav-btn.active{background:linear-gradient(135deg,#be185d,#ec4899)}
+#section-tv .section-title{color:#111111}
+#section-tv .section-title .ic{background:linear-gradient(135deg,#3a3a3a,#111111);color:#fff;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+#section-tv .sub-nav-btn.active{background:linear-gradient(135deg,#111111,#3a3a3a)}
 /* Lecteur TV flottant : reste affiché quand on change de rubrique, et se déplace par appui long puis glissement */
 #lecteurTvZone.lecteur-persistant{left:auto;right:12px;bottom:12px;transform:none;width:min(320px,calc(100% - 24px));max-width:320px;max-height:none;padding:0;overflow:hidden;z-index:720;cursor:grab;background:#000;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #lecteurTvZone.tv-deplacement{transform:scale(1.04)!important;box-shadow:0 14px 40px rgba(0,0,0,.45);cursor:grabbing;transition:box-shadow .15s}
-.tv-entete{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px 6px 12px;background:linear-gradient(135deg,#be185d,#ec4899);color:#fff;font-size:12px;font-weight:800}
+.tv-entete{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px 6px 12px;background:linear-gradient(135deg,#111111,#3a3a3a);color:#fff;font-size:12px;font-weight:800}
 .tv-entete .tv-titre{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.tv-logo-entete{width:26px;height:26px;border-radius:7px;object-fit:cover;background:#fff;flex-shrink:0;border:1px solid rgba(255,255,255,.7)}
 .tv-fermer{width:24px;height:24px;padding:0;border-radius:50%;background:rgba(255,255,255,.25);box-shadow:none;font-size:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transform:none}
 .tv-fermer:hover{transform:none;box-shadow:none}
 .tv-ecran{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:0;overflow:hidden}
@@ -192,13 +194,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 .tv-num-coin{position:absolute;top:8px;right:8px;z-index:4;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;pointer-events:none}
 .tv-btn-plein{width:auto;position:absolute;right:8px;bottom:8px;z-index:5;padding:6px 10px;font-size:15px;background:rgba(0,0,0,.55);box-shadow:none;border-radius:10px;transform:none}
 .tv-btn-plein:hover{transform:none;box-shadow:none}
-.tv-num{display:inline-block;background:#fdeaf3;color:#be185d;font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px;margin-right:6px;vertical-align:middle;letter-spacing:.5px}
+.tv-num{display:inline-block;background:#ececec;color:#111111;font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px;margin-right:6px;vertical-align:middle;letter-spacing:.5px}
 .tv-ecran:fullscreen{aspect-ratio:auto;border-radius:0;width:100%;height:100%}
 .tv-ecran:-webkit-full-screen{aspect-ratio:auto;border-radius:0;width:100%;height:100%}
 #lecteurTvZone.tv-plein-ecran-css{left:0!important;top:0!important;right:0!important;bottom:0!important;transform:none!important;width:100vw!important;max-width:none!important;height:100vh;height:100dvh;border-radius:0;z-index:99999;cursor:default}
 #lecteurTvZone.tv-plein-ecran-css .tv-entete{display:none}
 #lecteurTvZone.tv-plein-ecran-css .tv-ecran{width:100%;height:100%;aspect-ratio:auto}
-.btn-boucle.actif{background:linear-gradient(135deg,#be185d,#ec4899);color:#fff}
+.btn-boucle.actif{background:linear-gradient(135deg,#111111,#3a3a3a);color:#fff}
 .tv-groupe{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:#fff}
 .tv-groupe summary{cursor:pointer}
 /* Fenêtres de dialogue de l'application (remplacent celles du navigateur, qui affichent le nom du site) */
@@ -208,7 +210,31 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 .dlg-champ{margin-bottom:12px}
 .dlg-actions{display:flex;gap:8px;justify-content:flex-end}
 .dlg-actions button{width:auto;flex:1}
-  </style>
+  /* En-tête : actions à droite (Contact au-dessus, Se connecter en dessous), bien visibles */
+.topbar-actions{display:flex;flex-direction:column;gap:6px;margin-left:auto;flex-shrink:0;align-items:stretch}
+.btn-topbar-fort{width:auto;padding:9px 18px;font-size:13px;font-weight:800;border-radius:999px;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.25);border:2px solid #fff}
+.btn-topbar-fort.btn-contact{background:#fff;color:var(--blue2)}
+.btn-topbar-fort.btn-session{background:var(--yellow);color:var(--blue2);border-color:var(--yellow)}
+/* Effet de clic : le bouton s'enfonce et une onde de sa couleur de texte se propage */
+button,.tuile-visiteur{-webkit-tap-highlight-color:transparent}
+button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!important;filter:brightness(.9)}
+@keyframes arcClic{0%{box-shadow:0 0 0 0 currentColor}100%{box-shadow:0 0 0 14px transparent}}
+.effet-clic{animation:arcClic .45s ease-out}
+/* Bible : sélection, surlignage, recherche */
+.bible-verset{cursor:pointer;border-radius:8px;padding:8px 6px}
+.bible-verset.selectionne{outline:2px solid var(--blue);outline-offset:-2px}
+.bible-verset.hl-jaune{background:#fff3a3}.bible-verset.hl-vert{background:#c8f0c0}.bible-verset.hl-bleu{background:#bfe0ff}.bible-verset.hl-rose{background:#ffd0e6}.bible-verset.hl-orange{background:#ffd9a8}
+.bible-verset.flash{animation:bibleFlash 2.5s}
+@keyframes bibleFlash{0%,60%{box-shadow:0 0 0 3px var(--yellow)}100%{box-shadow:0 0 0 3px transparent}}
+.bible-barre{position:sticky;top:96px;z-index:60;display:none;flex-wrap:wrap;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 10px;box-shadow:var(--shadow);margin-bottom:10px}
+.bible-barre button{width:auto;padding:7px 10px;font-size:12px;flex-shrink:0}
+.bible-barre #bibleBtnPlage.actif{background:var(--blue);color:#fff}
+.bible-barre .hl-pastille{width:26px;height:26px;border-radius:50%;padding:0;border:2px solid #fff;box-shadow:0 0 0 1px #999}
+.hl-pastille.jaune{background:#fff3a3!important}.hl-pastille.vert{background:#c8f0c0!important}.hl-pastille.bleu{background:#bfe0ff!important}.hl-pastille.rose{background:#ffd0e6!important}.hl-pastille.orange{background:#ffd9a8!important}
+.bible-resultat{padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;line-height:1.5}
+.bible-resultat .ref{font-weight:800;color:var(--blue2);font-size:12px}
+.bible-resultat mark{background:#ffe066;border-radius:3px;padding:0 1px}
+</style>
 </head>
 <body>
 
@@ -217,7 +243,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     <div class="recu-portrait">
       <div class="recu-header">
         <div class="logo-circle" id="recuLogo">🙏</div>
-        <div class="nom" id="recuOrgName">Association</div>
+        <div class="nom" id="recuOrgName">SUN</div>
       </div>
       <div class="recu-titre">Reçu de paiement</div>
       <div class="recu-ligne"><span>Membre</span><strong id="recuNomMembre">—</strong></div>
@@ -232,16 +258,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   </div>
 
   <div class="topbar" id="topbar">
-    <div class="topbar-boutons-gauche">
-      <button id="btnPrecedent" onclick="boutonPrecedent()" class="btn-topbar-mini" style="display:none;">◀ Précédent</button>
-      <button id="btnDeconnexion" onclick="quitterSession()" class="btn-topbar-mini" style="display:none;">Se déconnecter</button>
-    </div>
     <div class="logo-circle" id="topbarLogo">🙏</div>
     <div class="topbar-nom-wrap">
-      <div class="topbar-nom" id="topbarNom">Association</div>
+      <div class="topbar-nom" id="topbarNom">SUN</div>
       <div class="topbar-sub" id="topbarSub">Espace membres</div>
     </div>
-    <button id="btnContact" onclick="afficherEcranContact()" class="btn-topbar-mini" style="margin-left:auto;" title="Contactez-nous">📞 Contact</button>
+    <div class="topbar-actions">
+      <button id="btnContact" onclick="afficherEcranContact()" class="btn-topbar-fort btn-contact" title="Contactez-nous">📞 Contact</button>
+      <button id="btnDeconnexion" onclick="quitterSession()" class="btn-topbar-fort btn-session" style="display:none;">Se déconnecter</button>
+    </div>
     <button id="btnInstallerApp" onclick="installerApplication()" style="display:none;width:auto;padding:8px 12px;font-size:12px;background:rgba(255,255,255,.18);color:#fff;box-shadow:none;white-space:nowrap;flex-shrink:0;">📲 Installer</button>
   </div>
 
@@ -251,7 +276,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div class="card">
         <div class="brand-center">
           <div class="logo-circle-lg" id="accueilLogo">🙏</div>
-          <div class="brand-nom" id="accueilNomAssoc">Association</div>
+          <div class="brand-nom" id="accueilNomAssoc">SUN</div>
         </div>
         <h1 class="titre">Bienvenue 🙏</h1>
         <p class="subtitle">Connectez-vous à votre espace membre ou créez votre compte.</p>
@@ -283,7 +308,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('documents')"><span class="ic">📄</span><span class="lib">Documents</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('videos')"><span class="ic">▶️</span><span class="lib">Vidéos</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('offrandes')"><span class="ic">🙌</span><span class="lib">Offrandes & Dons</span></div>
-          <div class="tuile-visiteur" onclick="entrerModeVisiteur('cotisation')"><span class="ic">💳</span><span class="lib">Cotisations</span></div>
+          <div class="tuile-visiteur" onclick="entrerModeVisiteur('cotisation')"><span class="ic">💳</span><span class="lib">Campagnes caritatives</span></div>
           <div class="tuile-visiteur" style="grid-column:span 2;" onclick="entrerModeVisiteur('demandePriere')"><span class="ic">✉️</span><span class="lib">Demande de prière</span></div>
         </div>
       </div>
@@ -371,7 +396,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         </div>
         <p class="field-label" style="margin-bottom:14px;">Accès réservé</p>
         <h1 class="titre">Code d'accès requis</h1>
-        <p class="subtitle">Pour créer un compte, vous devez posséder un code d'accès remis par un administrateur de l'Association.</p>
+        <p class="subtitle">Pour créer un compte, vous devez posséder un code d'accès remis par un administrateur de SUN.</p>
         <label class="field-label">Votre code d'accès</label>
         <input id="codeInscription" type="text" autocomplete="off" placeholder="Ex : ARC-AB12CD34" style="text-transform:uppercase;letter-spacing:1.5px;font-weight:800;text-align:center;">
         <div id="erreurCodeInscription" class="error" style="display:none;"></div>
@@ -486,11 +511,9 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     <div class="lecteur-persistant" id="lecteurAudioZone" style="display:none;"></div>
     <!-- Lecteur TV flottant : placé hors de toute rubrique, il continue de jouer quand on change de page -->
     <div class="lecteur-persistant" id="lecteurTvZone" style="display:none;">
-      <div class="tv-entete"><span class="tv-titre" id="tvInfoNom"></span><span id="tvBadgeLive"></span><button class="tv-fermer" onclick="arreterTv_()" title="Fermer la TV">✕</button></div>
+      <div class="tv-entete"><span class="tv-titre" id="tvInfoNom"></span><span id="tvBadgeLive"></span><img id="tvLogoEntete" class="tv-logo-entete" alt="" style="display:none;"><button class="tv-fermer" onclick="arreterTv_()" title="Fermer la TV">✕</button></div>
       <div class="tv-ecran" id="tvEcran">
         <div id="tvEcranInterieur"></div>
-        <img id="tvLogoCoin" class="tv-logo-coin" alt="" style="display:none;">
-        <div id="tvNumCoin" class="tv-num-coin" style="display:none;"></div>
         <div id="tvTapPlay" class="tv-vide" style="display:none;cursor:pointer;background:rgba(0,0,0,.6);z-index:3;font-size:13px;" onclick="tvLancerLecture_()">▶ Touchez pour lancer la lecture</div>
         <button id="tvBtnPleinEcran" class="tv-btn-plein" onclick="tvPleinEcran_()" title="Plein écran">⛶</button>
       </div>
@@ -503,12 +526,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     </div>
 
     <div class="section" id="section-badge">
-      <div class="section-title"><span class="ic">🪪</span> Mon badge de membre</div>
+      <div class="section-title"><span class="ic">👤</span> Mon compte</div>
+      <p class="field-label">Mon badge</p>
       <div id="badgePrintZone" style="display:flex;justify-content:center;padding:10px 0 4px;">
         <div class="badge-portrait">
           <div class="badge-top-band">
             <div class="badge-mini-logo" id="badgeMiniLogo">🙏</div>
-            <div class="badge-org-name" id="badgeOrgName">Association</div>
+            <div class="badge-org-name" id="badgeOrgName">SUN</div>
           </div>
           <div class="badge-photo-wrap" id="badgePhotoWrap">👤</div>
           <div class="badge-body">
@@ -516,18 +540,54 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
             <div class="badge-role-tag" id="badgeRole">Membre</div>
             <div class="badge-divider"></div>
             <div class="badge-info-row"><span class="ic">📞</span><span id="badgeTel">—</span></div>
-            <div class="badge-status-tag" id="badgeStatut">✓ Membre actif</div>
+            <div class="badge-status-tag" id="badgeStatut" style="display:none;"></div>
             <div class="badge-qr-wrap"><img id="badgeQr" width="88" height="88"></div>
             <div class="badge-code-small" id="badgeCode">—</div>
           </div>
         </div>
       </div>
       <button class="secondary full-mt" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
+
+      <div class="card" style="margin-top:16px;">
+        <p class="field-label">Mes informations</p>
+        <label class="field-label">E-mail</label>
+        <input id="cpEmail" type="email" placeholder="Adresse e-mail">
+        <label class="field-label">Adresse actuelle</label>
+        <input id="cpAdresse" type="text" placeholder="Adresse actuelle">
+        <label class="field-label">Profession</label>
+        <input id="cpProfession" type="text" placeholder="Votre métier">
+        <label class="field-label">Église</label>
+        <input id="cpEglise" type="text" placeholder="Nom de votre église">
+        <div id="cpMsgInfos" class="item-desc" style="display:none;margin-bottom:8px;"></div>
+        <button class="flame" onclick="compteSauvegarderInfos()">Enregistrer mes informations</button>
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <p class="field-label">Changer mon numéro de téléphone</p>
+        <p class="item-desc">Votre numéro sert à vous connecter. Votre mot de passe actuel est demandé pour confirmer.</p>
+        <input id="cpNouveauTel" type="tel" placeholder="Nouveau numéro (avec indicatif)">
+        <input id="cpTelMdp" type="password" placeholder="Mot de passe actuel">
+        <div id="cpMsgTel" class="item-desc" style="display:none;margin-bottom:8px;"></div>
+        <button onclick="compteChangerTelephone()">Changer mon numéro</button>
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <p class="field-label">Changer mon mot de passe</p>
+        <input id="cpMdpActuel" type="password" placeholder="Mot de passe actuel">
+        <input id="cpMdpNouveau" type="password" placeholder="Nouveau mot de passe (4 caractères minimum)">
+        <input id="cpMdpConfirm" type="password" placeholder="Confirmer le nouveau mot de passe">
+        <div id="cpMsgMdp" class="item-desc" style="display:none;margin-bottom:8px;"></div>
+        <button onclick="compteChangerMotDePasse()">Changer mon mot de passe</button>
+      </div>
+
+      <div id="compteRoles"></div>
+
+      <button class="danger-outline full-mt" onclick="quitterSession()">Se déconnecter</button>
     </div>
 
     <div class="section" id="section-cotisation">
-      <div class="section-title"><span class="ic">💳</span> Cotisations</div>
-      <p class="subtitle left" style="margin-top:-6px;">Chaque cotisation est une campagne avec un objectif collectif. Vous pouvez y contribuer autant de fois que vous le souhaitez.</p>
+      <div class="section-title"><span class="ic">💳</span> Campagnes caritatives</div>
+      <p class="subtitle left" style="margin-top:-6px;">Chaque campagne caritative poursuit un objectif collectif. Vous pouvez y contribuer autant de fois que vous le souhaitez.</p>
       <div class="card" id="listeTypesCotisation"><div class="loading">Chargement…</div></div>
       <div id="messagePaiement" style="margin: -6px 0 14px; font-size:13px;"></div>
       <div class="stat-grid">
@@ -535,7 +595,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         <div class="stat-box"><div class="stat-num" id="statNbPaiements">—</div><div class="stat-label">Paiements</div></div>
       </div>
       <div class="card">
-        <p class="field-label" style="margin-bottom:10px;">Historique de mes cotisations</p>
+        <p class="field-label" style="margin-bottom:10px;">Historique de mes contributions</p>
         <div id="listeMesCotisations"><div class="loading">Chargement…</div></div>
       </div>
     </div>
@@ -576,6 +636,34 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <button class="secondary small" id="btnEcouterBible" onclick="toggleLectureBible()">🔊 Écouter</button>
           <button class="secondary small" onclick="chapitreBibleSuivant()">▶</button>
         </div>
+        <div class="bible-selecteurs" style="margin-top:8px;">
+          <button class="secondary small" onclick="bibleToutSelectionner()">☑ Tout sélectionner</button>
+          <button class="secondary small" onclick="bibleToggleRecherche()">🔍 Rechercher</button>
+        </div>
+        <p class="item-desc" style="margin:10px 0 0;">Touchez un verset pour le sélectionner, puis surlignez-le ou copiez-le.</p>
+      </div>
+      <div class="card" id="bibleRechercheCard" style="display:none;">
+        <input id="bibleRechercheTexte" type="text" placeholder="Mot ou expression à chercher…" onkeydown="if(event.key==='Enter')bibleLancerRecherche(1)">
+        <select id="bibleRechercheScope">
+          <option value="bible">Dans toute la Bible</option>
+          <option value="livre">Dans ce livre</option>
+          <option value="chapitre">Dans ce chapitre</option>
+        </select>
+        <button class="flame" onclick="bibleLancerRecherche(1)">Rechercher</button>
+        <div id="bibleRechercheResultats" style="margin-top:12px;"></div>
+      </div>
+      <div class="bible-barre" id="bibleBarreSelection">
+        <span id="bibleNbSel" style="font-size:12px;font-weight:800;color:var(--blue2);"></span>
+        <button class="hl-pastille jaune" onclick="bibleSurligner('jaune')" title="Jaune"></button>
+        <button class="hl-pastille vert" onclick="bibleSurligner('vert')" title="Vert"></button>
+        <button class="hl-pastille bleu" onclick="bibleSurligner('bleu')" title="Bleu"></button>
+        <button class="hl-pastille rose" onclick="bibleSurligner('rose')" title="Rose"></button>
+        <button class="hl-pastille orange" onclick="bibleSurligner('orange')" title="Orange"></button>
+        <button class="secondary" onclick="bibleSurligner('')" title="Retirer le surlignage">🧽</button>
+        <button class="secondary" id="bibleBtnPlage" onclick="bibleTogglePlage()" title="Sélectionner un passage">↔ Passage</button>
+        <button class="secondary" onclick="bibleToutSelectionner()">☑ Tout</button>
+        <button class="flame" onclick="bibleCopier()">📋 Copier</button>
+        <button class="secondary" onclick="bibleAnnulerSelection()">✕</button>
       </div>
       <div class="card" id="bibleContenuZone"><div class="empty-state">Choisissez un livre pour commencer la lecture.</div></div>
       <div class="bible-selecteurs">
@@ -618,6 +706,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       <div class="section-title"><span class="ic">✉️</span> Demande de prière</div>
       <div class="card" id="dpFormulaireZone">
         <div class="form-public-note">Partagez votre requête, notre équipe de prière vous accompagne.</div>
+        <div class="item-desc" style="background:#fff8e1;border:1px solid #f4c400;border-radius:12px;padding:12px 14px;margin-bottom:14px;line-height:1.6;">🙏 Après chaque demande de prière, le groupe d'intercession <strong>CIEUX OUVERTS</strong> prend immédiatement votre cas en charge et engage la discussion avec vous pour programmer une rencontre de prière en ligne. Chaque demande de prière est validée par un don minimal de <strong>2 000 F CFA</strong>, destiné à couvrir les charges de communication du groupe d'intercession.</div>
         <label class="field-label">Nom</label>
         <input id="dpNom" type="text" placeholder="Nom">
         <label class="field-label">Prénom</label>
@@ -783,56 +872,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       </div>
     </div>
 
-    <div class="section" id="section-jeu">
-      <div class="section-title"><span class="ic">🎮</span> Jeu</div>
-      <p class="subtitle left" style="margin-top:-6px;">Quelques jeux chrétiens pour apprendre la Bible en vous amusant — téléchargeables gratuitement.</p>
-      <div id="listeJeux">
-
-        <p class="item-desc" style="margin-bottom:14px;">ℹ️ "Verse Blitz" se joue directement ici. Les 3 autres sont des applications à installer sur votre téléphone — impossible techniquement de les faire tourner à l'intérieur d'un site web.</p>
-
-        <div class="jeu-carte">
-          <div class="item-nom">⚡ Verse Blitz</div>
-          <div class="item-desc">Jeu d'arcade rapide pour mémoriser des versets bibliques en assemblant les mots dans le bon ordre.</div>
-          <div class="jeu-boutons">
-            <button class="secondary small" onclick="toggleJeuIntegre_()">🎮 Jouer ici</button>
-            <a class="secondary small" href="https://codeinfaith.com/projects/verse-blitz/" target="_blank">🌐 Nouvel onglet</a>
-          </div>
-          <div id="jeuIntegreZone" style="display:none;margin-top:12px;">
-            <iframe src="https://codeinfaith.com/projects/verse-blitz/" style="width:100%;height:520px;border:none;border-radius:12px;background:#eef3f9;" allow="autoplay" title="Verse Blitz"></iframe>
-            <p class="item-desc" style="margin-top:6px;text-align:center;">Le jeu ne s'affiche pas ? Utilisez "Nouvel onglet" ci-dessus.</p>
-          </div>
-        </div>
-
-        <div class="jeu-carte">
-          <div class="item-nom">🎲 Game of Bible</div>
-          <div class="item-desc">Jeu d'aventure et de questions rapides pour tester vos connaissances bibliques — par Spirit Games.</div>
-          <div class="jeu-boutons">
-            <a class="secondary small" href="https://apps.apple.com/us/app/the-bible-game/id1663041338" target="_blank">📱 App Store</a>
-            <a class="secondary small" href="https://play.google.com/store/apps/details?id=com.nlwc.bible.game" target="_blank">🤖 Google Play</a>
-          </div>
-        </div>
-
-        <div class="jeu-carte">
-          <div class="item-nom">🧩 Bible Tiles</div>
-          <div class="item-desc">Jeu de puzzle où l'on associe des tuiles identiques pour découvrir des histoires bibliques illustrées.</div>
-          <div class="jeu-boutons">
-            <a class="secondary small" href="https://apps.apple.com/us/app/bible-tiles-christian-puzzle/id6744103022" target="_blank">📱 App Store</a>
-            <a class="secondary small" href="https://play.google.com/store/apps/details?id=com.sophungamesltd.holytiles" target="_blank">🤖 Google Play</a>
-          </div>
-        </div>
-
-        <div class="jeu-carte">
-          <div class="item-nom">🙏 AMEN Christian Game</div>
-          <div class="item-desc">L'alternative chrétienne au célèbre jeu de cartes UNO, inspirée de la vie et des enseignements de Jésus.</div>
-          <div class="jeu-boutons">
-            <a class="secondary small" href="https://apps.apple.com/us/app/amen-christian-game/id1528445624" target="_blank">📱 App Store</a>
-            <a class="secondary small" href="https://play.google.com/store/apps/details?id=com.rdgames.amengame" target="_blank">🤖 Google Play</a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
     <div class="section" id="section-prieres">
       <div class="section-title"><span class="ic">🙏</span> Séances directes</div>
 
@@ -971,7 +1010,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
       <div class="admin-section active" id="admin-apparence">
         <div class="card">
-          <label class="field-label">Logo de l'association</label>
+          <label class="field-label">Logo de l'application</label>
           <div class="logo-upload-preview" id="logoPreview">🙏</div>
           <label class="file-btn-label">
             Choisir une image
@@ -980,8 +1019,8 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
           <div id="logoStatut" style="margin-top:8px; font-size:12px;"></div>
         </div>
         <div class="card">
-          <label class="field-label">Nom de l'association</label>
-          <input id="adminNomAssoc" type="text" placeholder="Nom de l'association">
+          <label class="field-label">Nom de l'application (fixé : SUN)</label>
+          <input id="adminNomAssoc" type="text" value="SUN" disabled>
           <label class="field-label">Lien de la chaîne YouTube</label>
           <input id="adminYoutube" type="text" placeholder="https://www.youtube.com/@...">
           <label class="field-label">ID de la chaîne YouTube (facultatif)</label>
@@ -1138,7 +1177,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
       <div class="admin-section" id="admin-cotisation">
         <div class="card">
-          <label class="field-label">Créer une campagne de cotisation</label>
+          <label class="field-label">Créer une campagne caritative</label>
           <input id="ntcNom" type="text" placeholder="Ex : Cotisation mensuelle, Construction du temple…">
           <label class="field-label">Montant suggéré par personne (FCFA)</label>
           <input id="ntcMontant" type="number" placeholder="Ex : 2000">
@@ -1402,6 +1441,53 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   </div>
 
 <script>
+  // Lecture en arrière-plan : commandes sur l'écran verrouillé + relance si le navigateur met en pause en quittant l'appli
+  function majMediaSession_(titre, actions) {
+    if (!("mediaSession" in navigator)) return;
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({ title: titre || "SUN", artist: "SUN" });
+      ["play", "pause", "previoustrack", "nexttrack"].forEach(function (a) {
+        try { navigator.mediaSession.setActionHandler(a, (actions && actions[a]) || null); } catch (e) {}
+      });
+    } catch (e) {}
+  }
+  document.addEventListener("play", function (e) {
+    const el = e.target;
+    if (!el || (el.tagName !== "AUDIO" && el.tagName !== "VIDEO")) return;
+    const zone = el.closest(".lecteur-persistant");
+    const nom = zone && zone.querySelector(".item-nom");
+    const estAudio = el.id === "audioElementActuel";
+    majMediaSession_(nom ? nom.textContent : "", {
+      play: function () { el.play(); }, pause: function () { el.pause(); },
+      previoustrack: estAudio ? function () { audioPrecedent(); } : null,
+      nexttrack: estAudio ? function () { audioSuivant(); } : null
+    });
+  }, true);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState !== "hidden") return;
+    const enLecture = [];
+    document.querySelectorAll("audio, video").forEach(function (m) { if (!m.paused && !m.ended) enLecture.push(m); });
+    let tvLisait = false;
+    try { tvLisait = !!(tvPlayer_ && tvPlayerPret_ && tvPlayer_.getPlayerState() === 1); } catch (e) {}
+    [400, 1500, 4000].forEach(function (d) {
+      setTimeout(function () {
+        enLecture.forEach(function (m) { if (m.paused && !m.ended) { try { m.play(); } catch (e) {} } });
+        if (tvLisait) { try { tvPlayer_.playVideo(); } catch (e) {} }
+      }, d);
+    });
+  });
+
+  // Effet de clic sur tous les boutons (et tuiles cliquables)
+  document.addEventListener("pointerdown", function (e) {
+    const b = e.target.closest && e.target.closest("button, .tuile-visiteur, [role=button]");
+    if (!b || b.disabled) return;
+    b.classList.remove("effet-clic");
+    void b.offsetWidth;
+    b.classList.add("effet-clic");
+  }, true);
+  document.addEventListener("animationend", function (e) {
+    if (e.animationName === "arcClic") e.target.classList.remove("effet-clic");
+  }, true);
   let membreCourant = null;
   let configApp = null;
   let typeCotisationEnCours = null;
@@ -1688,13 +1774,13 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   function appliquerBranding(config) {
     configApp = config || {};
-    const nom = configApp.NomAssociation || "Association";
+    const nom = "SUN";
     document.getElementById("topbarNom").textContent = nom;
     document.getElementById("accueilNomAssoc").textContent = nom;
     document.getElementById("badgeOrgName").textContent = nom;
     document.title = nom + " — Espace membres";
     const initiale = nom.charAt(0).toUpperCase();
-    const logoHtml = configApp.LogoBase64 ? '<img src="data:image/png;base64,' + configApp.LogoBase64 + '">' : initiale;
+    const logoHtml = '<img src="icon-192.png" alt="SUN">'; // logo SUN fixe
     document.getElementById("topbarLogo").innerHTML = logoHtml;
     document.getElementById("accueilLogo").innerHTML = logoHtml;
     document.getElementById("badgeMiniLogo").innerHTML = logoHtml;
@@ -2027,7 +2113,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   // ==================== TABLEAU DE BORD ====================
   const PERMISSIONS_CLIENT = {
     'Admin_TG': ['finances'],
-    'Admin_SG': ['finances', 'demandesPriere'],
+    'Admin_SG': ['demandesPriere'],
     'Admin_OG': ['contenus'],
     'Admin_Super': ['finances', 'demandesPriere', 'contenus', 'systeme']
   };
@@ -2046,16 +2132,15 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         { id: "audios", label: "🎧 Audios" },
         { id: "documents", label: "📄 Documents" },
         { id: "videos", label: "▶️ Vidéos" },
-        { id: "jeu", label: "🎮 Jeu" },
         { id: "offrandes", label: "🙌 Offrandes" },
-        { id: "cotisation", label: "💳 Cotisations" },
+        { id: "cotisation", label: "💳 Campagnes caritatives" },
         { id: "demandePriere", label: "✉️ Demande de prière" }
       ];
     } else {
       onglets = [
         { id: "groupes", label: "Groupes" },
-        { id: "badge", label: "Mon badge" },
-        { id: "cotisation", label: "Cotisations" },
+        { id: "badge", label: "👤 Mon compte" },
+        { id: "cotisation", label: "Campagnes caritatives" },
         { id: "offrandes", label: "Offrandes" },
         { id: "bible", label: "📖 Bible" },
         { id: "prieres", label: "🙏 Séances directes" },
@@ -2063,7 +2148,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         { id: "audios", label: "🎧 Audios" },
         { id: "documents", label: "📄 Documents" },
         { id: "videos", label: "▶️ Vidéos" },
-        { id: "jeu", label: "🎮 Jeu" },
         { id: "messages", label: "Messages" }
       ];
       if (membreCourant && membreCourant.estAuteur) {
@@ -2100,7 +2184,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("btnDeconnexion").textContent = "Se déconnecter";
     document.getElementById("btnDeconnexion").onclick = quitterSession;
     document.getElementById("topbarSub").textContent = "Espace membres";
-    document.getElementById("bonjourNom").textContent = "Bienvenue " + membreCourant.prenom + " — " + (membreCourant.statut || "Actif") + " 👋";
+    document.getElementById("bonjourNom").textContent = "Bienvenue " + membreCourant.prenom + ((membreCourant.statut && membreCourant.statut !== "Actif") ? " — " + membreCourant.statut : "") + " 👋";
 
     construireTabs();
     remplirBadge();
@@ -2364,16 +2448,92 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     document.getElementById("badgeCode").textContent = "Code : " + membreCourant.code;
     const statutEl = document.getElementById("badgeStatut");
     if (membreCourant.statut === "Actif") {
-      statutEl.textContent = "✓ Membre actif";
-      statutEl.style.color = "";
-      statutEl.style.background = "";
+      statutEl.textContent = "";
+      statutEl.style.display = "none";
     } else {
+      statutEl.style.display = "";
       statutEl.textContent = membreCourant.statut || "Statut inconnu";
       statutEl.style.color = "#b8892f";
       statutEl.style.background = "#fdf1dc";
     }
+    remplirCompte_();
     document.getElementById("badgeQr").src = "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" + encodeURIComponent(membreCourant.code);
     document.getElementById("badgePhotoWrap").innerHTML = membreCourant.photoBase64 ? '<img src="data:image/png;base64,' + membreCourant.photoBase64 + '">' : "👤";
+  }
+
+  // ==================== MON COMPTE ====================
+  function compteMessage_(id, texte, ok) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = texte;
+    el.style.color = ok ? "var(--green)" : "var(--danger)";
+    el.style.display = texte ? "block" : "none";
+  }
+
+  function remplirCompte_() {
+    const m = membreCourant;
+    if (!m) return;
+    document.getElementById("cpEmail").value = m.email || "";
+    document.getElementById("cpAdresse").value = m.adresseActuelle || "";
+    document.getElementById("cpProfession").value = m.profession || "";
+    document.getElementById("cpEglise").value = m.eglise || "";
+
+    const cartes = [];
+    if (m.estAuteur) cartes.push('<div class="card" style="margin-top:12px;"><p class="field-label">✍️ Auteur</p><p class="item-desc">Soumettez vos documents, audios et vidéos et suivez leur publication.</p><button class="secondary" onclick="afficherOnglet(\'soumissions\')">Mes soumissions</button></div>');
+    if (m.estTvOwner) cartes.push('<div class="card" style="margin-top:12px;"><p class="field-label">📺 TV Owner</p><p class="item-desc">Gérez votre chaîne : logo, vidéos, playlists, boucle des temps morts, grille et lives.</p><button class="secondary" onclick="tvSousOnglet=\'studio\';afficherOnglet(\'tv\')">Mon studio TV</button></div>');
+    const perms = PERMISSIONS_CLIENT[m.role];
+    if (perms) {
+      const domaines = { finances: "Finances et campagnes caritatives", demandesPriere: "Demandes de prière", contenus: "Contenus et TV", systeme: "Membres, annonces et réglages" };
+      cartes.push('<div class="card" style="margin-top:12px;"><p class="field-label">⚙ ' + escapeHtml(LIBELLES_ROLES[m.role] || "Administrateur") + '</p><p class="item-desc">Vous gérez : ' + perms.map(function (p) { return domaines[p]; }).join(", ") + '.</p><button class="secondary" onclick="afficherOnglet(\'admin\')">Ouvrir l\'administration</button></div>');
+    }
+    document.getElementById("compteRoles").innerHTML = cartes.join("");
+  }
+
+  function compteApresMiseAJour_(membre) {
+    if (membre) Object.assign(membreCourant, membre);
+    sauvegarderSession_();
+    remplirBadge();
+  }
+
+  function compteSauvegarderInfos() {
+    compteMessage_("cpMsgInfos", "", true);
+    appelServeur("modifierMonProfil", membreCourant.code, {
+      email: document.getElementById("cpEmail").value,
+      adresseActuelle: document.getElementById("cpAdresse").value,
+      profession: document.getElementById("cpProfession").value,
+      eglise: document.getElementById("cpEglise").value
+    }).then(function (res) {
+      if (!res.succes) { compteMessage_("cpMsgInfos", res.message || "Échec de l'enregistrement.", false); return; }
+      compteApresMiseAJour_(res.membre);
+      compteMessage_("cpMsgInfos", "✓ Informations enregistrées.", true);
+    }).catch(function (e) { compteMessage_("cpMsgInfos", "Erreur : " + e.message, false); });
+  }
+
+  function compteChangerTelephone() {
+    const tel = document.getElementById("cpNouveauTel").value.trim();
+    const mdp = document.getElementById("cpTelMdp").value;
+    if (!tel || !mdp) { compteMessage_("cpMsgTel", "Renseignez le nouveau numéro et votre mot de passe actuel.", false); return; }
+    appelServeur("changerTelephoneMembre", membreCourant.code, mdp, tel).then(function (res) {
+      if (!res.succes) { compteMessage_("cpMsgTel", res.message || "Échec du changement.", false); return; }
+      compteApresMiseAJour_(res.membre);
+      document.getElementById("cpNouveauTel").value = "";
+      document.getElementById("cpTelMdp").value = "";
+      compteMessage_("cpMsgTel", "✓ Numéro modifié. Utilisez-le désormais pour vous connecter.", true);
+    }).catch(function (e) { compteMessage_("cpMsgTel", "Erreur : " + e.message, false); });
+  }
+
+  function compteChangerMotDePasse() {
+    const actuel = document.getElementById("cpMdpActuel").value;
+    const nouveau = document.getElementById("cpMdpNouveau").value;
+    const confirmation = document.getElementById("cpMdpConfirm").value;
+    if (!actuel || !nouveau) { compteMessage_("cpMsgMdp", "Renseignez votre mot de passe actuel et le nouveau.", false); return; }
+    if (nouveau.length < 4) { compteMessage_("cpMsgMdp", "Le nouveau mot de passe doit contenir au moins 4 caractères.", false); return; }
+    if (nouveau !== confirmation) { compteMessage_("cpMsgMdp", "La confirmation ne correspond pas.", false); return; }
+    appelServeur("changerMotDePasseMembre", membreCourant.code, actuel, nouveau).then(function (res) {
+      if (!res.succes) { compteMessage_("cpMsgMdp", res.message || "Échec du changement.", false); return; }
+      ["cpMdpActuel", "cpMdpNouveau", "cpMdpConfirm"].forEach(function (id) { document.getElementById(id).value = ""; });
+      compteMessage_("cpMsgMdp", "✓ Mot de passe modifié.", true);
+    }).catch(function (e) { compteMessage_("cpMsgMdp", "Erreur : " + e.message, false); });
   }
 
   function afficherOnglet(nom, depuisHistorique) {
@@ -2381,7 +2541,6 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     if (ongletActuel === "bible" && nom !== "bible") arreterLectureBible(); // ne pas laisser la voix continuer en arrière-plan
     ongletActuel = nom;
     if (!modeVisiteur) sauvegarderSession_(); // prolonge la session tant que le membre navigue activement
-    document.getElementById("btnPrecedent").style.display = (historiqueOnglets.length || modeVisiteur) ? "inline-flex" : "none";
     document.querySelectorAll("#tabsPrincipaux .tab").forEach(function (t) { t.classList.toggle("active", t.dataset.tab === nom); });
     document.querySelectorAll("#ecranDashboard > .section").forEach(function (s) { s.classList.toggle("active", s.id === "section-" + nom); });
     // Recharge les données à chaque visite de l'onglet, pour ne jamais afficher un contenu périmé.
@@ -2417,7 +2576,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       { id: "membres", label: "Membres", permission: "systeme" },
       { id: "annonces", label: "📢 Annonces", permission: "systeme" },
       { id: "paiements", label: "Paiements", permission: "finances" },
-      { id: "cotisation", label: "Cotisations", permission: "finances" },
+      { id: "cotisation", label: "Campagnes caritatives", permission: "finances" },
       { id: "demandesPriere", label: "Demandes de prière", permission: "demandesPriere" },
       { id: "soumissions", label: "✍️ Soumissions", permission: "contenus" },
       { id: "tv", label: "📺 TV", permission: "contenus" },
@@ -2615,7 +2774,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function afficherTypesCotisationMembre(types) {
     types = types || [];
     const zone = document.getElementById("listeTypesCotisation");
-    if (!types.length) { zone.innerHTML = '<p class="empty-state">Aucune campagne de cotisation configurée pour le moment.</p>'; return; }
+    if (!types.length) { zone.innerHTML = '<p class="empty-state">Aucune campagne caritative pour le moment.</p>'; return; }
     zone.innerHTML = types.map(function (t) {
       const nomEchappe = escapeHtml(t.Nom).replace(/'/g, "&#39;");
       const aObjectif = Number(t.MontantObjectif) > 0;
@@ -2808,7 +2967,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
   function voirRecu(transactionId) {
     appelServeur("getRecuPaiement", membreCourant.code, transactionId).then(function (res) {
       if (!res.succes) { alert(res.message || "Reçu indisponible."); return; }
-      document.getElementById("recuOrgName").textContent = res.nomAssociation;
+      document.getElementById("recuOrgName").textContent = "SUN";
       document.getElementById("recuLogo").innerHTML = document.getElementById("topbarLogo").innerHTML;
       document.getElementById("recuNomMembre").textContent = res.nomMembre;
       document.getElementById("recuCodeMembre").textContent = res.code;
@@ -3588,9 +3747,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         return;
       }
       versetsBibleActuels = res.versets || [];
-      zone.innerHTML = versetsBibleActuels.map(function (v) {
-        return '<div class="bible-verset"><span class="num">' + v.numero + '</span>' + escapeHtml(v.texte) + '</div>';
-      }).join("");
+      bibleChapitreAffiche_ = { livre: livreId, chapitre: chapitre };
+      bibleSelection_ = [];
+      bibleModePlage_ = false;
+      bibleAfficherVersets_();
+      if (bibleVersetAMontrer_) { const n = bibleVersetAMontrer_; bibleVersetAMontrer_ = null; setTimeout(function () { bibleMontrerVerset_(n); }, 60); }
       // Le chapitre précédent vient de se terminer et l'enchaînement automatique est actif :
       // on démarre directement la lecture de celui-ci, sans action de l'utilisateur.
       if (avancementAutomatiqueBible_) {
@@ -3733,6 +3894,207 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     selectLivre.selectedIndex = nouvelIndex;
     document.getElementById("bibleChapitre").value = 1;
     chargerChapitreBible();
+  }
+
+  // ==================== BIBLE — SÉLECTION, SURLIGNAGE, COPIE, RECHERCHE ====================
+  let bibleSelection_ = [];
+  let bibleModePlage_ = false;
+  let bibleVersetAMontrer_ = null;
+  let bibleChapitreAffiche_ = { livre: "", chapitre: "" };
+  let bibleRecherche_ = { terme: "", portee: "", page: 1, affiches: 0, brut: 0, total: 0 };
+
+  function bibleSurlignages_() { try { return JSON.parse(localStorage.getItem("sun_bible_surlignages") || "{}"); } catch (e) { return {}; } }
+  function bibleSauverSurlignages_(o) { try { localStorage.setItem("sun_bible_surlignages", JSON.stringify(o)); } catch (e) {} }
+  function bibleCleVerset_(n) { return bibleChapitreAffiche_.livre + ":" + bibleChapitreAffiche_.chapitre + ":" + n; }
+
+  function bibleAfficherVersets_() {
+    const zone = document.getElementById("bibleContenuZone");
+    const hl = bibleSurlignages_();
+    zone.innerHTML = versetsBibleActuels.map(function (v) {
+      const c = hl[bibleCleVerset_(v.numero)];
+      const sel = bibleSelection_.indexOf(Number(v.numero)) !== -1;
+      return '<div class="bible-verset' + (c ? " hl-" + c : "") + (sel ? " selectionne" : "") + '" data-v="' + v.numero + '" onclick="bibleToucherVerset_(' + v.numero + ')"><span class="num">' + v.numero + "</span>" + escapeHtml(v.texte) + "</div>";
+    }).join("");
+    bibleMajBarre_();
+  }
+
+  function bibleMajBarre_() {
+    const barre = document.getElementById("bibleBarreSelection");
+    if (!barre) return;
+    const n = bibleSelection_.length;
+    barre.style.display = n ? "flex" : "none";
+    document.getElementById("bibleNbSel").textContent = bibleModePlage_ ? "Touchez le dernier verset" : n + (n > 1 ? " versets" : " verset");
+    document.getElementById("bibleBtnPlage").classList.toggle("actif", bibleModePlage_);
+  }
+
+  function bibleToucherVerset_(n) {
+    const sel = window.getSelection && window.getSelection().toString();
+    if (sel && sel.length > 0) return; // l'utilisateur sélectionne du texte à la main : on ne touche à rien
+    n = Number(n);
+    if (bibleModePlage_ && bibleSelection_.length) {
+      const bornes = bibleSelection_.concat([n]);
+      const a = Math.min.apply(null, bornes), b = Math.max.apply(null, bornes);
+      bibleSelection_ = versetsBibleActuels.map(function (v) { return Number(v.numero); }).filter(function (x) { return x >= a && x <= b; });
+      bibleModePlage_ = false;
+    } else {
+      const i = bibleSelection_.indexOf(n);
+      if (i === -1) bibleSelection_.push(n); else bibleSelection_.splice(i, 1);
+    }
+    bibleAfficherVersets_();
+  }
+
+  function bibleToutSelectionner() {
+    const tous = versetsBibleActuels.map(function (v) { return Number(v.numero); });
+    if (!tous.length) return;
+    bibleSelection_ = (bibleSelection_.length === tous.length) ? [] : tous;
+    bibleModePlage_ = false;
+    bibleAfficherVersets_();
+  }
+
+  function bibleAnnulerSelection() { bibleSelection_ = []; bibleModePlage_ = false; bibleAfficherVersets_(); }
+
+  function bibleTogglePlage() {
+    if (!bibleSelection_.length) return;
+    bibleModePlage_ = !bibleModePlage_;
+    bibleMajBarre_();
+  }
+
+  function bibleSurligner(couleur) {
+    if (!bibleSelection_.length) return;
+    const hl = bibleSurlignages_();
+    bibleSelection_.forEach(function (n) {
+      if (couleur) hl[bibleCleVerset_(n)] = couleur; else delete hl[bibleCleVerset_(n)];
+    });
+    bibleSauverSurlignages_(hl);
+    bibleSelection_ = [];
+    bibleAfficherVersets_();
+  }
+
+  function bibleToast_(texte) {
+    const t = document.createElement("div");
+    t.textContent = texte;
+    t.style.cssText = "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;font-weight:700;z-index:9999;";
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 1800);
+  }
+
+  function bibleCopierTexte_(texte) {
+    const fin = function (ok) { bibleToast_(ok ? "✓ Copié" : "Copie impossible"); };
+    const repli = function () {
+      const ta = document.createElement("textarea");
+      ta.value = texte; ta.style.cssText = "position:fixed;opacity:0;top:0;left:0;";
+      document.body.appendChild(ta); ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) {}
+      ta.remove(); fin(ok);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(texte).then(function () { fin(true); }).catch(repli);
+    else repli();
+  }
+
+  function bibleNomLivre_(id) {
+    const l = (livresBibleCache || []).find(function (x) { return String(x.id) === String(id); });
+    return l ? (langueBibleActuelle === "en" ? l.en : l.fr) : "";
+  }
+
+  function bibleCopier() {
+    if (!bibleSelection_.length) return;
+    const nums = bibleSelection_.slice().sort(function (a, b) { return a - b; });
+    const plages = [];
+    nums.forEach(function (n) {
+      const d = plages[plages.length - 1];
+      if (d && n === d[1] + 1) d[1] = n; else plages.push([n, n]);
+    });
+    const ref = plages.map(function (p) { return p[0] === p[1] ? p[0] : p[0] + "-" + p[1]; }).join(", ");
+    const lignes = nums.map(function (n) {
+      const v = versetsBibleActuels.find(function (x) { return Number(x.numero) === n; });
+      return n + " " + (v ? v.texte.trim() : "");
+    });
+    const entete = bibleNomLivre_(bibleChapitreAffiche_.livre) + " " + bibleChapitreAffiche_.chapitre + ":" + ref + " (" + (langueBibleActuelle === "en" ? "KJV" : "LSG") + ")";
+    bibleCopierTexte_(entete + "\n" + lignes.join("\n"));
+  }
+
+  function bibleMontrerVerset_(n) {
+    const el = document.querySelector('#bibleContenuZone .bible-verset[data-v="' + n + '"]');
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("flash");
+    setTimeout(function () { el.classList.remove("flash"); }, 2500);
+  }
+
+  function bibleAllerAuVerset_(livre, chapitre, verset) {
+    if (String(livre) === String(bibleChapitreAffiche_.livre) && String(chapitre) === String(bibleChapitreAffiche_.chapitre)) { bibleMontrerVerset_(verset); return; }
+    document.getElementById("bibleLivre").value = String(livre);
+    document.getElementById("bibleChapitre").value = String(chapitre);
+    bibleVersetAMontrer_ = verset;
+    chargerChapitreBible();
+  }
+
+  // ----- Recherche -----
+  function bibleSansAccents_(t) { return Array.from(String(t)).map(function (c) { return c.normalize("NFD").replace(/[\u0300-\u036f]/g, "") || c; }); }
+
+  function bibleMarquer_(texte, terme) {
+    const orig = Array.from(String(texte));
+    const plat = bibleSansAccents_(texte);
+    const cherche = bibleSansAccents_(terme).join("").toLowerCase();
+    if (plat.some(function (c) { return c.length !== 1; }) || !cherche) return escapeHtml(texte);
+    const hay = plat.join("").toLowerCase();
+    if (hay.length !== orig.length) return escapeHtml(texte);
+    let out = "", i = 0;
+    while (i < orig.length) {
+      const k = hay.indexOf(cherche, i);
+      if (k === -1) { out += escapeHtml(orig.slice(i).join("")); break; }
+      out += escapeHtml(orig.slice(i, k).join("")) + "<mark>" + escapeHtml(orig.slice(k, k + cherche.length).join("")) + "</mark>";
+      i = k + cherche.length;
+    }
+    return out;
+  }
+
+  function bibleToggleRecherche() {
+    const c = document.getElementById("bibleRechercheCard");
+    const ouvrir = c.style.display === "none";
+    c.style.display = ouvrir ? "block" : "none";
+    if (ouvrir) document.getElementById("bibleRechercheTexte").focus();
+  }
+
+  function bibleLigneResultat_(livre, chapitre, verset, texte, terme, local) {
+    const action = local ? "bibleMontrerVerset_(" + verset + ")" : "bibleAllerAuVerset_(" + livre + "," + chapitre + "," + verset + ")";
+    return '<div class="bible-resultat" onclick="' + action + '"><div class="ref">' + escapeHtml(bibleNomLivre_(livre)) + " " + chapitre + ":" + verset + "</div><div>" + bibleMarquer_(texte, terme) + "</div></div>";
+  }
+
+  function bibleLancerRecherche(page) {
+    const terme = document.getElementById("bibleRechercheTexte").value.trim();
+    const portee = document.getElementById("bibleRechercheScope").value;
+    const zone = document.getElementById("bibleRechercheResultats");
+    if (terme.length < 2) { zone.innerHTML = '<p class="item-desc">Saisissez au moins 2 lettres.</p>'; return; }
+
+    if (portee === "chapitre") {
+      if (!versetsBibleActuels.length) { zone.innerHTML = '<p class="item-desc">Ouvrez d\'abord un chapitre.</p>'; return; }
+      const q = bibleSansAccents_(terme).join("").toLowerCase();
+      const trouves = versetsBibleActuels.filter(function (v) { return bibleSansAccents_(v.texte).join("").toLowerCase().indexOf(q) !== -1; });
+      zone.innerHTML = trouves.length
+        ? '<p class="item-desc">' + trouves.length + " résultat(s) dans ce chapitre.</p>" + trouves.map(function (v) { return bibleLigneResultat_(bibleChapitreAffiche_.livre, bibleChapitreAffiche_.chapitre, v.numero, v.texte, terme, true); }).join("")
+        : '<p class="item-desc">Aucun résultat dans ce chapitre.</p>';
+      return;
+    }
+
+    if (page === 1) { bibleRecherche_ = { terme: terme, portee: portee, page: 1, affiches: 0, brut: 0, total: 0 }; zone.innerHTML = '<div class="loading">Recherche…</div>'; }
+    const livre = Number(document.getElementById("bibleLivre").value);
+    appelServeur("rechercherBible", bibleRecherche_.terme, bibleRecherche_.portee, livre, langueBibleActuelle, page).then(function (res) {
+      if (!res.succes) { zone.innerHTML = '<p class="error">' + escapeHtml(res.message || "Recherche impossible.") + "</p>"; return; }
+      bibleRecherche_.page = page;
+      bibleRecherche_.brut += res.brut;
+      bibleRecherche_.total = res.total;
+      bibleRecherche_.affiches += res.resultats.length;
+      const ancien = zone.querySelector("#bibleResultatsListe");
+      const lignes = res.resultats.map(function (r) { return bibleLigneResultat_(r.livre, r.chapitre, r.numero, r.texte, bibleRecherche_.terme, false); }).join("");
+      if (page === 1 && !res.resultats.length) { zone.innerHTML = '<p class="item-desc">Aucun résultat.</p>'; return; }
+      const encore = res.brut > 0 && bibleRecherche_.brut < res.total;
+      const entete = '<p class="item-desc">' + res.total + " résultat(s)" + (bibleRecherche_.portee === "livre" ? " dans " + escapeHtml(bibleNomLivre_(livre)) : "") + ".</p>";
+      const liste = (ancien ? ancien.innerHTML : "") + lignes;
+      zone.innerHTML = entete + '<div id="bibleResultatsListe">' + liste + "</div>" +
+        (encore ? '<button class="secondary full-mt" onclick="bibleLancerRecherche(' + (page + 1) + ')">Voir plus de résultats</button>' : "");
+    }).catch(function (err) { zone.innerHTML = '<p class="error">Erreur : ' + escapeHtml(err.message) + "</p>"; });
   }
 
   // ==================== MESSAGERIE (texte + audio) ====================
@@ -4404,7 +4766,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     });
   }
 
-  const LIBELLES_ROLES = { Membre: "Membre", Admin_TG: "Admin TG", Admin_SG: "Admin SG", Admin_OG: "Admin OG", Admin_Super: "Super Admin" };
+  const LIBELLES_ROLES = { Membre: "Membre", Admin_TG: "Admin TG", Admin_SG: "Admin ICO", Admin_OG: "Admin OG", Admin_Super: "Super Admin" };
 
   // ==================== SÉLECTION MULTIPLE (Audios, Vidéos, Documents, Membres) ====================
   // Système réutilisable de cases à cocher + suppression groupée, commun aux 4 panneaux.
@@ -5883,17 +6245,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
 
   // Logo de la chaîne dans l'angle supérieur droit du lecteur (numéro si pas de logo)
   function tvAfficherLogoCoin_(c) {
-    const img = document.getElementById("tvLogoCoin");
-    const puce = document.getElementById("tvNumCoin");
-    if (c.LogoBase64) {
-      img.src = "data:image/png;base64," + c.LogoBase64;
-      img.style.display = "block";
-      puce.style.display = "none";
-    } else {
-      img.style.display = "none";
-      puce.textContent = c.Numero ? tvNumeroFmt_(c.Numero) : "";
-      puce.style.display = c.Numero ? "block" : "none";
-    }
+    const img = document.getElementById("tvLogoEntete");
+    if (!img) return;
+    if (c.LogoBase64) { img.src = "data:image/png;base64," + c.LogoBase64; img.style.display = "block"; }
+    else { img.removeAttribute("src"); img.style.display = "none"; }
   }
 
   // --- Synchronisation : tous les spectateurs doivent être au même point de la vidéo ---
@@ -5953,6 +6308,12 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
     }
   }
 
+  // Aucun sous-titre ni traduction écrite dans le lecteur TV
+  function tvCouperSousTitres_() {
+    try { tvPlayer_.unloadModule("captions"); } catch (e) {}
+    try { tvPlayer_.unloadModule("cc"); } catch (e) {}
+  }
+
   function tvForcerTailleLecteur_() {
     try {
       const f = tvPlayer_.getIframe();
@@ -5977,10 +6338,11 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
         host: "https://www.youtube-nocookie.com",
         width: "100%", height: "100%",
         videoId: tvVideoDemandee_,
-        playerVars: { autoplay: 1, controls: 0, disablekb: 1, rel: 0, modestbranding: 1, playsinline: 1, fs: 0, start: depart },
+        playerVars: { autoplay: 1, controls: 0, disablekb: 1, rel: 0, modestbranding: 1, playsinline: 1, fs: 0, cc_load_policy: 0, iv_load_policy: 3, start: depart },
         events: {
           onReady: function () {
             tvPlayerPret_ = true;
+            tvCouperSousTitres_();
             tvForcerTailleLecteur_();
             tvPlayer_.playVideo();
             tvAppliquerDemande_();
@@ -5989,7 +6351,7 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
             if (!tvPlayer_) return;
             if (e.data === 0) rafraichirTv_();                     // vidéo terminée : on enchaîne tout de suite
             else if (e.data === 2) tvPlayer_.playVideo();          // pas de pause possible : la lecture reprend aussitôt
-            else if (e.data === 1) setTimeout(tvBoucleSync_, 600); // la lecture démarre : on vérifie tout de suite la synchro
+            else if (e.data === 1) { tvCouperSousTitres_(); setTimeout(tvBoucleSync_, 600); } // la lecture démarre : on vérifie tout de suite la synchro
           }
         }
       });
@@ -6513,10 +6875,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1.5px solid var(--line
       try { new Notification("📺 " + tvLibelle_(c), { body: "La chaîne " + message, icon: "icon-192.png" }); } catch (e) { /* pas grave */ }
     }
     const b = document.createElement("div");
-    b.style.cssText = "position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,#be185d,#ec4899);color:#fff;padding:14px 18px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:calc(100% - 24px);text-align:center;font-size:13px;font-weight:700;";
+    b.style.cssText = "position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,#111111,#3a3a3a);color:#fff;padding:14px 18px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:calc(100% - 24px);text-align:center;font-size:13px;font-weight:700;";
     b.innerHTML = "📺 La chaîne « " + escapeHtml(tvLibelle_(c)) + " » " + message +
       '<div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">' +
-      '<button style="width:auto;padding:7px 16px;background:#fff;color:#be185d;border-radius:8px;font-size:12px;font-weight:800;border:none;" onclick="ouvrirChaineTvDepuisAlerte_(\'' + c.ID + '\');this.closest(\'div\').parentElement.remove()">▶ Regarder</button>' +
+      '<button style="width:auto;padding:7px 16px;background:#fff;color:#111111;border-radius:8px;font-size:12px;font-weight:800;border:none;" onclick="ouvrirChaineTvDepuisAlerte_(\'' + c.ID + '\');this.closest(\'div\').parentElement.remove()">▶ Regarder</button>' +
       '<button style="width:auto;padding:7px 16px;background:rgba(255,255,255,.25);color:#fff;border-radius:8px;font-size:12px;font-weight:800;border:none;" onclick="this.closest(\'div\').parentElement.remove()">OK</button></div>';
     document.body.appendChild(b);
     setTimeout(function () { if (b.parentElement) b.remove(); }, 20000);
