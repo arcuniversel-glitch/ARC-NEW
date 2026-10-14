@@ -1,7 +1,7 @@
 {
-  "name": "ARC",
-  "short_name": "ARC",
-  "description": "Espace membres de l'Association du Réveil Chrétien",
+  "name": "SUN",
+  "short_name": "SUN",
+  "description": "SUN — Bible, TV, audios, vidéos, prière et campagnes caritatives",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -9,8 +9,23 @@
   "background_color": "#f4f7fb",
   "theme_color": "#0b2f68",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
