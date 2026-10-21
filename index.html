@@ -1490,31 +1490,35 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     if (e.animationName === "arcClic") e.target.classList.remove("effet-clic");
   }, true);
   let membreCourant = null;
+  let jetonSession = ""; // jeton signé remis par le nouveau serveur à la connexion
   let configApp = null;
   let typeCotisationEnCours = null;
   let photoInscriptionBase64 = '';
   let codeInvitationInscription = '';
   let codesGeneresDerniereFois = [];
 
-  // ==================== ADRESSE DE L'API (backend Apps Script) ====================
-  // Collez ici l'URL de déploiement de votre Apps Script (celle qui se termine par /exec).
-  // C'est la SEULE ligne à modifier après avoir déployé Code.gs comme API.
-  const API_URL = "https://script.google.com/macros/s/AKfycbyBOvScNdIsYbJlVfduCaSAkxC_-juQo-NjWqmWlE7ux27pBsBqQwxyow9DAdjEtT4o/exec";
+  // ==================== ADRESSES DE L'API ====================
+  // Le NOUVEAU serveur (Cloudflare) reçoit toutes les requêtes. Il exécute lui-même les actions déjà
+  // portées et relaie le reste à l'ANCIEN serveur (Apps Script). Si le nouveau serveur est injoignable,
+  // l'appli retombe automatiquement sur l'ancien, comme avant.
+  const API_URL_NOUVEAU = "https://sun-api.arcuniversel.workers.dev";
+  const API_URL_ANCIEN = "https://script.google.com/macros/s/AKfycbyBOvScNdIsYbJlVfduCaSAkxC_-juQo-NjWqmWlE7ux27pBsBqQwxyow9DAdjEtT4o/exec";
+  const API_URL = API_URL_NOUVEAU;
 
-  // ==================== APPEL SERVEUR (via l'API Apps Script) ====================
-  // Remplace l'ancien google.script.run : la page est maintenant hébergée séparément
-  // (GitHub Pages), donc elle appelle le backend Apps Script comme une API classique.
-  // Le corps de la requête est envoyé en texte brut (pas en JSON déclaré) exprès : cela
-  // évite une requête de pré-vérification CORS ("preflight") qu'Apps Script ne sait pas
-  // traiter, et qui ferait échouer silencieusement tous les appels.
+  // ==================== APPEL SERVEUR ====================
+  // Le corps est envoyé en texte brut (pas en JSON déclaré) exprès : cela évite une requête de
+  // pré-vérification CORS (« preflight ») que l'ancien serveur ne sait pas traiter.
   function appelServeur(nomFonction) {
     const args = Array.prototype.slice.call(arguments, 1);
-    if (!API_URL || API_URL.indexOf("COLLEZ_ICI") === 0) {
-      return Promise.reject(new Error("L'adresse de l'API (API_URL) n'a pas encore été configurée dans index.html."));
-    }
-    return fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: nomFonction, params: args })
+    const corps = JSON.stringify({ action: nomFonction, params: args });
+    const envoyer = function (url) { return fetch(url, { method: "POST", body: corps }); };
+    return envoyer(API_URL_NOUVEAU).then(function (res) {
+      // Page d'erreur de la plateforme (et non une réponse JSON du serveur) : on tente l'ancien serveur.
+      const type = res.headers.get("content-type") || "";
+      if (!res.ok && type.indexOf("json") === -1) return envoyer(API_URL_ANCIEN);
+      return res;
+    }, function () {
+      return envoyer(API_URL_ANCIEN); // nouveau serveur injoignable
     }).then(function (res) {
       if (!res.ok) throw new Error("Erreur réseau (statut " + res.status + ").");
       return res.json();
@@ -1620,10 +1624,11 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 
   function sauvegarderSession_() {
     if (!membreCourant) return;
-    try { localStorage.setItem("arc_session", JSON.stringify({ membre: membreCourant, ts: Date.now() })); } catch (e) { /* stockage indisponible, tant pis */ }
+    try { localStorage.setItem("arc_session", JSON.stringify({ membre: membreCourant, jeton: jetonSession, ts: Date.now() })); } catch (e) { /* stockage indisponible, tant pis */ }
   }
 
   function effacerSession_() {
+    jetonSession = "";
     try { localStorage.removeItem("arc_session"); } catch (e) {}
   }
 
@@ -1635,6 +1640,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       if (!donnees || !donnees.membre || !donnees.ts) return false;
       if (Date.now() - donnees.ts > DUREE_SESSION_MS) { effacerSession_(); return false; }
       membreCourant = donnees.membre;
+      jetonSession = donnees.jeton || "";
       return true;
     } catch (e) { return false; }
   }
@@ -1722,7 +1728,8 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     lignes.push("Version de l'interface TV : 8");
     lignes.push("Déjà en mode application : " + estDejaInstallee());
     lignes.push("Proposition d'installation reçue du navigateur : " + (promptInstallDiffere ? "OUI" : "NON"));
-    lignes.push("Adresse API configurée : " + API_URL);
+    lignes.push("Serveur principal : " + API_URL_NOUVEAU);
+    lignes.push("Serveur de secours : " + API_URL_ANCIEN);
     lignes.push("");
 
     const afficherResultat = function () {
@@ -1928,6 +1935,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
         return;
       }
       membreCourant = res.membre;
+      jetonSession = res.jeton || "";
       sauvegarderSession_();
       afficherDashboard();
     }).catch(function (e) {
