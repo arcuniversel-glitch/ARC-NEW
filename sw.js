@@ -1,4 +1,4 @@
-/* Service worker — SUN
+/* Service worker — JESUS
  *
  * Principe : le RÉSEAU d'abord, le cache seulement en secours (hors connexion).
  * Ainsi, dès qu'une nouvelle version de index.html est mise en ligne sur GitHub, elle est
@@ -7,7 +7,7 @@
  * Les appels vers Apps Script, YouTube, Google Fonts, Kkiapay… (autres domaines) et toutes les
  * requêtes qui ne sont pas des GET ne sont JAMAIS interceptés : ils passent directement.
  */
-const CACHE = "sun-cache-v3";
+const CACHE = "jesus-cache-v1";
 const FICHIERS_DE_BASE = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-512-maskable.png"];
 
 self.addEventListener("install", function (event) {
