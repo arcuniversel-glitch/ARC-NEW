@@ -1,7 +1,7 @@
 {
-  "name": "SUN",
-  "short_name": "SUN",
-  "description": "SUN — Bible, TV, audios, vidéos, prière et campagnes caritatives",
+  "name": "JESUS",
+  "short_name": "JESUS",
+  "description": "JESUS — Bible, TV, audios, vidéos, prière et campagnes caritatives",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
