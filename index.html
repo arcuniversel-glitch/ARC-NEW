@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="SUN">
+  <meta name="apple-mobile-web-app-title" content="JESUS">
   <meta name="theme-color" content="#0b2f68">
   <script src="https://cdn.kkiapay.me/k.js"></script>
   <style>
@@ -243,7 +243,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     <div class="recu-portrait">
       <div class="recu-header">
         <div class="logo-circle" id="recuLogo">🙏</div>
-        <div class="nom" id="recuOrgName">SUN</div>
+        <div class="nom" id="recuOrgName">JESUS</div>
       </div>
       <div class="recu-titre">Reçu de paiement</div>
       <div class="recu-ligne"><span>Membre</span><strong id="recuNomMembre">—</strong></div>
@@ -260,7 +260,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   <div class="topbar" id="topbar">
     <div class="logo-circle" id="topbarLogo">🙏</div>
     <div class="topbar-nom-wrap">
-      <div class="topbar-nom" id="topbarNom">SUN</div>
+      <div class="topbar-nom" id="topbarNom">JESUS</div>
       <div class="topbar-sub" id="topbarSub">Espace membres</div>
     </div>
     <div class="topbar-actions">
@@ -276,7 +276,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       <div class="card">
         <div class="brand-center">
           <div class="logo-circle-lg" id="accueilLogo">🙏</div>
-          <div class="brand-nom" id="accueilNomAssoc">SUN</div>
+          <div class="brand-nom" id="accueilNomAssoc">JESUS</div>
         </div>
         <h1 class="titre">Bienvenue 🙏</h1>
         <p class="subtitle">Connectez-vous à votre espace membre ou créez votre compte.</p>
@@ -397,7 +397,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
         </div>
         <p class="field-label" style="margin-bottom:14px;">Accès réservé</p>
         <h1 class="titre">Code d'accès requis</h1>
-        <p class="subtitle">Pour créer un compte, vous devez posséder un code d'accès remis par un administrateur de SUN.</p>
+        <p class="subtitle">Pour créer un compte, vous devez posséder un code d'accès remis par un administrateur de JESUS.</p>
         <label class="field-label">Votre code d'accès</label>
         <input id="codeInscription" type="text" autocomplete="off" placeholder="Ex : ARC-AB12CD34" style="text-transform:uppercase;letter-spacing:1.5px;font-weight:800;text-align:center;">
         <div id="erreurCodeInscription" class="error" style="display:none;"></div>
@@ -533,7 +533,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
         <div class="badge-portrait">
           <div class="badge-top-band">
             <div class="badge-mini-logo" id="badgeMiniLogo">🙏</div>
-            <div class="badge-org-name" id="badgeOrgName">SUN</div>
+            <div class="badge-org-name" id="badgeOrgName">JESUS</div>
           </div>
           <div class="badge-photo-wrap" id="badgePhotoWrap">👤</div>
           <div class="badge-body">
@@ -1020,8 +1020,8 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
           <div id="logoStatut" style="margin-top:8px; font-size:12px;"></div>
         </div>
         <div class="card">
-          <label class="field-label">Nom de l'application (fixé : SUN)</label>
-          <input id="adminNomAssoc" type="text" value="SUN" disabled>
+          <label class="field-label">Nom de l'application (fixé : JESUS)</label>
+          <input id="adminNomAssoc" type="text" value="JESUS" disabled>
           <label class="field-label">Lien de la chaîne YouTube</label>
           <input id="adminYoutube" type="text" placeholder="https://www.youtube.com/@...">
           <label class="field-label">ID de la chaîne YouTube (facultatif)</label>
@@ -1446,7 +1446,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   function majMediaSession_(titre, actions) {
     if (!("mediaSession" in navigator)) return;
     try {
-      navigator.mediaSession.metadata = new MediaMetadata({ title: titre || "SUN", artist: "SUN" });
+      navigator.mediaSession.metadata = new MediaMetadata({ title: titre || "JESUS", artist: "JESUS" });
       ["play", "pause", "previoustrack", "nexttrack"].forEach(function (a) {
         try { navigator.mediaSession.setActionHandler(a, (actions && actions[a]) || null); } catch (e) {}
       });
@@ -1782,13 +1782,13 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 
   function appliquerBranding(config) {
     configApp = config || {};
-    const nom = "SUN";
+    const nom = "JESUS";
     document.getElementById("topbarNom").textContent = nom;
     document.getElementById("accueilNomAssoc").textContent = nom;
     document.getElementById("badgeOrgName").textContent = nom;
     document.title = nom + " — Espace membres";
     const initiale = nom.charAt(0).toUpperCase();
-    const logoHtml = '<img src="icon-192.png" alt="SUN">'; // logo SUN fixe
+    const logoHtml = '<img src="icon-192.png" alt="JESUS">'; // logo JESUS fixe
     document.getElementById("topbarLogo").innerHTML = logoHtml;
     document.getElementById("accueilLogo").innerHTML = logoHtml;
     document.getElementById("badgeMiniLogo").innerHTML = logoHtml;
@@ -2978,7 +2978,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   function voirRecu(transactionId) {
     appelServeur("getRecuPaiement", membreCourant.code, transactionId).then(function (res) {
       if (!res.succes) { alert(res.message || "Reçu indisponible."); return; }
-      document.getElementById("recuOrgName").textContent = "SUN";
+      document.getElementById("recuOrgName").textContent = "JESUS";
       document.getElementById("recuLogo").innerHTML = document.getElementById("topbarLogo").innerHTML;
       document.getElementById("recuNomMembre").textContent = res.nomMembre;
       document.getElementById("recuCodeMembre").textContent = res.code;
