@@ -294,6 +294,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
           <option value="sw">Kiswahili</option>
         </select>
         <div id="google_translate_element" style="display:none;"></div>
+        <a href="confidentialite.html" class="ghost-link full-mt" style="display:block;text-align:center;font-size:12px;opacity:.8;text-decoration:none;">🔒 Politique de confidentialité</a>
         <button onclick="diagnostiquerPWA()" class="ghost-link full-mt" style="font-size:11px;opacity:.7;">🔧 Diagnostic installation (pour le support)</button>
         <div id="diagnosticPWAZone" class="codes-box" style="display:none;user-select:text;-webkit-user-select:text;"></div>
       </div>
@@ -383,6 +384,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
         <div id="erreurContact" class="error" style="display:none;"></div>
         <button class="flame" onclick="envoyerContactClick()">Envoyer le message</button>
         <div id="messageContact" style="margin-top:10px;font-size:13px;"></div>
+        <a href="confidentialite.html" class="ghost-link full-mt" style="display:block;text-align:center;font-size:12px;opacity:.8;text-decoration:none;">🔒 Politique de confidentialité</a>
         <button class="ghost-link full-mt" onclick="retourDepuisContact()">← Retour</button>
       </div>
     </div>
@@ -1510,7 +1512,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   // pré-vérification CORS (« preflight ») que l'ancien serveur ne sait pas traiter.
   function appelServeur(nomFonction) {
     const args = Array.prototype.slice.call(arguments, 1);
-    const corps = JSON.stringify({ action: nomFonction, params: args });
+    const corps = JSON.stringify({ action: nomFonction, params: args, jeton: jetonSession || undefined });
     const envoyer = function (url) { return fetch(url, { method: "POST", body: corps }); };
     return envoyer(API_URL_NOUVEAU).then(function (res) {
       // Page d'erreur de la plateforme (et non une réponse JSON du serveur) : on tente l'ancien serveur.
