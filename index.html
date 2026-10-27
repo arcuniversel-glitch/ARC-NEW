@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="JESUS">
   <meta name="theme-color" content="#0b2f68">
-  <script src="https://cdn.kkiapay.me/k.js"></script>
+  <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
   <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap');
 :root{--blue:#0757a8;--blue2:#0b2f68;--red:#d71920;--red2:#a90812;--yellow:#f4c400;--ink:#17233c;--muted:#69758a;--bg:#f4f7fb;--card:#fff;--line:#e4e9f2;--green:#168653;--danger:#c62828;--shadow:0 12px 35px rgba(12,47,104,.09)}
@@ -1530,6 +1530,30 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     });
   }
 
+  // ==================== PAIEMENT (FedaPay) ====================
+  // Les écrans appellent encore openKkiapayWidget / addKkiapayListener (anciens noms) : ces deux fonctions
+  // ouvrent maintenant la fenêtre de paiement FedaPay. L'état du paiement est ensuite revérifié par le serveur.
+  const ecouteursPaiement_ = [];
+  function addKkiapayListener(evenement, fonction) {
+    if (evenement === "success") ecouteursPaiement_.push(fonction);
+  }
+  function openKkiapayWidget(opts) {
+    if (typeof FedaPay === "undefined") { alert("Le module de paiement n'a pas pu se charger. Vérifiez votre connexion et réessayez."); return; }
+    const m = membreCourant || {};
+    const widget = FedaPay.init({
+      public_key: opts.api_key,
+      transaction: { amount: Math.round(Number(opts.amount)), description: "JESUS", custom_metadata: { code: String(opts.data || "") } },
+      currency: { iso: "XOF" },
+      customer: { firstname: m.prenom || undefined, lastname: m.nom || undefined, email: m.email || undefined },
+      onComplete: function (resp) {
+        if (resp && resp.reason === FedaPay.CHECKOUT_COMPLETED && resp.transaction) {
+          ecouteursPaiement_.forEach(function (f) { f({ transactionId: String(resp.transaction.id) }); });
+        }
+      }
+    });
+    widget.open();
+  }
+
   function afficherErreurZone(elementId, err) {
     const msg = (err && err.message) ? err.message : "Une erreur est survenue.";
     const zone = document.getElementById(elementId);
@@ -2774,9 +2798,9 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   }
 
   function acheterSeance(id, prix) {
-    if (!configApp || !configApp.kkiapayPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    if (!configApp || !configApp.paiementPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
     typeCotisationEnCours = { nom: id, montant: prix, periodicite: "", categorie: "Seance" };
-    openKkiapayWidget({ amount: prix, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
+    openKkiapayWidget({ amount: prix, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
 
   // ==================== COTISATIONS ====================
@@ -2863,12 +2887,12 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       document.getElementById("messagePaiement").innerHTML = '<span class="error">Indiquez un montant valide.</span>';
       return;
     }
-    if (!configApp || !configApp.kkiapayPublicKey) {
+    if (!configApp || !configApp.paiementPublicKey) {
       document.getElementById("messagePaiement").innerHTML = '<span class="error">Le paiement n\u2019est pas encore configuré. Contactez un responsable.</span>';
       return;
     }
     typeCotisationEnCours = { nom: nom, montant: montant, periodicite: periodicite, categorie: "Cotisation" };
-    openKkiapayWidget({ amount: montant, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
+    openKkiapayWidget({ amount: montant, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
 
   addKkiapayListener("success", function (response) {
@@ -2878,7 +2902,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     if (info.categorie === "Document") {
       const zoneDoc = document.getElementById("messageAchatDocument");
       zoneDoc.textContent = "Vérification du paiement…";
-      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "Kkiapay", info.nom, null, "Document")
+      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "FedaPay", info.nom, null, "Document")
         .then(function (res) {
           if (!res.succes) { zoneDoc.className = "error"; zoneDoc.textContent = "Le paiement n'a pas pu être vérifié. Contactez un responsable."; return; }
           return appelServeur("getLienDocument", codeActuel(), info.nom, transactionId).then(function (lienRes) {
@@ -2895,7 +2919,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 
     if (info.categorie === "Audio") {
       const zone = document.getElementById("lecteurAudioZone");
-      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "Kkiapay", info.nom, null, "Audio")
+      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "FedaPay", info.nom, null, "Audio")
         .then(function (res) {
           if (!res.succes) { alert("Le paiement n'a pas pu être vérifié."); return; }
           audiosDeverrouilles[info.nom] = true;
@@ -2905,7 +2929,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     }
 
     if (info.categorie === "Video") {
-      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "Kkiapay", info.nom, null, "Video")
+      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "FedaPay", info.nom, null, "Video")
         .then(function (res) {
           if (!res.succes) { alert("Le paiement n'a pas pu être vérifié."); return; }
           videosDeverrouillees[info.nom] = true;
@@ -2915,7 +2939,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     }
 
     if (info.categorie === "Seance") {
-      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "Kkiapay", info.nom, null, "Seance")
+      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "FedaPay", info.nom, null, "Seance")
         .then(function (res) {
           if (!res.succes) { alert("Le paiement n'a pas pu être vérifié."); return; }
           return appelServeur("getLienSeance", codeActuel(), info.nom, transactionId).then(function (lienRes) {
@@ -2928,7 +2952,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     }
 
     if (info.categorie === "Publication") {
-      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "Kkiapay", info.nom, null, "Publication")
+      appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "FedaPay", info.nom, null, "Publication")
         .then(function (res) {
           alert(res.succes ? "✓ Paiement confirmé — votre contenu est maintenant publié !" : "Le paiement n'a pas pu être vérifié.");
           chargerMesSoumissions();
@@ -2939,7 +2963,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     const estOffrande = info.categorie === "Don";
     const zoneMessage = document.getElementById(estOffrande ? "messageOffrande" : "messagePaiement");
     zoneMessage.textContent = "Vérification du paiement…";
-    appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "Kkiapay", info.nom, info.periodicite, info.categorie)
+    appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "FedaPay", info.nom, info.periodicite, info.categorie)
       .then(function (res) {
         if (res.succes) {
           zoneMessage.className = "success-text";
@@ -2971,9 +2995,9 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     const err = document.getElementById("erreurOffrande");
     err.style.display = "none";
     if (!montant || montant <= 0) { err.textContent = "Indiquez un montant valide."; err.style.display = "block"; return; }
-    if (!configApp || !configApp.kkiapayPublicKey) { err.textContent = "Le paiement n'est pas encore configuré. Contactez un responsable."; err.style.display = "block"; return; }
+    if (!configApp || !configApp.paiementPublicKey) { err.textContent = "Le paiement n'est pas encore configuré. Contactez un responsable."; err.style.display = "block"; return; }
     typeCotisationEnCours = { nom: motif || "Offrande / Don", montant: montant, periodicite: "", categorie: "Don" };
-    openKkiapayWidget({ amount: montant, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
+    openKkiapayWidget({ amount: montant, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
 
   // ==================== REÇU DE PAIEMENT ====================
@@ -3300,9 +3324,9 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   }
 
   function acheterAudio(audioId, prix) {
-    if (!configApp || !configApp.kkiapayPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    if (!configApp || !configApp.paiementPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
     typeCotisationEnCours = { nom: audioId, montant: prix, periodicite: "", categorie: "Audio" };
-    openKkiapayWidget({ amount: prix, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
+    openKkiapayWidget({ amount: prix, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
 
   // ==================== VIDÉOS DE LA PLATEFORME (fusionnées dans les mêmes catégories que YouTube) ====================
@@ -3463,9 +3487,9 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   }
 
   function acheterVideo(videoId, prix) {
-    if (!configApp || !configApp.kkiapayPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    if (!configApp || !configApp.paiementPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
     typeCotisationEnCours = { nom: videoId, montant: prix, periodicite: "", categorie: "Video" };
-    openKkiapayWidget({ amount: prix, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
+    openKkiapayWidget({ amount: prix, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
 
   // ==================== SOUMISSIONS DE CONTENU (membres Auteur) ====================
@@ -3561,10 +3585,10 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   }
 
   function payerPublicationClick(idSoumission) {
-    if (!configApp || !configApp.kkiapayPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    if (!configApp || !configApp.paiementPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
     const montant = (configApp && configApp.MontantPublication) || 2000;
     typeCotisationEnCours = { nom: idSoumission, montant: montant, periodicite: "", categorie: "Publication" };
-    openKkiapayWidget({ amount: montant, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
+    openKkiapayWidget({ amount: montant, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
 
   // ==================== NOS ÉCRITS (documents) ====================
@@ -3691,13 +3715,13 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 
   // Document payant pas encore acheté : passe par Kkiapay avant de débloquer le téléchargement.
   function acheterDocument(documentId, titre, prix) {
-    if (!configApp || !configApp.kkiapayPublicKey) {
+    if (!configApp || !configApp.paiementPublicKey) {
       document.getElementById("messageAchatDocument").innerHTML = '<span class="error">Le paiement n\u2019est pas encore configuré. Contactez un responsable.</span>';
       return;
     }
     documentEnCoursAchat = { id: documentId, titre: titre, prix: prix };
     typeCotisationEnCours = { nom: documentId, montant: prix, periodicite: "", categorie: "Document" };
-    openKkiapayWidget({ amount: prix, api_key: configApp.kkiapayPublicKey, sandbox: false, data: codeActuel() });
+    openKkiapayWidget({ amount: prix, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
 
   // ==================== BIBLE (bilingue FR/EN) ====================
