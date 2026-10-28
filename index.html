@@ -1542,6 +1542,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     const m = membreCourant || {};
     const widget = FedaPay.init({
       public_key: opts.api_key,
+      environment: String(opts.api_key || "").indexOf("pk_live_") === 0 ? "live" : "sandbox",
       transaction: { amount: Math.round(Number(opts.amount)), description: "JESUS", custom_metadata: { code: String(opts.data || "") } },
       currency: { iso: "XOF" },
       customer: { firstname: m.prenom || undefined, lastname: m.nom || undefined, email: m.email || undefined },
