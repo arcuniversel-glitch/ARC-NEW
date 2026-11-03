@@ -1514,6 +1514,10 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     const args = Array.prototype.slice.call(arguments, 1);
     const corps = JSON.stringify({ action: nomFonction, params: args, jeton: jetonSession || undefined });
     const envoyer = function (url) { return fetch(url, { method: "POST", body: corps }); };
+    const lire = function (res) {
+      if (!res.ok) throw new Error("Erreur réseau (statut " + res.status + ").");
+      return res.json();
+    };
     return envoyer(API_URL_NOUVEAU).then(function (res) {
       // Page d'erreur de la plateforme (et non une réponse JSON du serveur) : on tente l'ancien serveur.
       const type = res.headers.get("content-type") || "";
@@ -1521,9 +1525,10 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       return res;
     }, function () {
       return envoyer(API_URL_ANCIEN); // nouveau serveur injoignable
-    }).then(function (res) {
-      if (!res.ok) throw new Error("Erreur réseau (statut " + res.status + ").");
-      return res.json();
+    }).then(lire).then(function (json) {
+      // Le nouveau serveur n'a pas réussi à joindre l'ancien : on l'appelle directement depuis l'appli.
+      if (!json.succes && json.relaisEchoue) return envoyer(API_URL_ANCIEN).then(lire);
+      return json;
     }).then(function (json) {
       if (!json.succes) throw new Error(json.erreur || "Erreur inconnue du serveur.");
       return json.resultat;
