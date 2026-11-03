@@ -1560,6 +1560,20 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     widget.open();
   }
 
+  // Lecteur audio léger pour un fichier Drive (messages vocaux, pièces jointes) : plus rapide que l'aperçu complet de
+  // Google Drive. Si le fichier ne se lit pas directement, on retombe sur l'aperçu Drive.
+  function lecteurAudioDrive_(id) {
+    const sur = escapeHtml(String(id || ""));
+    return '<audio class="audio-frame" controls preload="none" style="width:100%;" src="https://drive.google.com/uc?export=download&id=' + sur + '" onerror="basculerVersApercuDrive_(this,\'' + sur + '\')"></audio>';
+  }
+  function basculerVersApercuDrive_(element, id) {
+    const f = document.createElement("iframe");
+    f.className = "audio-frame";
+    f.src = "https://drive.google.com/file/d/" + id + "/preview";
+    f.allow = "autoplay";
+    element.replaceWith(f);
+  }
+
   function afficherErreurZone(elementId, err) {
     const msg = (err && err.message) ? err.message : "Une erreur est survenue.";
     const zone = document.getElementById(elementId);
@@ -3038,7 +3052,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   function construireCartePub_(pub) {
     if (!pub) return "";
     const contenu = pub.Type === "Video"
-      ? '<iframe class="audio-frame" style="height:180px;" src="https://drive.google.com/file/d/' + pub.DriveFileId + '/preview" allow="autoplay"></iframe>'
+      ? '' + lecteurAudioDrive_(pub.DriveFileId) + ''
       : '<img src="data:image/jpeg;base64,' + pub.ImageBase64 + '">';
     const interieur = pub.Lien ? '<a href="' + pub.Lien.replace(/"/g, "&quot;") + '" target="_blank">' + contenu + '</a>' : contenu;
     return '<div class="item-desc">Publicité</div>' + interieur;
@@ -3277,15 +3291,27 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     // l'utilisateur restant dans la même chaîne d'évènement.
     element.play().catch(function () { /* certains navigateurs bloquent, les contrôles restent utilisables manuellement */ });
     element.addEventListener("ended", gererFinAudio_);
-    // Filet de sécurité : si la lecture directe échoue pour ce fichier précis (rare), on
-    // bascule automatiquement sur l'aperçu Google Drive, qui fonctionne toujours de façon
-    // fiable — l'auditeur n'est jamais bloqué par un message d'erreur sans solution.
-    element.addEventListener("error", function () {
+    // Filets de sécurité, dans l'ordre : lecture directe depuis le lien (rapide) → si elle échoue, on demande le
+    // fichier lui-même au serveur (plus lent mais fiable) → si cela échoue aussi, aperçu Google Drive.
+    const apercuSecours = function () {
       document.getElementById("audioErreurZone").innerHTML =
         '<p class="item-desc" style="padding:0 14px 8px;">Lecteur de secours (👉 cliquez sur ▶ ci-dessous) :</p>' +
         '<iframe class="audio-frame" style="margin:0 14px;width:calc(100% - 28px);" src="' + res.apercu + '" allow="autoplay"></iframe>';
       element.style.display = "none";
-    }, { once: true });
+    };
+    let fichierDemande = !!res.audioBase64;
+    element.addEventListener("error", function surErreur() {
+      if (fichierDemande || !res.audioId) { element.removeEventListener("error", surErreur); apercuSecours(); return; }
+      fichierDemande = true;
+      document.getElementById("audioErreurZone").innerHTML = '<p class="item-desc" style="padding:0 14px 8px;">Chargement du fichier…</p>';
+      appelServeur("getLienAudio", codeActuel(), res.audioId, null, true).then(function (r2) {
+        if (r2.succes && r2.audioBase64) {
+          document.getElementById("audioErreurZone").innerHTML = "";
+          element.src = "data:" + (r2.audioMimeType || "audio/mpeg") + ";base64," + r2.audioBase64;
+          element.play().catch(function () {});
+        } else apercuSecours();
+      }).catch(apercuSecours);
+    });
   }
 
   function gererFinAudio_() {
@@ -4170,7 +4196,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     if (!annonces.length) { zone.innerHTML = ""; return; }
     zone.innerHTML = annonces.map(function (a) {
       const contenu = a.TypeAnnonce === "Audio"
-        ? '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + a.PieceJointeId + '/preview" allow="autoplay"></iframe>'
+        ? '' + lecteurAudioDrive_(a.PieceJointeId) + ''
         : a.TypeAnnonce === "Document"
         ? '<a class="secondary small" style="display:inline-block;text-decoration:none;text-align:center;margin-top:6px;" href="https://drive.google.com/uc?export=download&id=' + a.PieceJointeId + '" target="_blank">⬇️ Télécharger le document</a>'
         : "";
@@ -4208,12 +4234,12 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     zone.innerHTML = messages.map(function (m) {
       const date = m.Date ? new Date(m.Date).toLocaleDateString("fr-FR") : "";
       const contenu = m.TypeMessage === "Audio"
-        ? '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + m.Message + '/preview" allow="autoplay"></iframe>'
+        ? '' + lecteurAudioDrive_(m.Message) + ''
         : escapeHtml(m.Message);
       let html = '<div class="message-bulle">' + contenu + '<div class="message-date">' + date + "</div></div>";
       if (m.Reponse) {
         const contenuReponse = m.ReponseType === "Audio"
-          ? '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + m.Reponse + '/preview" allow="autoplay"></iframe>'
+          ? '' + lecteurAudioDrive_(m.Reponse) + ''
           : escapeHtml(m.Reponse);
         html += '<div class="message-reponse"><strong>Réponse :</strong><br>' + contenuReponse + "</div>";
       } else {
@@ -4371,12 +4397,12 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       const date = m.Date ? new Date(m.Date).toLocaleDateString("fr-FR") : "";
       const estAdmin = !m.NomMembre || m.NomMembre.indexOf("🙏") === -1;
       const contenu = m.TypeMessage === "Audio"
-        ? '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + m.Message + '/preview" allow="autoplay"></iframe>'
+        ? '' + lecteurAudioDrive_(m.Message) + ''
         : escapeHtml(m.Message);
       let html = '<div class="' + (estAdmin ? "message-reponse" : "message-bulle") + '">' + contenu + '<div class="message-date">' + date + "</div></div>";
       if (m.Reponse) {
         const contenuReponse = m.ReponseType === "Audio"
-          ? '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + m.Reponse + '/preview" allow="autoplay"></iframe>'
+          ? '' + lecteurAudioDrive_(m.Reponse) + ''
           : escapeHtml(m.Reponse);
         html += '<div class="message-reponse"><strong>Réponse de l\u2019administration :</strong><br>' + contenuReponse + "</div>";
       }
@@ -5222,11 +5248,11 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       const date = m.Date ? new Date(m.Date).toLocaleDateString("fr-FR") : "";
       const pillClass = m.Statut === "Traité" ? "statut-traite" : "statut-nouveau";
       const contenuMessage = m.TypeMessage === "Audio"
-        ? '<iframe class="audio-frame" src="https://drive.google.com/file/d/' + m.Message + '/preview" allow="autoplay"></iframe>'
+        ? '' + lecteurAudioDrive_(m.Message) + ''
         : '<p style="font-size:14px; margin:8px 0;">' + escapeHtml(m.Message) + "</p>";
       const reponseExistante = (m.Reponse && m.ReponseType !== "Audio") ? escapeHtml(m.Reponse) : "";
       const reponseAudioExistante = (m.Reponse && m.ReponseType === "Audio")
-        ? '<div class="item-desc" style="margin-bottom:6px;">Réponse vocale déjà envoyée :</div><iframe class="audio-frame" src="https://drive.google.com/file/d/' + m.Reponse + '/preview" allow="autoplay"></iframe>'
+        ? '<div class="item-desc" style="margin-bottom:6px;">Réponse vocale déjà envoyée :</div>' + lecteurAudioDrive_(m.Reponse) + ''
         : "";
       return '<div class="admin-message-card">' +
         '<div class="item-row" style="padding-top:0;">' +
