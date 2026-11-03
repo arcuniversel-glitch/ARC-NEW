@@ -932,6 +932,27 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 
         <div id="tvStudioSuite" style="display:none;">
           <div class="card">
+            <p class="field-label">Mon live</p>
+            <div id="tvLiveFormZone">
+              <input id="tvLiveTitre" type="text" placeholder="Titre du live">
+              <div id="erreurTvLive" class="error" style="display:none;"></div>
+              <button class="flame" onclick="demarrerLiveTvClick()">🔴 Préparer mon live</button>
+            </div>
+            <div id="tvLiveInfosZone" style="display:none;">
+              <p class="item-nom" id="tvLiveStatut"></p>
+              <p class="item-desc">Dans OBS (ordinateur) : Paramètres › Diffusion › Service « Personnalisé ». Sur téléphone : une appli comme Larix Broadcaster. Collez l'adresse et la clé ci-dessous, puis lancez la diffusion : votre chaîne bascule en direct toute seule.</p>
+              <label class="field-label">Adresse du serveur</label>
+              <div class="codes-box" id="tvLiveAdresse"></div>
+              <button class="secondary small full-mt" onclick="copierTexte_(document.getElementById('tvLiveAdresse').textContent)">📋 Copier l'adresse</button>
+              <label class="field-label" style="margin-top:12px;">Clé de diffusion (à ne jamais partager)</label>
+              <div class="codes-box" id="tvLiveCle"></div>
+              <button class="secondary small full-mt" onclick="copierTexte_(document.getElementById('tvLiveCle').textContent)">📋 Copier la clé</button>
+              <button class="secondary full-mt" onclick="chargerStudioTv_()">🔄 Actualiser le statut</button>
+              <button class="danger-outline full-mt" onclick="arreterLiveTvClick()">⏹ Terminer le live</button>
+            </div>
+          </div>
+
+          <div class="card">
             <p class="field-label">Ma bibliothèque (vidéos et playlists)</p>
             <p class="subtitle left" style="margin-top:-4px;">Ajoutez des vidéos ou des playlists YouTube (publiques ou non répertoriées). Elles ne sont diffusées que lorsque vous les placez dans la grille horaire, ou si vous les mettez dans la boucle des temps morts avec le bouton 🔁.</p>
             <label class="field-label">Une vidéo</label>
@@ -981,30 +1002,9 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
             <button onclick="ajouterCreneauTvClick()">Ajouter à la grille</button>
             <div id="tvListeCreneaux" style="margin-top:12px;"></div>
           </div>
-
-          <div class="card">
-            <p class="field-label">Mon live</p>
-            <div id="tvLiveFormZone">
-              <input id="tvLiveTitre" type="text" placeholder="Titre du live">
-              <div id="erreurTvLive" class="error" style="display:none;"></div>
-              <button class="flame" onclick="demarrerLiveTvClick()">🔴 Préparer mon live</button>
-            </div>
-            <div id="tvLiveInfosZone" style="display:none;">
-              <p class="item-nom" id="tvLiveStatut"></p>
-              <p class="item-desc">Dans OBS (ordinateur) : Paramètres › Diffusion › Service « Personnalisé ». Sur téléphone : une appli comme Larix Broadcaster. Collez l'adresse et la clé ci-dessous, puis lancez la diffusion : votre chaîne bascule en direct toute seule.</p>
-              <label class="field-label">Adresse du serveur</label>
-              <div class="codes-box" id="tvLiveAdresse"></div>
-              <button class="secondary small full-mt" onclick="copierTexte_(document.getElementById('tvLiveAdresse').textContent)">📋 Copier l'adresse</button>
-              <label class="field-label" style="margin-top:12px;">Clé de diffusion (à ne jamais partager)</label>
-              <div class="codes-box" id="tvLiveCle"></div>
-              <button class="secondary small full-mt" onclick="copierTexte_(document.getElementById('tvLiveCle').textContent)">📋 Copier la clé</button>
-              <button class="secondary full-mt" onclick="chargerStudioTv_()">🔄 Actualiser le statut</button>
-              <button class="danger-outline full-mt" onclick="arreterLiveTvClick()">⏹ Terminer le live</button>
-            </div>
-          </div>
         </div>
       </div>
-      <p class="item-desc" style="text-align:center;opacity:.5;margin-top:18px;">Version TV 8</p>
+      <p class="item-desc" style="text-align:center;opacity:.5;margin-top:18px;">Version TV 9</p>
     </div>
 
     <!-- ===== ADMINISTRATION ===== -->
@@ -1757,7 +1757,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   function diagnostiquerPWA() {
     const lignes = [];
     lignes.push("URL actuelle : " + window.location.href);
-    lignes.push("Version de l'interface TV : 8");
+    lignes.push("Version de l'interface TV : 9");
     lignes.push("Déjà en mode application : " + estDejaInstallee());
     lignes.push("Proposition d'installation reçue du navigateur : " + (promptInstallDiffere ? "OUI" : "NON"));
     lignes.push("Serveur principal : " + API_URL_NOUVEAU);
