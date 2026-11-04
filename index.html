@@ -1569,7 +1569,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       environment: String(opts.api_key || "").indexOf("pk_live_") === 0 ? "live" : "sandbox",
       transaction: { amount: Math.round(Number(opts.amount)), description: "JESUS", custom_metadata: { code: String(opts.data || "") } },
       currency: { iso: "XOF" },
-      customer: { firstname: m.prenom || undefined, lastname: m.nom || undefined, email: m.email || undefined },
+      customer: { firstname: m.prenom || undefined, lastname: m.nom || undefined },
       onComplete: function (resp) {
         if (resp && resp.reason === FedaPay.CHECKOUT_COMPLETED && resp.transaction) {
           ecouteursPaiement_.forEach(function (f) { f({ transactionId: String(resp.transaction.id) }); });
@@ -3016,7 +3016,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
           zoneMessage.className = "success-text";
           zoneMessage.textContent = estOffrande ? "Offrande confirmée. Vous êtes béni(e)." : "✓ Paiement confirmé pour \"" + info.nom + "\". Merci !";
           try { zoneMessage.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
-          if (!modeVisiteur) { if (estOffrande) chargerMesOffrandes(); else chargerMesCotisations(); }
+          if (!modeVisiteur) { if (estOffrande) chargerMesOffrandes(); else chargerMesCotisations(); afficherRecuApresPaiement_(transactionId); }
         } else {
           zoneMessage.className = "error";
           zoneMessage.textContent = "Le paiement n'a pas pu être vérifié. Contactez un responsable.";
@@ -3048,21 +3048,50 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     openKkiapayWidget({ amount: montant, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
 
-  // ==================== REÇU DE PAIEMENT ====================
+  // ==================== REÇU DE PAIEMENT (reçu JESUS) ====================
+  function remplirRecu_(res) {
+    document.getElementById("recuOrgName").textContent = "JESUS";
+    document.getElementById("recuLogo").innerHTML = document.getElementById("topbarLogo").innerHTML;
+    document.getElementById("recuNomMembre").textContent = res.nomMembre;
+    document.getElementById("recuCodeMembre").textContent = res.code;
+    document.getElementById("recuType").textContent = res.type;
+    document.getElementById("recuMethode").textContent = res.methode;
+    document.getElementById("recuDate").textContent = res.date + (res.heure ? " à " + res.heure : "");
+    document.getElementById("recuTransactionId").textContent = res.transactionId;
+    document.getElementById("recuMontant").textContent = Number(res.montant).toLocaleString("fr-FR") + " FCFA";
+  }
+
   function voirRecu(transactionId) {
     appelServeur("getRecuPaiement", membreCourant.code, transactionId).then(function (res) {
       if (!res.succes) { alert(res.message || "Reçu indisponible."); return; }
-      document.getElementById("recuOrgName").textContent = "JESUS";
-      document.getElementById("recuLogo").innerHTML = document.getElementById("topbarLogo").innerHTML;
-      document.getElementById("recuNomMembre").textContent = res.nomMembre;
-      document.getElementById("recuCodeMembre").textContent = res.code;
-      document.getElementById("recuType").textContent = res.type;
-      document.getElementById("recuMethode").textContent = res.methode;
-      document.getElementById("recuDate").textContent = res.date;
-      document.getElementById("recuTransactionId").textContent = res.transactionId;
-      document.getElementById("recuMontant").textContent = Number(res.montant).toLocaleString("fr-FR") + " FCFA";
+      remplirRecu_(res);
       window.print();
     }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+
+  // Juste après un paiement confirmé : on montre NOTRE reçu à l'écran (impression / PDF possibles).
+  function afficherRecuApresPaiement_(transactionId) {
+    if (!membreCourant) return;
+    appelServeur("getRecuPaiement", membreCourant.code, transactionId).then(function (res) {
+      if (!res.succes) return;
+      const fond = document.createElement("div");
+      fond.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9500;display:flex;align-items:center;justify-content:center;padding:14px;";
+      const ligne = function (a, b) { return '<div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #e8eef7;"><span style="color:#5b6b82;">' + a + '</span><strong style="text-align:right;">' + escapeHtml(b) + '</strong></div>'; };
+      fond.innerHTML = '<div style="background:#fff;color:#1b2430;border-radius:18px;max-width:400px;width:100%;max-height:92vh;overflow:auto;">' +
+        '<div style="background:#0b2f68;color:#fff;text-align:center;padding:16px;border-radius:18px 18px 0 0;">' +
+        '<div style="width:56px;height:56px;margin:0 auto 6px;border-radius:14px;overflow:hidden;background:#fff;">' + document.getElementById("topbarLogo").innerHTML + '</div>' +
+        '<div style="font-size:20px;font-weight:800;">JESUS</div><div style="opacity:.85;font-size:12px;">Réveil Chrétien</div></div>' +
+        '<div style="padding:16px;"><div style="font-size:17px;font-weight:800;color:#0b2f68;margin-bottom:6px;">✅ Paiement confirmé — Reçu</div>' +
+        ligne("Membre", res.nomMembre) + ligne("Code membre", res.code) + ligne("Objet", res.type) +
+        ligne("Date", res.date + (res.heure ? " à " + res.heure : "")) + ligne("Référence", res.transactionId) +
+        '<div style="text-align:center;font-size:26px;font-weight:800;color:#0b2f68;margin:14px 0 4px;">' + Number(res.montant).toLocaleString("fr-FR") + ' FCFA</div>' +
+        '<div style="text-align:center;font-size:13px;">Merci. Que Dieu vous bénisse.</div>' +
+        '<div style="display:flex;gap:8px;margin-top:14px;"><button class="secondary" id="recuImprimer">🖨️ Imprimer / PDF</button><button class="flame" id="recuFermer">Fermer</button></div>' +
+        '<div style="text-align:center;font-size:11px;color:#5b6b82;margin-top:10px;">Conservez ce reçu comme preuve de paiement.</div></div></div>';
+      document.body.appendChild(fond);
+      fond.querySelector("#recuFermer").onclick = function () { fond.remove(); };
+      fond.querySelector("#recuImprimer").onclick = function () { remplirRecu_(res); window.print(); };
+    }).catch(function () {});
   }
 
   // ==================== ENREGISTREMENTS (audio, Public/Membres) ====================
