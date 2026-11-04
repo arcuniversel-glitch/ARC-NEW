@@ -226,7 +226,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 .bible-verset.hl-jaune{background:#fff3a3}.bible-verset.hl-vert{background:#c8f0c0}.bible-verset.hl-bleu{background:#bfe0ff}.bible-verset.hl-rose{background:#ffd0e6}.bible-verset.hl-orange{background:#ffd9a8}
 .bible-verset.flash{animation:bibleFlash 2.5s}
 @keyframes bibleFlash{0%,60%{box-shadow:0 0 0 3px var(--yellow)}100%{box-shadow:0 0 0 3px transparent}}
-.bible-barre{position:sticky;top:96px;z-index:60;display:none;flex-wrap:wrap;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 10px;box-shadow:var(--shadow);margin-bottom:10px}
+.bible-barre{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:640;display:none;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;background:#fff;color:#1b2430;border:1px solid var(--line);border-radius:16px;padding:8px 10px;box-shadow:0 8px 28px rgba(0,0,0,.28);width:max-content;max-width:calc(100% - 16px)}
 .bible-barre button{width:auto;padding:7px 10px;font-size:12px;flex-shrink:0}
 .bible-barre #bibleBtnPlage.actif{background:var(--blue);color:#fff}
 .bible-barre .hl-pastille{width:26px;height:26px;border-radius:50%;padding:0;border:2px solid #fff;box-shadow:0 0 0 1px #999}
@@ -613,7 +613,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
         <label class="field-label">Motif (facultatif)</label>
         <input id="offrandeMotif" type="text" placeholder="Ex : Offrande de reconnaissance">
         <div id="erreurOffrande" class="error" style="display:none;"></div>
-        <button class="flame" onclick="lancerOffrande()">Faire un don</button>
+        <button class="flame" onclick="lancerOffrande()">Faire une offrande</button>
         <div id="messageOffrande" style="margin-top:10px; font-size:13px;"></div>
       </div>
       <div class="card">
@@ -821,7 +821,8 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
           <div id="subParolesFichierNom" class="item-desc" style="margin-top:4px;"></div>
         </div>
         <div id="erreurSoumission" class="error" style="display:none;margin-top:10px;"></div>
-        <button class="flame full-mt" onclick="envoyerSoumissionClick()">Soumettre pour vérification</button>
+        <button class="flame full-mt" id="btnEnvoyerSoumission" onclick="envoyerSoumissionClick()">Soumettre pour vérification</button>
+        <div id="infoSoumission" class="item-desc" style="display:none;margin-top:8px;"></div>
       </div>
       <p class="field-label" style="margin-bottom:8px;">Mes soumissions</p>
       <div class="card" id="listeMesSoumissions"><div class="loading">Chargement…</div></div>
@@ -1036,6 +1037,13 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
           <input id="adminMontantPublication" type="number" min="0" placeholder="Ex : 2000">
           <div id="erreurApparence" class="error" style="display:none;"></div>
           <button onclick="sauvegarderApparence()">Enregistrer</button>
+        </div>
+        <div class="card" id="carteNomsRubriques">
+          <label class="field-label">Noms des rubriques</label>
+          <p class="subtitle left" style="margin:-4px 0 6px;font-size:11px;">Laissez un champ vide pour garder le nom d'origine. Le changement s'applique aux onglets, aux tuiles de l'accueil et aux titres.</p>
+          <div id="adminNomsRubriques"></div>
+          <div id="erreurNomsRubriques" class="error" style="display:none;"></div>
+          <div style="display:flex;gap:8px;margin-top:10px;"><button class="secondary" onclick="sauvegarderNomsRubriques(true)">Rétablir les noms d'origine</button><button onclick="sauvegarderNomsRubriques(false)">Enregistrer les noms</button></div>
         </div>
       </div>
 
@@ -1506,6 +1514,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   const API_URL_NOUVEAU = "https://sun-api.arcuniversel.workers.dev";
   const API_URL_ANCIEN = "https://script.google.com/macros/s/AKfycbyBOvScNdIsYbJlVfduCaSAkxC_-juQo-NjWqmWlE7ux27pBsBqQwxyow9DAdjEtT4o/exec";
   const API_URL = API_URL_NOUVEAU;
+  const ACTIONS_LOURDES_ = ["soumettreContenu", "envoyerMessageAudio", "repondreMessageAudio", "envoyerMessageDemandePriereAudio", "envoyerAnnonceGroupee"];
 
   // ==================== APPEL SERVEUR ====================
   // Le corps est envoyé en texte brut (pas en JSON déclaré) exprès : cela évite une requête de
@@ -1514,6 +1523,16 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     const args = Array.prototype.slice.call(arguments, 1);
     const corps = JSON.stringify({ action: nomFonction, params: args, jeton: jetonSession || undefined });
     const envoyer = function (url) { return fetch(url, { method: "POST", body: corps }); };
+    // Envois de fichiers volumineux : directement vers Apps Script (évite de les faire transiter deux fois).
+    if (ACTIONS_LOURDES_.indexOf(nomFonction) !== -1) {
+      return envoyer(API_URL_ANCIEN).then(function (res) {
+        if (!res.ok) throw new Error("Erreur réseau (statut " + res.status + ").");
+        return res.json();
+      }).then(function (json) {
+        if (!json.succes) throw new Error(json.erreur || "Erreur inconnue du serveur.");
+        return json.resultat;
+      });
+    }
     const lire = function (res) {
       if (!res.ok) throw new Error("Erreur réseau (statut " + res.status + ").");
       return res.json();
@@ -1828,6 +1847,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 
   function appliquerBranding(config) {
     configApp = config || {};
+    setTimeout(appliquerNomsRubriques_, 0);
     const nom = "JESUS";
     document.getElementById("topbarNom").textContent = nom;
     document.getElementById("accueilNomAssoc").textContent = nom;
@@ -2175,6 +2195,12 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     'Admin_Super': ['finances', 'demandesPriere', 'contenus', 'systeme']
   };
 
+  // Droits d'un membre : ceux envoyés par le serveur (rôle fixe ou droits cochés pour un administrateur personnalisé).
+  function permissionsDe_(m) {
+    if (!m) return [];
+    return Array.isArray(m.permissions) ? m.permissions : (PERMISSIONS_CLIENT[m.role] || []);
+  }
+
   let modeVisiteur = false;
   let ongletActuel = null;
   let historiqueOnglets = [];
@@ -2210,10 +2236,11 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       if (membreCourant && membreCourant.estAuteur) {
         onglets.push({ id: "soumissions", label: "✍️ Soumissions" });
       }
-      if (membreCourant && PERMISSIONS_CLIENT[membreCourant.role]) {
+      if (membreCourant && permissionsDe_(membreCourant).length) {
         onglets.push({ id: "admin", label: "⚙ Admin" });
       }
     }
+    onglets = onglets.map(function (o) { return { id: o.id, label: etiquetteOnglet_(o.id, o.label) }; });
     document.getElementById("tabsPrincipaux").innerHTML = onglets.map(function (o) {
       return '<div class="tab" data-tab="' + o.id + '" onclick="afficherOnglet(\'' + o.id + '\')">' + o.label + "</div>";
     }).join("");
@@ -2538,8 +2565,8 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     const cartes = [];
     if (m.estAuteur) cartes.push('<div class="card" style="margin-top:12px;"><p class="field-label">✍️ Auteur</p><p class="item-desc">Soumettez vos documents, audios et vidéos et suivez leur publication.</p><button class="secondary" onclick="afficherOnglet(\'soumissions\')">Mes soumissions</button></div>');
     if (m.estTvOwner) cartes.push('<div class="card" style="margin-top:12px;"><p class="field-label">📺 TV Owner</p><p class="item-desc">Gérez votre chaîne : logo, vidéos, playlists, boucle des temps morts, grille et lives.</p><button class="secondary" onclick="tvSousOnglet=\'studio\';afficherOnglet(\'tv\')">Mon studio TV</button></div>');
-    const perms = PERMISSIONS_CLIENT[m.role];
-    if (perms) {
+    const perms = permissionsDe_(m);
+    if (perms.length) {
       const domaines = { finances: "Finances et campagnes caritatives", demandesPriere: "Demandes de prière", contenus: "Contenus et TV", systeme: "Membres, annonces et réglages" };
       cartes.push('<div class="card" style="margin-top:12px;"><p class="field-label">⚙ ' + escapeHtml(LIBELLES_ROLES[m.role] || "Administrateur") + '</p><p class="item-desc">Vous gérez : ' + perms.map(function (p) { return domaines[p]; }).join(", ") + '.</p><button class="secondary" onclick="afficherOnglet(\'admin\')">Ouvrir l\'administration</button></div>');
     }
@@ -2617,8 +2644,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
   }
 
   function construireAdminSubtabs() {
-    const role = membreCourant ? membreCourant.role : null;
-    const permissions = PERMISSIONS_CLIENT[role] || [];
+    const permissions = permissionsDe_(membreCourant);
     const tousLesSousOnglets = [
       { id: "apparence", label: "Apparence", permission: "systeme" },
       { id: "groupes", label: "Groupes", permission: "contenus" },
@@ -2802,7 +2828,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     const badgePremium = s.Type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : "";
     const bouton = (s.Type === "Payant" && !s.LienMeet)
       ? '<button class="flame small" onclick="acheterSeance(\'' + s.ID + '\',' + Number(s.Prix) + ')">💳 ' + Number(s.Prix).toLocaleString("fr-FR") + ' F</button>'
-      : '<button class="btn-meet" onclick="ouvrirLienExterne_(\'' + (s.LienMeet || "").replace(/'/g, "&#39;") + '\')">Rejoindre</button>';
+      : '<button class="btn-meet" onclick="ouvrirLienExterne_(\'' + jsq_(s.LienMeet || "") + '\')">Rejoindre</button>';
     return '<div class="item-row">' +
       '<div><div class="item-nom">' + escapeHtml(s.Titre) + badgePremium + '</div>' +
       '<div class="item-desc">' + date + heure + '</div></div>' +
@@ -2833,7 +2859,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     const zone = document.getElementById("listeTypesCotisation");
     if (!types.length) { zone.innerHTML = '<p class="empty-state">Aucune campagne caritative pour le moment.</p>'; return; }
     zone.innerHTML = types.map(function (t) {
-      const nomEchappe = escapeHtml(t.Nom).replace(/'/g, "&#39;");
+      const nomEchappe = jsq_(t.Nom);
       const aObjectif = Number(t.MontantObjectif) > 0;
       const pourcentage = aObjectif ? t.Pourcentage : null;
       const barre = aObjectif
@@ -2911,6 +2937,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       document.getElementById("messagePaiement").innerHTML = '<span class="error">Le paiement n\u2019est pas encore configuré. Contactez un responsable.</span>';
       return;
     }
+    document.getElementById("messagePaiement").innerHTML = '<span class="item-desc">Ouverture du paiement…</span>';
     typeCotisationEnCours = { nom: nom, montant: montant, periodicite: periodicite, categorie: "Cotisation" };
     openKkiapayWidget({ amount: montant, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
@@ -2987,7 +3014,8 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       .then(function (res) {
         if (res.succes) {
           zoneMessage.className = "success-text";
-          zoneMessage.textContent = estOffrande ? "✓ Don confirmé. Merci pour votre générosité !" : "✓ Paiement confirmé pour \"" + info.nom + "\". Merci !";
+          zoneMessage.textContent = estOffrande ? "Offrande confirmée. Vous êtes béni(e)." : "✓ Paiement confirmé pour \"" + info.nom + "\". Merci !";
+          try { zoneMessage.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
           if (!modeVisiteur) { if (estOffrande) chargerMesOffrandes(); else chargerMesCotisations(); }
         } else {
           zoneMessage.className = "error";
@@ -3148,7 +3176,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
         ? '<img src="data:image/jpeg;base64,' + cat.CoverBase64 + '" style="width:100%;height:64px;object-fit:cover;border-radius:10px;margin-bottom:6px;">'
         : '<span class="ic">' + (iconePourNom_(nom) || "🎧") + '</span>';
       const nb = audiosCache.filter(function (a) { return a.Categorie === nom; }).length;
-      return '<div class="playlist-tuile" onclick="ouvrirCategorieAudio(\'' + nom.replace(/'/g, "&#39;") + '\')">' + cover + '<span class="lib">' + escapeHtml(nom) + '</span><div class="item-desc" style="margin-top:4px;">' + nb + ' audio(s)</div></div>';
+      return '<div class="playlist-tuile" onclick="ouvrirCategorieAudio(\'' + jsq_(nom) + '\')">' + cover + '<span class="lib">' + escapeHtml(nom) + '</span><div class="item-desc" style="margin-top:4px;">' + nb + ' audio(s)</div></div>';
     }).join("") + '</div>';
   }
 
@@ -3233,6 +3261,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     if (!audio) return;
     const zone = document.getElementById("lecteurAudioZone");
     zone.style.display = "block";
+    const btnFermer = '<button class="lecteur-fermer" onclick="fermerLecteurAudio_()" title="Fermer le lecteur">✕</button>';
 
     const cover = audio.CoverBase64 ? '<img class="lecteur-cover" src="data:image/jpeg;base64,' + audio.CoverBase64 + '">' : '<div class="lecteur-cover" style="display:flex;align-items:center;justify-content:center;">🎧</div>';
     const entete = '<div class="lecteur-entete">' + cover +
@@ -3240,7 +3269,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       (audio.Auteur ? '<div class="item-desc">Par ' + escapeHtml(audio.Auteur) + '</div>' : '') + '</div></div>';
 
     if (audio.Type === "Payant" && !audiosDeverrouilles[audio.ID]) {
-      zone.innerHTML = entete + '<div style="padding:0 14px 14px;">' +
+      zone.innerHTML = btnFermer + entete + '<div style="padding:0 14px 14px;">' +
         '<p class="item-desc">Contenu payant — ' + Number(audio.Prix).toLocaleString("fr-FR") + ' FCFA</p>' +
         '<button class="flame" onclick="acheterAudio(\'' + audio.ID + '\',' + Number(audio.Prix) + ')">💳 Acheter et écouter</button>' +
         '</div>';
@@ -3257,13 +3286,13 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       return;
     }
 
-    zone.innerHTML = entete + '<div class="loading" style="padding:0 14px 14px;">Chargement…</div>';
+    zone.innerHTML = btnFermer + entete + '<div class="loading" style="padding:0 14px 14px;">Chargement…</div>';
     appelServeur("getLienAudio", codeActuel(), audio.ID, null).then(function (res) {
-      if (!res.succes) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">' + escapeHtml(res.message) + '</p>'; return; }
+      if (!res.succes) { zone.innerHTML = btnFermer + entete + '<p class="error" style="padding:0 14px 14px;">' + escapeHtml(res.message) + '</p>'; return; }
       audiosDeverrouilles[audio.ID] = true;
       afficherLecteurActif(entete, res);
       precharger_AudioSuivant_();
-    }).catch(function (err) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">Erreur : ' + escapeHtml(err.message) + '</p>'; });
+    }).catch(function (err) { zone.innerHTML = btnFermer + entete + '<p class="error" style="padding:0 14px 14px;">Erreur : ' + escapeHtml(err.message) + '</p>'; });
   }
 
   function afficherLecteurActif(entete, res) {
@@ -3482,7 +3511,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       zone.innerHTML = entete +
         '<iframe class="video-player-frame" src="' + res.apercu + '" allow="autoplay" allowfullscreen></iframe>' +
         construireControlesVideo_(true) +
-        '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + res.lien + '" target="_blank">⬇️ Télécharger</a></div>';
+        (v.type === "Payant" ? '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + res.lien + '" target="_blank">⬇️ Télécharger</a></div>' : '');
     }).catch(function (err) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">Erreur : ' + escapeHtml(err.message) + '</p>'; });
   }
 
@@ -3564,12 +3593,23 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     if (!email) { err.textContent = "Votre e-mail est obligatoire."; err.style.display = "block"; return; }
     if (!fichier) { err.textContent = "Choisissez un fichier à soumettre."; err.style.display = "block"; return; }
 
+    const bouton = document.getElementById("btnEnvoyerSoumission");
+    const info = document.getElementById("infoSoumission");
+    const libelleBouton = bouton.textContent;
+    const octets = fichier.size;
+    const taille = octets > 1048576 ? (octets / 1048576).toFixed(1) + " Mo" : Math.max(1, Math.round(octets / 1024)) + " Ko";
+    bouton.disabled = true; bouton.textContent = "⏳ Envoi en cours… ne fermez pas l'application";
+    info.style.display = "block";
+    info.textContent = "Envoi de « " + fichier.name + " » (" + taille + ")." + (octets > 20 * 1048576 ? " Un gros fichier peut demander plusieurs minutes : patientez jusqu'à la confirmation." : "");
+    const terminerEnvoi = function () { bouton.disabled = false; bouton.textContent = libelleBouton; info.style.display = "none"; };
     const lecteur = new FileReader();
+    lecteur.onerror = function () { terminerEnvoi(); err.textContent = "Impossible de lire le fichier."; err.style.display = "block"; };
     lecteur.onload = function () {
       const base64 = lecteur.result.split(",")[1];
       lireFichierGenerique_("subParolesFichier", function (parolesBase64, parolesNom, parolesMime) {
         appelServeur("soumettreContenu", membreCourant.code, type, titre, description, prix, email, base64, fichier.name, fichier.type || "application/octet-stream", couverturesEnCours.soumission || "", paroles, parolesBase64, parolesNom, parolesMime)
           .then(function () {
+            terminerEnvoi();
             alert("✓ Votre soumission a été envoyée pour vérification.");
             document.getElementById("subTitre").value = "";
             document.getElementById("subDescription").value = "";
@@ -3585,6 +3625,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
             compterMotsSoumission();
             chargerMesSoumissions();
           }).catch(function (e) {
+            terminerEnvoi();
             err.textContent = "Erreur : " + e.message;
             err.style.display = "block";
           });
@@ -3697,7 +3738,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 
   function construireCarteDocument_(d) {
     const badgePremium = d.Type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : '';
-    const titreEchappe = escapeHtml(d.Titre).replace(/'/g, "&#39;");
+    const titreEchappe = jsq_(d.Titre);
     const cover = d.CoverBase64 ? '<img src="data:image/jpeg;base64,' + d.CoverBase64 + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:10px;margin-bottom:8px;">' : '';
     const bouton = d.Type === "Payant"
       ? '<button class="flame small full-mt" onclick="acheterDocument(\'' + d.ID + '\',\'' + titreEchappe + '\',' + Number(d.Prix) + ')">💳 Acheter (' + Number(d.Prix).toLocaleString("fr-FR") + ' F) et télécharger</button>'
@@ -3717,32 +3758,34 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     zone.innerHTML = documents.map(construireCarteDocument_).join("");
   }
 
-  // Documents gratuits, ou membre ayant déjà acheté ce document : téléchargement direct.
-  function telechargerDocument(documentId) {
-    appelServeur("getLienDocument", codeActuel(), documentId, null).then(function (res) {
-      if (!res.succes) { alert(res.message || "Téléchargement impossible."); return; }
-      window.open(res.lien, "_blank");
-    }).catch(function (err) { alert("Erreur : " + err.message); });
+  // Ouvre tout de suite un onglet d'attente, DANS le clic : les navigateurs bloquent les fenêtres ouvertes plus tard
+  // (après l'attente du serveur). On y charge ensuite le document.
+  function ouvrirFenetreAttente_() {
+    const f = window.open("", "_blank");
+    if (f) { try { f.document.write('<p style="font-family:sans-serif;padding:24px;color:#0b2f68;">Ouverture du document…</p>'); } catch (e) {} }
+    return f;
+  }
+  function allerVers_(fenetre, adresse) {
+    if (fenetre && !fenetre.closed) fenetre.location.href = adresse;
+    else window.location.href = adresse; // fenêtre bloquée : on ouvre dans cet onglet
   }
 
-  // Ouvre le document directement dans un nouvel onglet (lecteur PDF natif du navigateur en
-  // général), sans jamais passer par l'interface de Google Drive ni forcer un téléchargement.
-  function lireDocument(documentId) {
+  // Documents gratuits, ou membre ayant déjà acheté ce document : téléchargement direct.
+  function telechargerDocument(documentId) {
+    const fenetre = ouvrirFenetreAttente_();
     appelServeur("getLienDocument", codeActuel(), documentId, null).then(function (res) {
-      if (!res.succes) { alert(res.message || "Lecture impossible."); return; }
-      if (res.docBase64) {
-        const fenetre = window.open("");
-        if (fenetre) {
-          fenetre.document.write(
-            '<iframe src="data:' + res.docMimeType + ';base64,' + res.docBase64 + '" style="position:fixed;inset:0;width:100%;height:100%;border:none;"></iframe>'
-          );
-          fenetre.document.title = res.titre || "Document";
-        }
-      } else {
-        // Fichier trop volumineux pour ce canal : repli sur le lien de téléchargement classique.
-        window.open(res.lien, "_blank");
-      }
-    }).catch(function (err) { alert("Erreur : " + err.message); });
+      if (!res.succes) { if (fenetre) fenetre.close(); alert(res.message || "Téléchargement impossible."); return; }
+      allerVers_(fenetre, res.lien);
+    }).catch(function (err) { if (fenetre) fenetre.close(); alert("Erreur : " + err.message); });
+  }
+
+  // Ouvre le document dans un nouvel onglet (aperçu Google Drive : fonctionne pour les PDF et les documents Office).
+  function lireDocument(documentId) {
+    const fenetre = ouvrirFenetreAttente_();
+    appelServeur("getLienDocument", codeActuel(), documentId, null).then(function (res) {
+      if (!res.succes) { if (fenetre) fenetre.close(); alert(res.message || "Lecture impossible."); return; }
+      allerVers_(fenetre, res.apercu || res.lien);
+    }).catch(function (err) { if (fenetre) fenetre.close(); alert("Erreur : " + err.message); });
   }
 
   // Document payant pas encore acheté : passe par Kkiapay avant de débloquer le téléchargement.
@@ -3967,6 +4010,8 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 
   // ==================== BIBLE — SÉLECTION, SURLIGNAGE, COPIE, RECHERCHE ====================
   let bibleSelection_ = [];
+  let bibleSelectionNative_ = false;   // sélection faite au doigt/souris sur le texte (et non en touchant un verset)
+  let bibleTexteNatif_ = "";
   let bibleModePlage_ = false;
   let bibleVersetAMontrer_ = null;
   let bibleChapitreAffiche_ = { livre: "", chapitre: "" };
@@ -3996,6 +4041,27 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     document.getElementById("bibleBtnPlage").classList.toggle("actif", bibleModePlage_);
   }
 
+  // Sélection au doigt ou à la souris sur le texte : la boîte (couleurs + copier) apparaît toute seule.
+  let bibleMinuteurSel_ = null;
+  document.addEventListener("selectionchange", function () {
+    clearTimeout(bibleMinuteurSel_);
+    bibleMinuteurSel_ = setTimeout(function () {
+      const zone = document.getElementById("bibleContenuZone");
+      if (!zone || !zone.offsetParent) return;
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed || !sel.rangeCount || !zone.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+        if (bibleSelectionNative_) { bibleSelectionNative_ = false; bibleTexteNatif_ = ""; bibleSelection_ = []; bibleMajBarre_(); }
+        return;
+      }
+      const range = sel.getRangeAt(0);
+      const nums = [];
+      zone.querySelectorAll(".bible-verset").forEach(function (el) { if (range.intersectsNode(el)) nums.push(Number(el.getAttribute("data-v"))); });
+      if (!nums.length) return;
+      bibleSelectionNative_ = true; bibleTexteNatif_ = sel.toString(); bibleSelection_ = nums; bibleModePlage_ = false;
+      bibleMajBarre_();
+    }, 180);
+  });
+
   function bibleToucherVerset_(n) {
     const sel = window.getSelection && window.getSelection().toString();
     if (sel && sel.length > 0) return; // l'utilisateur sélectionne du texte à la main : on ne touche à rien
@@ -4020,13 +4086,12 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     bibleAfficherVersets_();
   }
 
-  function bibleAnnulerSelection() { bibleSelection_ = []; bibleModePlage_ = false; bibleAfficherVersets_(); }
-
-  function bibleTogglePlage() {
-    if (!bibleSelection_.length) return;
-    bibleModePlage_ = !bibleModePlage_;
-    bibleMajBarre_();
+  function bibleEffacerSelectionNative_() {
+    bibleSelectionNative_ = false; bibleTexteNatif_ = "";
+    try { window.getSelection().removeAllRanges(); } catch (e) {}
   }
+
+  function bibleAnnulerSelection() { bibleSelection_ = []; bibleModePlage_ = false; bibleEffacerSelectionNative_(); bibleAfficherVersets_(); }
 
   function bibleSurligner(couleur) {
     if (!bibleSelection_.length) return;
@@ -4036,6 +4101,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     });
     bibleSauverSurlignages_(hl);
     bibleSelection_ = [];
+    bibleEffacerSelectionNative_();
     bibleAfficherVersets_();
   }
 
@@ -4075,11 +4141,15 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       if (d && n === d[1] + 1) d[1] = n; else plages.push([n, n]);
     });
     const ref = plages.map(function (p) { return p[0] === p[1] ? p[0] : p[0] + "-" + p[1]; }).join(", ");
+    const entete = bibleNomLivre_(bibleChapitreAffiche_.livre) + " " + bibleChapitreAffiche_.chapitre + ":" + ref + " (" + (langueBibleActuelle === "en" ? "KJV" : "LSG") + ")";
+    if (bibleSelectionNative_ && bibleTexteNatif_.trim()) {   // texte exactement tel qu'il a été sélectionné
+      bibleCopierTexte_(entete + "\n" + bibleTexteNatif_.trim());
+      return;
+    }
     const lignes = nums.map(function (n) {
       const v = versetsBibleActuels.find(function (x) { return Number(x.numero) === n; });
       return n + " " + (v ? v.texte.trim() : "");
     });
-    const entete = bibleNomLivre_(bibleChapitreAffiche_.livre) + " " + bibleChapitreAffiche_.chapitre + ":" + ref + " (" + (langueBibleActuelle === "en" ? "KJV" : "LSG") + ")";
     bibleCopierTexte_(entete + "\n" + lignes.join("\n"));
   }
 
@@ -4547,7 +4617,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     const zone = document.getElementById("listePlaylists");
     if (!playlists.length) { zone.innerHTML = '<div class="card"><p class="empty-state">Aucune playlist configurée pour le moment.</p></div>'; return; }
     zone.innerHTML = '<div class="grille-playlists">' + playlists.map(function (p) {
-      const nomEchappe = escapeHtml(p.Nom).replace(/'/g, "&#39;");
+      const nomEchappe = jsq_(p.Nom);
       const nbPlateforme = videosPlateformeCache.filter(function (v) { return v.Categorie === p.Nom; }).length;
       const cover = p.CoverBase64
         ? '<img src="data:image/jpeg;base64,' + p.CoverBase64 + '" style="width:100%;height:64px;object-fit:cover;border-radius:10px;margin-bottom:6px;">'
@@ -4587,7 +4657,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     if (!videos.length) { zone.innerHTML = entete + '<p class="empty-state">Aucune vidéo trouvée.</p>'; return; }
     const cartes = videos.map(function (v, i) {
       if (v.source === "youtube") {
-        const titreEchappe = escapeHtml(v.titre).replace(/'/g, "&#39;");
+        const titreEchappe = jsq_(v.titre);
         return '<div class="video-item" onclick="lireVideoUnifiee(' + i + ')">' +
           '<img class="video-thumb" src="' + v.miniature + '" alt="">' +
           '<div><div class="video-titre">' + escapeHtml(v.titre) + '</div>' +
@@ -4629,8 +4699,72 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     afficherVideosPlaylist(resultats, nomPlaylistCourante);
   }
 
+  // ==================== NOMS DES RUBRIQUES (modifiables par le Super Admin) ====================
+  const RUBRIQUES = [
+    { id: "bible", nom: "Bible" }, { id: "prieres", nom: "Séances directes" }, { id: "tv", nom: "TV" },
+    { id: "audios", nom: "Audios" }, { id: "documents", nom: "Documents" }, { id: "videos", nom: "Vidéos" },
+    { id: "offrandes", nom: "Offrandes" }, { id: "cotisation", nom: "Campagnes caritatives" },
+    { id: "demandePriere", nom: "Demande de prière" }, { id: "groupes", nom: "Groupes" },
+    { id: "badge", nom: "Mon compte" }, { id: "messages", nom: "Messages" }, { id: "soumissions", nom: "Soumissions" }
+  ];
+
+  function nomsRubriques_() {
+    try { const o = JSON.parse((configApp && configApp.NomsRubriques) || "{}"); return (o && typeof o === "object") ? o : {}; }
+    catch (e) { return {}; }
+  }
+  function nomRubriquePerso_(id) {
+    const n = nomsRubriques_()[id];
+    return (typeof n === "string" && n.trim()) ? n.trim().slice(0, 40) : "";
+  }
+  // Étiquette d'un onglet : le nom personnalisé remplace le texte, l'icône d'origine est conservée.
+  function etiquetteOnglet_(id, defaut) {
+    const perso = nomRubriquePerso_(id);
+    if (!perso) return defaut;
+    const m = String(defaut).match(/^([^A-Za-zÀ-ÿ0-9]+)/);
+    return (m ? m[1].trim() + " " : "") + perso;
+  }
+  // Applique les noms personnalisés aux tuiles de l'accueil et aux titres des rubriques.
+  function appliquerNomsRubriques_() {
+    RUBRIQUES.forEach(function (r) {
+      const perso = nomRubriquePerso_(r.id);
+      if (!perso) return;
+      const titre = document.querySelector("#section-" + r.id + " .section-title");
+      if (titre) { const ic = titre.querySelector(".ic"); titre.innerHTML = (ic ? ic.outerHTML + " " : "") + escapeHtml(perso); }
+      document.querySelectorAll('.tuile-visiteur[onclick*="\'' + r.id + '\'"] .lib').forEach(function (el) { el.textContent = perso; });
+    });
+  }
+
+  function afficherNomsRubriquesAdmin_() {
+    const zone = document.getElementById("adminNomsRubriques");
+    if (!zone) return;
+    const perso = nomsRubriques_();
+    zone.innerHTML = RUBRIQUES.map(function (r) {
+      return '<label class="field-label" style="margin-top:8px;">' + escapeHtml(r.nom) + '</label>' +
+        '<input type="text" maxlength="40" id="nomRubrique-' + r.id + '" placeholder="' + escapeHtml(r.nom) + '" value="' + escapeHtml(typeof perso[r.id] === "string" ? perso[r.id] : "") + '">';
+    }).join("");
+  }
+  function sauvegarderNomsRubriques(reinitialiser) {
+    const resultat = {};
+    if (!reinitialiser) {
+      RUBRIQUES.forEach(function (r) {
+        const v = (document.getElementById("nomRubrique-" + r.id).value || "").trim().slice(0, 40);
+        if (v && v !== r.nom) resultat[r.id] = v;
+      });
+    }
+    const zone = document.getElementById("erreurNomsRubriques");
+    zone.style.display = "none";
+    appelServeur("mettreAJourConfig", membreCourant.code, "NomsRubriques", JSON.stringify(resultat)).then(function () {
+      configApp.NomsRubriques = JSON.stringify(resultat);
+      afficherNomsRubriquesAdmin_();
+      construireTabs();
+      appliquerNomsRubriques_();
+      alert(reinitialiser ? "Noms d'origine rétablis. Rechargez l'application pour revoir les anciens titres partout." : "Noms enregistrés.");
+    }).catch(function (e) { zone.textContent = "Erreur : " + e.message; zone.style.display = "block"; });
+  }
+
   // ==================== ADMINISTRATION ====================
   function chargerDonneesAdmin() {
+    afficherNomsRubriquesAdmin_();
     document.getElementById("adminNomAssoc").value = (configApp && configApp.NomAssociation) || "";
     document.getElementById("adminYoutube").value = (configApp && configApp.LienYoutube) || "";
     document.getElementById("adminYoutubeChannelId").value = (configApp && configApp.YoutubeChannelId) || "";
@@ -4835,7 +4969,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     });
   }
 
-  const LIBELLES_ROLES = { Membre: "Membre", Admin_TG: "Admin TG", Admin_SG: "Admin ICO", Admin_OG: "Admin OG", Admin_Super: "Super Admin" };
+  const LIBELLES_ROLES = { Membre: "Membre", Admin_TG: "Admin TG", Admin_SG: "Admin ICO", Admin_OG: "Admin OG", Admin_Super: "Super Admin", Admin_Perso: "Admin personnalisé" };
 
   // ==================== SÉLECTION MULTIPLE (Audios, Vidéos, Documents, Membres) ====================
   // Système réutilisable de cases à cocher + suppression groupée, commun aux 4 panneaux.
@@ -4931,8 +5065,8 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       const nomAff = (m.prenom || m.nom) ? (m.prenom + " " + m.nom) : m.telephone;
       const pillClass = m.role === "Membre" ? "role-membre" : "role-admin";
       const codeEchappe = m.code.replace(/'/g, "&#39;");
-      const options = Object.keys(LIBELLES_ROLES).map(function (r) {
-        return '<option value="' + r + '"' + (m.role === r ? " selected" : "") + '>' + LIBELLES_ROLES[r] + '</option>';
+      const options = Object.keys(LIBELLES_ROLES).filter(function (r) { return r !== "Admin_Perso" || m.role === "Admin_Perso"; }).map(function (r) {
+        return '<option value="' + r + '"' + (m.role === r ? " selected" : "") + (r === "Admin_Perso" ? " disabled" : "") + '>' + LIBELLES_ROLES[r] + '</option>';
       }).join("");
       const estSuspendu = m.statut === "Suspendu";
       const statutAffiche = estSuspendu && m.dateFinSuspension ? "Suspendu jusqu'au " + m.dateFinSuspension : m.statut;
@@ -4962,8 +5096,9 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
         '</div></div>' +
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
         actionsCompte + boutonAuteur + boutonExoneration + boutonTv +
-        '<button class="secondary small" onclick="ouvrirEditionBadge_(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">🪪 Badge</button>' +
-        '<button class="danger-outline small" onclick="supprimerMembreClick(\'' + codeEchappe + '\',\'' + escapeHtml(nomAff).replace(/'/g, "&#39;") + '\')">Retirer</button>' +
+        (m.role !== "Admin_Super" ? '<button class="secondary small" onclick="ouvrirDroitsAdmin_(\'' + codeEchappe + '\')">🔐 Droits d\'admin</button>' : '') +
+        '<button class="secondary small" onclick="ouvrirEditionBadge_(\'' + codeEchappe + '\',\'' + jsq_(nomAff) + '\')">🪪 Badge</button>' +
+        '<button class="danger-outline small" onclick="supprimerMembreClick(\'' + codeEchappe + '\',\'' + jsq_(nomAff) + '\')">Retirer</button>' +
         '</div></div>';
     });
     zone.innerHTML = construireBarreSelection_("membres") + cartes.join("");
@@ -5038,6 +5173,49 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       err.textContent = "Erreur : " + e.message;
       err.style.display = "block";
     });
+  }
+
+  // ----- Droits d'administration : le Super Admin coche ce qu'un membre peut gérer -----
+  function ouvrirDroitsAdmin_(code) {
+    const m = (membresAdminCache_ || []).find(function (x) { return x.code === code; });
+    if (!m) return;
+    const nom = ((m.prenom || "") + " " + (m.nom || "")).trim() || m.telephone || code;
+    const droits = [
+      { id: "finances", titre: "Finances", aide: "Paiements, campagnes caritatives et offrandes" },
+      { id: "demandesPriere", titre: "Demandes de prière", aide: "Lire et traiter les demandes de prière" },
+      { id: "contenus", titre: "Contenus", aide: "Groupes, séances, audios, documents, vidéos, TV, affiches, actualités, soumissions des auteurs" },
+      { id: "systeme", titre: "Système", aide: "Membres, annonces, messages, codes d'accès, apparence. Donne beaucoup de pouvoir : à réserver aux personnes de confiance." }
+    ];
+    const actuels = Array.isArray(m.permissions) ? m.permissions : [];
+    const fond = document.createElement("div");
+    fond.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;";
+    fond.innerHTML = '<div style="background:var(--card,#fff);color:var(--text,#1b2430);border-radius:16px;max-width:420px;width:100%;max-height:90vh;overflow:auto;padding:18px;">' +
+      '<p class="field-label" style="margin-top:0;">🔐 Droits d\'administration</p>' +
+      '<p class="item-desc">' + escapeHtml(nom) + ' — cochez ce que cette personne peut gérer. Sans aucune case cochée, elle redevient simple membre.</p>' +
+      droits.map(function (d) {
+        return '<label style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;cursor:pointer;">' +
+          '<input type="checkbox" class="case-droit" value="' + d.id + '" style="width:auto;margin:3px 0 0;"' + (actuels.indexOf(d.id) !== -1 ? " checked" : "") + '>' +
+          '<span><strong>' + d.titre + '</strong><br><span class="item-desc">' + d.aide + '</span></span></label>';
+      }).join("") +
+      '<div id="droitsMessage" class="error" style="display:none;margin-top:8px;"></div>' +
+      '<div style="display:flex;gap:8px;margin-top:12px;"><button class="secondary" id="droitsAnnuler">Annuler</button><button class="flame" id="droitsEnregistrer">Enregistrer</button></div></div>';
+    document.body.appendChild(fond);
+    const fermer = function () { fond.remove(); };
+    fond.querySelector("#droitsAnnuler").onclick = fermer;
+    fond.addEventListener("click", function (e) { if (e.target === fond) fermer(); });
+    fond.querySelector("#droitsEnregistrer").onclick = function () {
+      const choisis = Array.prototype.map.call(fond.querySelectorAll(".case-droit:checked"), function (c) { return c.value; });
+      const bouton = this;
+      bouton.disabled = true; bouton.textContent = "Enregistrement…";
+      appelServeur("definirDroitsAdmin", membreCourant.code, code, choisis).then(function (res) {
+        if (!res.succes) throw new Error(res.message || "Échec de l'enregistrement.");
+        fermer();
+        appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
+      }).catch(function (e) {
+        bouton.disabled = false; bouton.textContent = "Enregistrer";
+        const z = fond.querySelector("#droitsMessage"); z.textContent = "Erreur : " + e.message; z.style.display = "block";
+      });
+    };
   }
 
   function changerRole(code, nouveauRole) {
@@ -7079,6 +7257,13 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
       { libelle: "Annuler", classe: "secondary" },
       { libelle: "Valider", classe: "flame", action: function (valeur) { onValider((valeur || "").trim()); } }
     ], true);
+  }
+
+  // Texte sûr à placer entre apostrophes dans un attribut onclick="…" : une apostrophe dans un nom
+  // (ex. « Aide d'urgence ») cassait le bouton, car le navigateur décode les entités avant d'exécuter le code.
+  function jsq_(str) {
+    return String(str == null ? "" : str).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\r?\n/g, " ")
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   function escapeHtml(str) {
