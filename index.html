@@ -234,6 +234,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 .bible-resultat{padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;line-height:1.5}
 .bible-resultat .ref{font-weight:800;color:var(--blue2);font-size:12px}
 .bible-resultat mark{background:#ffe066;border-radius:3px;padding:0 1px}
+video.video-player-frame{object-fit:contain}
 </style>
 </head>
 <body>
@@ -3533,19 +3534,34 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
     appelServeur("getLienVideo", codeActuel(), v.id, null).then(function (res) {
       if (!res.succes) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">' + escapeHtml(res.message) + '</p>'; return; }
       videosDeverrouillees[v.id] = true;
+      const boutonTelecharger = (v.type === "Payant" ? '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + (res.lienTelechargement || res.lien) + '" target="_blank">⬇️ Télécharger</a></div>' : '');
+      if (res.r2) {
+        // Fichier hébergé sur Cloudflare R2 : lecteur natif (démarrage rapide, avance/retour, vidéo centrée).
+        zone.innerHTML = entete +
+          '<video class="video-player-frame video-natif" src="' + res.lien + '" controls autoplay playsinline preload="auto"' + (v.type === "Payant" ? "" : ' controlsList="nodownload"') + ' onended="gererFinVideo_()"></video>' +
+          construireControlesVideo_(true) + boutonTelecharger;
+        const lecteurNatif = zone.querySelector("video.video-natif");
+        lecteurNatif.addEventListener("error", function () {          // format non lisible par ce navigateur : aperçu Drive
+          const f = document.createElement("iframe");
+          f.className = "video-player-frame"; f.src = res.apercu; f.allow = "autoplay"; f.setAttribute("allowfullscreen", "");
+          lecteurNatif.replaceWith(f);
+        });
+        return;
+      }
       // Revenu à l'aperçu Google Drive (plus fiable pour la lecture que le lecteur natif du
       // navigateur, qui échouait souvent avec les liens Drive). Contrepartie : pas de
       // détection automatique de fin de lecture pour cette source — Précédent/Suivant
       // restent pleinement fonctionnels, et "Répéter Tout" boucle bien au dernier Suivant.
       zone.innerHTML = entete +
         '<iframe class="video-player-frame" src="' + res.apercu + '" allow="autoplay" allowfullscreen></iframe>' +
-        construireControlesVideo_(true) +
-        (v.type === "Payant" ? '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + res.lien + '" target="_blank">⬇️ Télécharger</a></div>' : '');
+        construireControlesVideo_(true) + boutonTelecharger;
     }).catch(function (err) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">Erreur : ' + escapeHtml(err.message) + '</p>'; });
   }
 
   function gererFinVideo_() {
     if (modeRepetitionVideo === "un") {
+      const natif = document.querySelector("#lecteurVideoZone video.video-natif");
+      if (natif) { natif.currentTime = 0; natif.play().catch(function () {}); return; }
       const v = videosPlaylistCourante[indexVideoUnifieActuel];
       if (v && v.source === "youtube" && ytPlayerActuel) { ytPlayerActuel.seekTo(0); ytPlayerActuel.playVideo(); }
       return;
