@@ -1228,7 +1228,9 @@ video.video-player-frame{object-fit:contain}
           <input id="recAuteur" type="text" placeholder="Auteur">
           <input id="recEmailAuteur" type="email" placeholder="E-mail de l'auteur (pour notification d'achat)">
           <input id="recDescription" type="text" placeholder="Description courte (facultative)">
-          <input id="recLienDrive" type="text" placeholder="Lien de partage Google Drive du fichier audio">
+          <label class="field-label">Fichier audio</label>
+          <input id="recFichier" type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg,.aac,.opus,.flac,.webm">
+          <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">Le fichier est envoyé directement vers le stockage Cloudflare (95 Mo maximum).</p>
           <label class="field-label">Catégorie</label>
           <select id="recCategorie"></select>
           <label class="field-label">Visible par</label>
@@ -1270,7 +1272,9 @@ video.video-player-frame{object-fit:contain}
           <input id="docAuteur" type="text" placeholder="Auteur du document">
           <input id="docEmailAuteur" type="email" placeholder="E-mail de l'auteur (pour notification d'achat)">
           <input id="docDescription" type="text" placeholder="Description courte (facultative)">
-          <input id="docLienDrive" type="text" placeholder="Lien de partage Google Drive du document">
+          <label class="field-label">Fichier du document</label>
+          <input id="docFichier" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.epub,.rtf,.odt">
+          <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">Le fichier est envoyé directement vers le stockage Cloudflare (95 Mo maximum).</p>
           <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">
             Contrairement aux Enregistrements, ces documents doivent rester <strong>téléchargeables</strong> :
             n'activez pas la restriction "empêcher le téléchargement" sur ce fichier dans Google Drive.
@@ -1316,7 +1320,9 @@ video.video-player-frame{object-fit:contain}
           <input id="vidAuteur" type="text" placeholder="Auteur">
           <input id="vidEmailAuteur" type="email" placeholder="E-mail de l'auteur (pour notification d'achat)">
           <input id="vidDescription" type="text" placeholder="Description courte (facultative)">
-          <input id="vidLienDrive" type="text" placeholder="Lien de partage Google Drive du fichier vidéo">
+          <label class="field-label">Fichier vidéo</label>
+          <input id="vidFichier" type="file" accept="video/*,.mp4,.mov,.m4v,.webm,.ogv">
+          <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">Le fichier est envoyé directement vers le stockage Cloudflare (95 Mo maximum).</p>
           <label class="field-label">Catégorie (playlist où elle apparaîtra)</label>
           <select id="vidCategorie"></select>
           <label class="field-label">Type</label>
@@ -1592,6 +1598,40 @@ video.video-player-frame{object-fit:contain}
     f.src = "https://drive.google.com/file/d/" + id + "/preview";
     f.allow = "autoplay";
     element.replaceWith(f);
+  }
+
+  // ==================== ENVOI DIRECT DES FICHIERS VERS R2 ====================
+  // Le fichier part tel quel (sans conversion), avec la session signée. Le serveur répond par un « reçu »
+  // que l'on transmet ensuite à Apps Script pour enregistrer le contenu.
+  function televerserVersR2_(fichier, usage, surProgression) {
+    return new Promise(function (resolve, reject) {
+      if (!jetonSession) { reject(new Error("Session expirée. Reconnectez-vous.")); return; }
+      if (fichier.size > 95 * 1024 * 1024) { reject(new Error("Fichier trop volumineux (95 Mo maximum).")); return; }
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", API_URL_NOUVEAU + "/upload");
+      xhr.setRequestHeader("Authorization", "Bearer " + jetonSession);
+      xhr.setRequestHeader("X-Fichier-Nom", encodeURIComponent(fichier.name));
+      xhr.setRequestHeader("X-Fichier-Usage", usage);
+      xhr.setRequestHeader("Content-Type", fichier.type || "application/octet-stream");
+      xhr.upload.onprogress = function (e) { if (e.lengthComputable && surProgression) surProgression(Math.round(e.loaded * 100 / e.total)); };
+      xhr.onload = function () {
+        let j;
+        try { j = JSON.parse(xhr.responseText); } catch (e) { reject(new Error("Réponse inattendue du serveur (statut " + xhr.status + ").")); return; }
+        if (xhr.status >= 200 && xhr.status < 300 && j.ok) resolve(j); else reject(new Error(j.erreur || "Envoi refusé."));
+      };
+      xhr.onerror = function () { reject(new Error("Échec de l'envoi : vérifiez votre connexion.")); };
+      xhr.send(fichier);
+    });
+  }
+
+  // Envoie le fichier, affiche la progression dans la zone indiquée, puis appelle la suite avec le reçu.
+  function envoyerFichierPuisContinuer_(fichier, usage, zone, suite) {
+    zone.style.display = "block";
+    zone.style.color = "var(--blue2, #0b2f68)";
+    zone.textContent = "Envoi du fichier… 0 %";
+    televerserVersR2_(fichier, usage, function (pct) { zone.textContent = "Envoi du fichier… " + pct + " %"; })
+      .then(function (r2) { zone.style.display = "none"; zone.style.color = ""; suite(r2); })
+      .catch(function (e) { zone.style.color = ""; zone.textContent = "Erreur : " + e.message; zone.style.display = "block"; });
   }
 
   function afficherErreurZone(elementId, err) {
@@ -3647,12 +3687,12 @@ video.video-player-frame{object-fit:contain}
     info.style.display = "block";
     info.textContent = "Envoi de « " + fichier.name + " » (" + taille + ")." + (octets > 20 * 1048576 ? " Un gros fichier peut demander plusieurs minutes : patientez jusqu'à la confirmation." : "");
     const terminerEnvoi = function () { bouton.disabled = false; bouton.textContent = libelleBouton; info.style.display = "none"; };
-    const lecteur = new FileReader();
-    lecteur.onerror = function () { terminerEnvoi(); err.textContent = "Impossible de lire le fichier."; err.style.display = "block"; };
-    lecteur.onload = function () {
-      const base64 = lecteur.result.split(",")[1];
+    televerserVersR2_(fichier, "soumission", function (pct) {
+      bouton.textContent = "⏳ Envoi du fichier… " + pct + " %";
+    }).then(function (r2) {
+      bouton.textContent = "⏳ Enregistrement…";
       lireFichierGenerique_("subParolesFichier", function (parolesBase64, parolesNom, parolesMime) {
-        appelServeur("soumettreContenu", membreCourant.code, type, titre, description, prix, email, base64, fichier.name, fichier.type || "application/octet-stream", couverturesEnCours.soumission || "", paroles, parolesBase64, parolesNom, parolesMime)
+        appelServeur("soumettreContenu", membreCourant.code, type, titre, description, prix, email, "", fichier.name, fichier.type || "application/octet-stream", couverturesEnCours.soumission || "", paroles, parolesBase64, parolesNom, parolesMime, r2)
           .then(function () {
             terminerEnvoi();
             alert("✓ Votre soumission a été envoyée pour vérification.");
@@ -3675,8 +3715,11 @@ video.video-player-frame{object-fit:contain}
             err.style.display = "block";
           });
       });
-    };
-    lecteur.readAsDataURL(fichier);
+    }).catch(function (e) {
+      terminerEnvoi();
+      err.textContent = "Erreur : " + e.message;
+      err.style.display = "block";
+    });
   }
 
   function chargerMesSoumissions() {
@@ -5694,23 +5737,24 @@ video.video-player-frame{object-fit:contain}
     const auteur = document.getElementById("recAuteur").value.trim();
     const emailAuteur = document.getElementById("recEmailAuteur").value.trim();
     const description = document.getElementById("recDescription").value.trim();
-    const lien = document.getElementById("recLienDrive").value.trim();
+    const fichier = document.getElementById("recFichier").files[0];
     const categorie = document.getElementById("recCategorie").value;
     const visibilite = document.getElementById("recVisibilite").value;
     const type = document.getElementById("recType").value;
     const prix = document.getElementById("recPrix").value;
     const err = document.getElementById("erreurEnregistrement");
     err.style.display = "none";
-    if (!titre || !lien) { err.textContent = "Le titre et le lien Google Drive sont requis."; err.style.display = "block"; return; }
+    if (!titre || !fichier) { err.textContent = "Le titre et le fichier audio sont requis."; err.style.display = "block"; return; }
     if (type === "Payant" && (!prix || Number(prix) <= 0)) { err.textContent = "Indiquez un prix pour un audio payant."; err.style.display = "block"; return; }
+    envoyerFichierPuisContinuer_(fichier, "audio", err, function (r2) {
     const paroles = document.getElementById("recParoles").value.trim();
     lireFichierGenerique_("recParolesFichier", function (parolesBase64, parolesNom, parolesMime) {
-      appelServeur("ajouterEnregistrement", membreCourant.code, titre, description, lien, visibilite, categorie, type, prix, auteur, emailAuteur, couverturesEnCours.audio || "", paroles, parolesBase64, parolesNom, parolesMime).then(function () {
+      appelServeur("ajouterEnregistrement", membreCourant.code, titre, description, "", visibilite, categorie, type, prix, auteur, emailAuteur, couverturesEnCours.audio || "", paroles, parolesBase64, parolesNom, parolesMime, r2).then(function () {
         document.getElementById("recTitre").value = "";
         document.getElementById("recAuteur").value = "";
         document.getElementById("recEmailAuteur").value = "";
         document.getElementById("recDescription").value = "";
-        document.getElementById("recLienDrive").value = "";
+        document.getElementById("recFichier").value = "";
         document.getElementById("recPrix").value = "";
         document.getElementById("recCoverPreviewZone").style.display = "none";
         document.getElementById("recCoverFichier").value = "";
@@ -5723,6 +5767,7 @@ video.video-player-frame{object-fit:contain}
         err.textContent = "Erreur : " + e.message;
         err.style.display = "block";
       });
+    });
     });
   }
 
@@ -5758,19 +5803,20 @@ video.video-player-frame{object-fit:contain}
     const auteur = document.getElementById("docAuteur").value.trim();
     const emailAuteur = document.getElementById("docEmailAuteur").value.trim();
     const description = document.getElementById("docDescription").value.trim();
-    const lien = document.getElementById("docLienDrive").value.trim();
+    const fichier = document.getElementById("docFichier").files[0];
     const type = document.getElementById("docType").value;
     const prix = document.getElementById("docPrix").value;
     const err = document.getElementById("erreurDocument");
     err.style.display = "none";
-    if (!titre || !lien) { err.textContent = "Le titre et le lien Google Drive sont requis."; err.style.display = "block"; return; }
+    if (!titre || !fichier) { err.textContent = "Le titre et le fichier du document sont requis."; err.style.display = "block"; return; }
     if (type === "Payant" && (!prix || Number(prix) <= 0)) { err.textContent = "Indiquez un prix pour un document payant."; err.style.display = "block"; return; }
-    appelServeur("ajouterDocument", membreCourant.code, titre, description, lien, type, prix, auteur, emailAuteur, couverturesEnCours.document || "").then(function () {
+    envoyerFichierPuisContinuer_(fichier, "document", err, function (r2) {
+    appelServeur("ajouterDocument", membreCourant.code, titre, description, "", type, prix, auteur, emailAuteur, couverturesEnCours.document || "", r2).then(function () {
       document.getElementById("docTitre").value = "";
       document.getElementById("docAuteur").value = "";
       document.getElementById("docEmailAuteur").value = "";
       document.getElementById("docDescription").value = "";
-      document.getElementById("docLienDrive").value = "";
+      document.getElementById("docFichier").value = "";
       document.getElementById("docPrix").value = "";
       document.getElementById("docCoverPreviewZone").style.display = "none";
       document.getElementById("docCoverFichier").value = "";
@@ -5779,6 +5825,7 @@ video.video-player-frame{object-fit:contain}
     }).catch(function (e) {
       err.textContent = "Erreur : " + e.message;
       err.style.display = "block";
+    });
     });
   }
 
@@ -5880,22 +5927,23 @@ video.video-player-frame{object-fit:contain}
     const auteur = document.getElementById("vidAuteur").value.trim();
     const emailAuteur = document.getElementById("vidEmailAuteur").value.trim();
     const description = document.getElementById("vidDescription").value.trim();
-    const lien = document.getElementById("vidLienDrive").value.trim();
+    const fichier = document.getElementById("vidFichier").files[0];
     const categorie = document.getElementById("vidCategorie").value;
     const type = document.getElementById("vidType").value;
     const prix = document.getElementById("vidPrix").value;
     const err = document.getElementById("erreurVideoPlateforme");
     err.style.display = "none";
-    if (!titre || !lien) { err.textContent = "Le titre et le lien Google Drive sont requis."; err.style.display = "block"; return; }
+    if (!titre || !fichier) { err.textContent = "Le titre et le fichier vidéo sont requis."; err.style.display = "block"; return; }
     if (type === "Payant" && (!prix || Number(prix) <= 0)) { err.textContent = "Indiquez un prix pour une vidéo payante."; err.style.display = "block"; return; }
+    envoyerFichierPuisContinuer_(fichier, "video", err, function (r2) {
     const paroles = document.getElementById("vidParoles").value.trim();
     lireFichierGenerique_("vidParolesFichier", function (parolesBase64, parolesNom, parolesMime) {
-      appelServeur("ajouterVideo", membreCourant.code, titre, description, lien, type, prix, auteur, emailAuteur, couverturesEnCours.video || "", categorie, paroles, parolesBase64, parolesNom, parolesMime).then(function () {
+      appelServeur("ajouterVideo", membreCourant.code, titre, description, "", type, prix, auteur, emailAuteur, couverturesEnCours.video || "", categorie, paroles, parolesBase64, parolesNom, parolesMime, r2).then(function () {
         document.getElementById("vidTitre").value = "";
         document.getElementById("vidAuteur").value = "";
         document.getElementById("vidEmailAuteur").value = "";
         document.getElementById("vidDescription").value = "";
-        document.getElementById("vidLienDrive").value = "";
+        document.getElementById("vidFichier").value = "";
         document.getElementById("vidPrix").value = "";
         document.getElementById("vidCoverPreviewZone").style.display = "none";
         document.getElementById("vidCoverFichier").value = "";
@@ -5908,6 +5956,7 @@ video.video-player-frame{object-fit:contain}
         err.textContent = "Erreur : " + e.message;
         err.style.display = "block";
       });
+    });
     });
   }
 
