@@ -235,6 +235,10 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 .bible-resultat .ref{font-weight:800;color:var(--blue2);font-size:12px}
 .bible-resultat mark{background:#ffe066;border-radius:3px;padding:0 1px}
 video.video-player-frame{object-fit:contain}
+.btn-langue{width:auto;padding:8px 11px;font-size:18px;line-height:1;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.55);border-radius:12px;box-shadow:none;flex-shrink:0}
+.menu-langue{position:fixed;top:64px;right:12px;z-index:9400;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.28);padding:6px;min-width:190px}
+.menu-langue button{display:block;width:100%;text-align:left;background:transparent;color:#1b2430;box-shadow:none;border-radius:10px;padding:10px 12px;font-size:14px;font-weight:700}
+.menu-langue button:active{background:#eef3f9}
 </style>
 </head>
 <body>
@@ -264,6 +268,7 @@ video.video-player-frame{object-fit:contain}
       <div class="topbar-nom" id="topbarNom">JESUS</div>
       <div class="topbar-sub" id="topbarSub">Espace membres</div>
     </div>
+    <button id="btnLangue" class="btn-langue" onclick="ouvrirMenuLangue_(event)" title="Changer la langue de l'application" aria-label="Changer la langue">🌐</button>
     <div class="topbar-actions">
       <button id="btnContact" onclick="afficherEcranContact()" class="btn-topbar-fort btn-contact" title="Contactez-nous">📞 Contact</button>
       <button id="btnDeconnexion" onclick="quitterSession()" class="btn-topbar-fort btn-session" style="display:none;">Se déconnecter</button>
@@ -484,7 +489,7 @@ video.video-player-frame{object-fit:contain}
         <label class="field-label">Téléphone *</label>
         <input id="insTelephone" type="tel" placeholder="Ce numéro servira à vous connecter">
         <label class="field-label">Email *</label>
-        <input id="insEmail" type="email" placeholder="Email — utile pour réinitialiser votre mot de passe">
+        <input id="insEmail" type="email" required placeholder="E-mail (obligatoire) — pour réinitialiser votre mot de passe et recevoir vos reçus">
         <label class="field-label">Créer un mot de passe *</label>
         <input id="insMotDePasse" type="password" placeholder="Au moins 4 caractères">
         <label class="field-label">Confirmer le mot de passe *</label>
@@ -591,7 +596,6 @@ video.video-player-frame{object-fit:contain}
 
     <div class="section" id="section-cotisation">
       <div class="section-title"><span class="ic">💳</span> Campagnes caritatives</div>
-      <p class="subtitle left" style="margin-top:-6px;">Chaque campagne caritative poursuit un objectif collectif. Vous pouvez y contribuer autant de fois que vous le souhaitez.</p>
       <div class="card" id="listeTypesCotisation"><div class="loading">Chargement…</div></div>
       <div id="messagePaiement" style="margin: -6px 0 14px; font-size:13px;"></div>
       <div class="stat-grid">
@@ -607,7 +611,6 @@ video.video-player-frame{object-fit:contain}
     <!-- Offrandes / Dons (montant libre, distinct des cotisations) -->
     <div class="section" id="section-offrandes">
       <div class="section-title"><span class="ic">🙌</span> Offrandes & Dons</div>
-      <p class="subtitle left" style="margin-top:-6px;">Faites un don du montant de votre choix, à tout moment, en dehors des cotisations.</p>
       <div class="card">
         <label class="field-label">Montant (FCFA)</label>
         <input id="offrandeMontant" type="number" min="1" placeholder="Ex : 5000">
@@ -679,7 +682,6 @@ video.video-player-frame{object-fit:contain}
     <!-- Documents (gratuits ou payants, téléchargeables) -->
     <div class="section" id="section-documents">
       <div class="section-title"><span class="ic">📄</span> Documents</div>
-      <p class="subtitle left" style="margin-top:-6px;">Rapports et enseignements écrits — téléchargeables.</p>
 
       <div class="sub-nav" id="subNavDocuments">
         <button class="sub-nav-btn active" data-sub="accueil" onclick="afficherSousDocuments('accueil')">Accueil</button>
@@ -764,7 +766,6 @@ video.video-player-frame{object-fit:contain}
     <!-- Audios (playlists par catégorie, Google Drive) -->
     <div class="section" id="section-audios">
       <div class="section-title"><span class="ic">🎧</span> Audios</div>
-      <p class="subtitle left" style="margin-top:-6px;">Réunions et enseignements audio — gratuits ou payants.</p>
 
       <div class="sub-nav" id="subNavAudios">
         <button class="sub-nav-btn active" data-sub="accueil" onclick="afficherSousAudios('accueil')">Accueil</button>
@@ -852,7 +853,6 @@ video.video-player-frame{object-fit:contain}
 
     <div class="section" id="section-videos">
       <div class="section-title"><span class="ic">▶️</span> Vidéos</div>
-      <p class="subtitle left" style="margin-top:-6px;">Émissions, enseignements et programmes — YouTube et plateforme.</p>
 
       <div class="sub-nav" id="subNavVideos">
         <button class="sub-nav-btn active" data-sub="accueil" onclick="afficherSousVideos('accueil')">Accueil</button>
@@ -1038,6 +1038,18 @@ video.video-player-frame{object-fit:contain}
           <input id="adminMontantPublication" type="number" min="0" placeholder="Ex : 2000">
           <div id="erreurApparence" class="error" style="display:none;"></div>
           <button onclick="sauvegarderApparence()">Enregistrer</button>
+        </div>
+        <div class="card" id="carteBadge">
+          <label class="field-label">Badge des membres</label>
+          <p class="subtitle left" style="margin:-4px 0 6px;font-size:11px;">Couleur de la bande, nom et logo affichés sur le badge de chaque membre.</p>
+          <label class="field-label">Couleur de la bande</label>
+          <input id="adminBadgeCouleur" type="color" value="#0b2f68" style="height:46px;padding:4px;">
+          <label class="field-label">Nom affiché sous le logo</label>
+          <input id="adminBadgeNom" type="text" maxlength="40" placeholder="JESUS">
+          <label class="field-label">Logo du badge (PNG ou JPEG)</label>
+          <input id="adminBadgeLogo" type="file" accept="image/png,image/jpeg">
+          <div id="erreurBadge" class="error" style="display:none;"></div>
+          <div style="display:flex;gap:8px;margin-top:10px;"><button class="secondary" onclick="sauvegarderBadge(true)">Rétablir l'original</button><button onclick="sauvegarderBadge(false)">Enregistrer le badge</button></div>
         </div>
         <div class="card" id="carteNomsRubriques">
           <label class="field-label">Noms des rubriques</label>
@@ -1230,7 +1242,6 @@ video.video-player-frame{object-fit:contain}
           <input id="recDescription" type="text" placeholder="Description courte (facultative)">
           <label class="field-label">Fichier audio</label>
           <input id="recFichier" type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg,.aac,.opus,.flac,.webm">
-          <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">Le fichier est envoyé directement vers le stockage Cloudflare (95 Mo maximum).</p>
           <label class="field-label">Catégorie</label>
           <select id="recCategorie"></select>
           <label class="field-label">Visible par</label>
@@ -1255,10 +1266,6 @@ video.video-player-frame{object-fit:contain}
           <textarea id="recParoles" rows="4" placeholder="Paroles…"></textarea>
           <label class="file-btn-label" style="margin-top:8px;">📎 Importer un fichier (PDF...)<input type="file" id="recParolesFichier" accept=".pdf,.doc,.docx,.txt" style="display:none;" onchange="document.getElementById('recParolesFichierNom').textContent = this.files[0] ? '📎 ' + this.files[0].name : '';"></label>
           <div id="recParolesFichierNom" class="item-desc" style="margin-top:4px;"></div>
-          <p class="subtitle left" style="margin:10px 0 0;font-size:11px;">
-            Uploadez d'abord le fichier sur Google Drive, clic droit > Partager > Copier le lien.
-            <strong>Important</strong> : décochez "Les lecteurs peuvent télécharger, imprimer et copier" dans les options de partage.
-          </p>
           <div id="erreurEnregistrement" class="error" style="display:none;"></div>
           <button onclick="creerEnregistrementAdmin()">Ajouter</button>
         </div>
@@ -1274,7 +1281,6 @@ video.video-player-frame{object-fit:contain}
           <input id="docDescription" type="text" placeholder="Description courte (facultative)">
           <label class="field-label">Fichier du document</label>
           <input id="docFichier" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.epub,.rtf,.odt">
-          <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">Le fichier est envoyé directement vers le stockage Cloudflare (95 Mo maximum).</p>
           <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">
             Contrairement aux Enregistrements, ces documents doivent rester <strong>téléchargeables</strong> :
             n'activez pas la restriction "empêcher le téléchargement" sur ce fichier dans Google Drive.
@@ -1322,7 +1328,6 @@ video.video-player-frame{object-fit:contain}
           <input id="vidDescription" type="text" placeholder="Description courte (facultative)">
           <label class="field-label">Fichier vidéo</label>
           <input id="vidFichier" type="file" accept="video/*,.mp4,.mov,.m4v,.webm,.ogv">
-          <p class="subtitle left" style="margin:-4px 0 10px;font-size:11px;">Le fichier est envoyé directement vers le stockage Cloudflare (95 Mo maximum).</p>
           <label class="field-label">Catégorie (playlist où elle apparaîtra)</label>
           <select id="vidCategorie"></select>
           <label class="field-label">Type</label>
@@ -1886,19 +1891,50 @@ video.video-player-frame{object-fit:contain}
     });
   }
 
+  // Message affiché quand la clé de paiement n'a pas été reçue : plus précis pour un administrateur.
+  function messagePaiementNonConfigure_() {
+    const admin = membreCourant && permissionsDe_(membreCourant).length;
+    return admin
+      ? "Le paiement n'est pas configuré : la clé publique FedaPay (propriété FEDAPAY_PUBLIC_KEY d'Apps Script) n'est pas reçue par l'application."
+      : "Le paiement n'est pas encore configuré. Contactez un responsable.";
+  }
+
   function appliquerBranding(config) {
     configApp = config || {};
-    setTimeout(appliquerNomsRubriques_, 0);
+    setTimeout(rafraichirNomsRubriques_, 0);
+    // Copie de configuration en mémoire sans la clé de paiement : on redemande une version fraîche (sans cache).
+    if (!configApp.paiementPublicKey) {
+      setTimeout(function () {
+        appelServeur("getConfig", Date.now()).then(function (c) {
+          if (c && c.paiementPublicKey && configApp) { configApp.paiementPublicKey = c.paiementPublicKey; }
+          if (c && c.NomsRubriques && configApp && c.NomsRubriques !== configApp.NomsRubriques) { configApp.NomsRubriques = c.NomsRubriques; rafraichirNomsRubriques_(); }
+        }).catch(function () {});
+      }, 400);
+    }
     const nom = "JESUS";
     document.getElementById("topbarNom").textContent = nom;
     document.getElementById("accueilNomAssoc").textContent = nom;
-    document.getElementById("badgeOrgName").textContent = nom;
     document.title = nom + " — Espace membres";
     const initiale = nom.charAt(0).toUpperCase();
     const logoHtml = '<img src="icon-192.png" alt="JESUS">'; // logo JESUS fixe
     document.getElementById("topbarLogo").innerHTML = logoHtml;
     document.getElementById("accueilLogo").innerHTML = logoHtml;
-    document.getElementById("badgeMiniLogo").innerHTML = logoHtml;
+    appliquerBadgeConfig_();
+  }
+
+  // Badge des membres : couleur, nom et logo réglables par le Super Admin (Administration > Apparence).
+  function appliquerBadgeConfig_() {
+    const c = configApp || {};
+    const bande = document.querySelector(".badge-top-band");
+    if (bande) bande.style.background = /^#[0-9a-fA-F]{6}$/.test(c.BadgeCouleur || "") ? c.BadgeCouleur : "";
+    const nomBadge = (c.BadgeNom && String(c.BadgeNom).trim()) ? String(c.BadgeNom).trim().slice(0, 40) : "JESUS";
+    const elNom = document.getElementById("badgeOrgName");
+    if (elNom) elNom.textContent = nomBadge;
+    const elLogo = document.getElementById("badgeMiniLogo");
+    if (elLogo) {
+      const perso = /^data:image\/(png|jpeg);base64,[A-Za-z0-9+\/=]+$/.test(c.BadgeLogo || "");
+      elLogo.innerHTML = perso ? '<img src="' + c.BadgeLogo + '" alt="">' : '<img src="icon-192.png" alt="JESUS">';
+    }
   }
 
   // Affiche publicitaire (bandeau paysage visible sur toutes les pages).
@@ -1957,7 +1993,7 @@ video.video-player-frame{object-fit:contain}
     const telContact = configApp && configApp.TelephoneContact;
     document.getElementById("contactTelephone").textContent = telContact || "";
     document.getElementById("contactTelephoneLigne").style.display = telContact ? "block" : "none";
-    document.getElementById("contactEmail").textContent = (configApp && configApp.EmailContact) || "arcuniversel@gmail.com";
+    document.getElementById("contactEmail").textContent = "arcontact@gmail.com";
     document.getElementById("ecranContact").classList.add("active");
   }
 
@@ -2183,7 +2219,8 @@ video.video-player-frame{object-fit:contain}
     const err = document.getElementById("erreurInscription2");
     err.style.display = "none";
 
-    if (!profession || !eglise || !roleEglise || !adresse || !email) { err.textContent = "Tous les champs sont obligatoires."; err.style.display = "block"; return; }
+    if (!email) { err.textContent = "L'adresse e-mail est obligatoire pour créer un compte."; err.style.display = "block"; document.getElementById("insEmail").focus(); return; }
+    if (!profession || !eglise || !roleEglise || !adresse) { err.textContent = "Tous les champs sont obligatoires."; err.style.display = "block"; return; }
     if (!photoInscriptionBase64) { err.textContent = "Une photo est requise pour finaliser l'inscription."; err.style.display = "block"; return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = "L'adresse e-mail n'est pas valide."; err.style.display = "block"; return; }
     if (!telephone) { err.textContent = "Le téléphone est requis."; err.style.display = "block"; return; }
@@ -2435,6 +2472,33 @@ video.video-player-frame{object-fit:contain}
     masquerSliderAffiches();
     entrerModeVisiteur();
     });
+  }
+
+  // ==================== LANGUE DE L'APPLICATION (bouton de l'en-tête) ====================
+  const LANGUES_APP_ = [
+    { code: "fr", nom: "Français (original)" }, { code: "en", nom: "English" }, { code: "es", nom: "Español" },
+    { code: "pt", nom: "Português" }, { code: "ar", nom: "العربية" }, { code: "de", nom: "Deutsch" }, { code: "sw", nom: "Kiswahili" }
+  ];
+  function ouvrirMenuLangue_(evenement) {
+    if (evenement) evenement.stopPropagation();
+    const ancien = document.getElementById("menuLangue");
+    if (ancien) { ancien.remove(); return; }
+    const menu = document.createElement("div");
+    menu.id = "menuLangue";
+    menu.className = "menu-langue";
+    menu.innerHTML = LANGUES_APP_.map(function (l) {
+      return '<button type="button" onclick="choisirLangueApp_(\'' + l.code + '\')">' + escapeHtml(l.nom) + '</button>';
+    }).join("");
+    document.body.appendChild(menu);
+    setTimeout(function () {
+      document.addEventListener("click", function fermer() { const m = document.getElementById("menuLangue"); if (m) m.remove(); document.removeEventListener("click", fermer); });
+    }, 0);
+  }
+  function choisirLangueApp_(code) {
+    const m = document.getElementById("menuLangue"); if (m) m.remove();
+    const sel = document.getElementById("selecteurTraduction");
+    if (sel) sel.value = code;
+    traduireVers(code);
   }
 
   // ==================== TRADUCTION (widget Google Translate gratuit) ====================
@@ -2885,7 +2949,7 @@ video.video-player-frame{object-fit:contain}
   }
 
   function acheterSeance(id, prix) {
-    if (!configApp || !configApp.paiementPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    if (!configApp || !configApp.paiementPublicKey) { alert(messagePaiementNonConfigure_()); return; }
     typeCotisationEnCours = { nom: id, montant: prix, periodicite: "", categorie: "Seance" };
     openKkiapayWidget({ amount: prix, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
@@ -2975,7 +3039,7 @@ video.video-player-frame{object-fit:contain}
       return;
     }
     if (!configApp || !configApp.paiementPublicKey) {
-      document.getElementById("messagePaiement").innerHTML = '<span class="error">Le paiement n\u2019est pas encore configuré. Contactez un responsable.</span>';
+      document.getElementById("messagePaiement").innerHTML = '<span class="error">' + messagePaiementNonConfigure_() + '</span>';
       return;
     }
     document.getElementById("messagePaiement").innerHTML = '<span class="item-desc">Ouverture du paiement…</span>';
@@ -3084,7 +3148,7 @@ video.video-player-frame{object-fit:contain}
     const err = document.getElementById("erreurOffrande");
     err.style.display = "none";
     if (!montant || montant <= 0) { err.textContent = "Indiquez un montant valide."; err.style.display = "block"; return; }
-    if (!configApp || !configApp.paiementPublicKey) { err.textContent = "Le paiement n'est pas encore configuré. Contactez un responsable."; err.style.display = "block"; return; }
+    if (!configApp || !configApp.paiementPublicKey) { err.textContent = messagePaiementNonConfigure_(); err.style.display = "block"; return; }
     typeCotisationEnCours = { nom: motif || "Offrande / Don", montant: montant, periodicite: "", categorie: "Don" };
     openKkiapayWidget({ amount: montant, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
@@ -3166,6 +3230,24 @@ video.video-player-frame{object-fit:contain}
     }).catch(function () { /* pas grave si ça échoue */ });
   }
 
+  // Contenus cochés « à la une » par le Super Admin : ils passent en tête de la rubrique, les autres gardent leur ordre.
+  function ordonnerALaUne_(liste) {
+    const unes = [], autres = [];
+    (liste || []).forEach(function (x) { (x && x.ALaUne === true ? unes : autres).push(x); });
+    return unes.concat(autres);
+  }
+  function caseALaUne_(type, id, coche) {
+    if (!membreCourant || permissionsDe_(membreCourant).indexOf("systeme") === -1) return "";
+    return '<label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;"><input type="checkbox" style="width:auto;margin:0;"' + (coche ? " checked" : "") +
+      ' onchange="basculerALaUne_(\'' + type + '\',\'' + id + '\',this)">⭐ À la une</label>';
+  }
+  function basculerALaUne_(type, id, caseHtml) {
+    const valeur = caseHtml.checked;
+    caseHtml.disabled = true;
+    appelServeur("definirALaUne", membreCourant.code, type, id, valeur).then(function () { caseHtml.disabled = false; })
+      .catch(function (e) { caseHtml.disabled = false; caseHtml.checked = !valeur; alert("Erreur : " + e.message); });
+  }
+
   function chargerAudios() {
     document.getElementById("rechercheAudios").value = "";
     // Le lecteur audio n'est plus réinitialisé ici : il reste visible et continue de jouer
@@ -3175,7 +3257,7 @@ video.video-player-frame{object-fit:contain}
       appelServeur(fonction),
       categoriesAudioCache ? Promise.resolve(categoriesAudioCache) : appelServeur("getCategoriesAudio")
     ]).then(function (resultats) {
-      audiosCache = resultats[0] || [];
+      audiosCache = ordonnerALaUne_(resultats[0] || []);
       categoriesAudioCache = resultats[1] || [];
       afficherSousAudios(sousOngletAudiosActuel || "accueil");
     }).catch(function (err) { afficherErreurZone("audiosAlaUne", err); });
@@ -3365,6 +3447,36 @@ video.video-player-frame{object-fit:contain}
     }).catch(function (err) { zone.innerHTML = btnFermer + entete + '<p class="error" style="padding:0 14px 14px;">Erreur : ' + escapeHtml(err.message) + '</p>'; });
   }
 
+  // Curseur de volume visible (le bouton natif ne fait que couper le son sur téléphone). Le réglage est mémorisé.
+  // Sur iPhone, le navigateur ne laisse pas une page régler le volume : on y utilise les boutons du téléphone.
+  function initialiserVolumeAudio_(element) {
+    const curseur = document.getElementById("audioVolume");
+    const bouton = document.getElementById("audioVolumeBtn");
+    if (!curseur || !bouton) return;
+    let v = 1;
+    try { const m = localStorage.getItem("jesus_volume_audio"); if (m !== null && isFinite(Number(m))) v = Math.min(1, Math.max(0, Number(m))); } catch (e) {}
+    element.volume = v;
+    const majIcone = function () {
+      const niveau = element.muted ? 0 : element.volume;
+      bouton.textContent = niveau === 0 ? "🔇" : (niveau < 0.5 ? "🔉" : "🔊");
+      curseur.value = String(Math.round(niveau * 100));
+    };
+    curseur.oninput = function () {
+      const x = Number(curseur.value) / 100;
+      element.muted = x === 0;
+      element.volume = x;
+      try { localStorage.setItem("jesus_volume_audio", String(x)); } catch (e) {}
+      majIcone();
+    };
+    bouton.onclick = function () {
+      if (element.muted || element.volume === 0) { element.muted = false; if (element.volume === 0) element.volume = 0.6; }
+      else element.muted = true;
+      majIcone();
+    };
+    element.addEventListener("volumechange", majIcone);
+    majIcone();
+  }
+
   function afficherLecteurActif(entete, res) {
     const zone = document.getElementById("lecteurAudioZone");
     // Lecteur audio natif du navigateur — le son est transmis directement en base64 (même
@@ -3375,6 +3487,10 @@ video.video-player-frame{object-fit:contain}
       : res.lien; // repli si le fichier est trop volumineux pour ce canal (voir erreur ci-dessous)
     zone.innerHTML = '<button class="lecteur-fermer" onclick="fermerLecteurAudio_()" title="Fermer le lecteur">✕</button>' + entete +
       '<audio id="audioElementActuel" style="width:calc(100% - 28px);margin:8px 14px 0;display:block;" src="' + srcAudio + '" controls autoplay></audio>' +
+      '<div style="display:flex;align-items:center;gap:10px;padding:6px 14px 0;">' +
+      '<button id="audioVolumeBtn" class="secondary small" style="width:auto;padding:6px 10px;flex-shrink:0;" title="Couper / rétablir le son">🔊</button>' +
+      '<input id="audioVolume" type="range" min="0" max="100" step="1" value="100" style="flex:1;" title="Volume" aria-label="Volume">' +
+      '</div>' +
       '<div id="audioErreurZone"></div>' +
       '<div class="lecteur-controles">' +
       '<button onclick="audioPrecedent()">⏮️</button>' +
@@ -3385,6 +3501,7 @@ video.video-player-frame{object-fit:contain}
       '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + res.lien + '" target="_blank" download>⬇️ Télécharger</a></div>';
 
     const element = document.getElementById("audioElementActuel");
+    initialiserVolumeAudio_(element);
     // Lance explicitement la lecture (en plus de l'attribut autoplay) : c'est ce qui garantit
     // le démarrage automatique sur le plus grand nombre de navigateurs, le clic de
     // l'utilisateur restant dans la même chaîne d'évènement.
@@ -3455,7 +3572,7 @@ video.video-player-frame{object-fit:contain}
   }
 
   function acheterAudio(audioId, prix) {
-    if (!configApp || !configApp.paiementPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    if (!configApp || !configApp.paiementPublicKey) { alert(messagePaiementNonConfigure_()); return; }
     typeCotisationEnCours = { nom: audioId, montant: prix, periodicite: "", categorie: "Audio" };
     openKkiapayWidget({ amount: prix, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
@@ -3633,7 +3750,7 @@ video.video-player-frame{object-fit:contain}
   }
 
   function acheterVideo(videoId, prix) {
-    if (!configApp || !configApp.paiementPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    if (!configApp || !configApp.paiementPublicKey) { alert(messagePaiementNonConfigure_()); return; }
     typeCotisationEnCours = { nom: videoId, montant: prix, periodicite: "", categorie: "Video" };
     openKkiapayWidget({ amount: prix, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
   }
@@ -3746,7 +3863,7 @@ video.video-player-frame{object-fit:contain}
   }
 
   function payerPublicationClick(idSoumission) {
-    if (!configApp || !configApp.paiementPublicKey) { alert("Le paiement n'est pas encore configuré."); return; }
+    if (!configApp || !configApp.paiementPublicKey) { alert(messagePaiementNonConfigure_()); return; }
     const montant = (configApp && configApp.MontantPublication) || 2000;
     typeCotisationEnCours = { nom: idSoumission, montant: montant, periodicite: "", categorie: "Publication" };
     openKkiapayWidget({ amount: montant, api_key: configApp.paiementPublicKey, sandbox: false, data: codeActuel() });
@@ -3762,7 +3879,7 @@ video.video-player-frame{object-fit:contain}
   function chargerDocuments() {
     document.getElementById("rechercheDocuments").value = "";
     appelServeur("getDocuments").then(function (documents) {
-      documentsCache = documents || [];
+      documentsCache = ordonnerALaUne_(documents || []);
       afficherSousDocuments(sousOngletDocumentsActuel || "accueil");
     }).catch(function (err) { afficherErreurZone("documentsAlaUne", err); });
   }
@@ -3879,7 +3996,7 @@ video.video-player-frame{object-fit:contain}
   // Document payant pas encore acheté : passe par Kkiapay avant de débloquer le téléchargement.
   function acheterDocument(documentId, titre, prix) {
     if (!configApp || !configApp.paiementPublicKey) {
-      document.getElementById("messageAchatDocument").innerHTML = '<span class="error">Le paiement n\u2019est pas encore configuré. Contactez un responsable.</span>';
+      document.getElementById("messageAchatDocument").innerHTML = '<span class="error">' + messagePaiementNonConfigure_() + '</span>';
       return;
     }
     documentEnCoursAchat = { id: documentId, titre: titre, prix: prix };
@@ -4634,7 +4751,7 @@ video.video-player-frame{object-fit:contain}
     document.getElementById("rechercheVideos").value = "";
     Promise.all([appelServeur("getPlaylists"), appelServeur("getVideos")]).then(function (resultats) {
       playlistsCache = (resultats[0] || []).filter(function (p) { return p.PlaylistId; });
-      videosPlateformeCache = resultats[1] || [];
+      videosPlateformeCache = ordonnerALaUne_(resultats[1] || []);
       afficherSousVideos(sousOngletVideosActuel || "accueil");
     }).catch(function (err) { afficherErreurZone("videosAlaUne", err); });
   }
@@ -4812,6 +4929,16 @@ video.video-player-frame{object-fit:contain}
     return (m ? m[1].trim() + " " : "") + perso;
   }
   // Applique les noms personnalisés aux tuiles de l'accueil et aux titres des rubriques.
+  // Réapplique les noms partout (tuiles de l'accueil, titres, onglets déjà affichés), pour les visiteurs comme pour les membres.
+  function rafraichirNomsRubriques_() {
+    appliquerNomsRubriques_();
+    const tabs = document.getElementById("tabsPrincipaux");
+    if (tabs && tabs.children.length) {
+      const actif = ongletActuel;
+      construireTabs();
+      if (actif) document.querySelectorAll("#tabsPrincipaux .tab").forEach(function (t) { t.classList.toggle("active", t.getAttribute("data-tab") === actif); });
+    }
+  }
   function appliquerNomsRubriques_() {
     RUBRIQUES.forEach(function (r) {
       const perso = nomRubriquePerso_(r.id);
@@ -4850,9 +4977,62 @@ video.video-player-frame{object-fit:contain}
     }).catch(function (e) { zone.textContent = "Erreur : " + e.message; zone.style.display = "block"; });
   }
 
+  // ----- Badge : réglages du Super Admin -----
+  function chargerBadgeAdmin_() {
+    const c = configApp || {};
+    const couleur = document.getElementById("adminBadgeCouleur");
+    if (!couleur) return;
+    couleur.value = /^#[0-9a-fA-F]{6}$/.test(c.BadgeCouleur || "") ? c.BadgeCouleur : "#0b2f68";
+    document.getElementById("adminBadgeNom").value = c.BadgeNom || "";
+  }
+  // Réduit le logo (128 px) pour qu'il reste léger dans la configuration.
+  function reduireLogoBadge_(fichier) {
+    return new Promise(function (resolve, reject) {
+      const lecteur = new FileReader();
+      lecteur.onerror = function () { reject(new Error("Lecture de l'image impossible.")); };
+      lecteur.onload = function () {
+        const img = new Image();
+        img.onerror = function () { reject(new Error("Image non lisible.")); };
+        img.onload = function () {
+          const cote = 128, canvas = document.createElement("canvas");
+          canvas.width = cote; canvas.height = cote;
+          const ctx = canvas.getContext("2d");
+          const echelle = Math.max(cote / img.width, cote / img.height);
+          const w = img.width * echelle, h = img.height * echelle;
+          ctx.drawImage(img, (cote - w) / 2, (cote - h) / 2, w, h);
+          resolve(canvas.toDataURL(fichier.type === "image/png" ? "image/png" : "image/jpeg", 0.88));
+        };
+        img.src = lecteur.result;
+      };
+      lecteur.readAsDataURL(fichier);
+    });
+  }
+  function sauvegarderBadge(reinitialiser) {
+    const err = document.getElementById("erreurBadge");
+    err.style.display = "none";
+    const fichier = document.getElementById("adminBadgeLogo").files[0];
+    const preparation = reinitialiser ? Promise.resolve({ couleur: "", nom: "", logo: "" }) :
+      (fichier ? reduireLogoBadge_(fichier) : Promise.resolve(null)).then(function (logo) {
+        return { couleur: document.getElementById("adminBadgeCouleur").value, nom: document.getElementById("adminBadgeNom").value.trim().slice(0, 40), logo: logo };
+      });
+    preparation.then(function (v) {
+      const envois = [["BadgeCouleur", v.couleur], ["BadgeNom", v.nom]];
+      if (v.logo !== null) envois.push(["BadgeLogo", v.logo]);        // sans nouveau fichier, on garde le logo actuel
+      return envois.reduce(function (chaine, e) {
+        return chaine.then(function () { return appelServeur("mettreAJourConfig", membreCourant.code, e[0], e[1]).then(function () { configApp[e[0]] = e[1]; }); });
+      }, Promise.resolve());
+    }).then(function () {
+      appliquerBadgeConfig_();
+      chargerBadgeAdmin_();
+      document.getElementById("adminBadgeLogo").value = "";
+      alert(reinitialiser ? "Badge rétabli." : "Badge enregistré.");
+    }).catch(function (e) { err.textContent = "Erreur : " + e.message; err.style.display = "block"; });
+  }
+
   // ==================== ADMINISTRATION ====================
   function chargerDonneesAdmin() {
     afficherNomsRubriquesAdmin_();
+    chargerBadgeAdmin_();
     document.getElementById("adminNomAssoc").value = (configApp && configApp.NomAssociation) || "";
     document.getElementById("adminYoutube").value = (configApp && configApp.LienYoutube) || "";
     document.getElementById("adminYoutubeChannelId").value = (configApp && configApp.YoutubeChannelId) || "";
@@ -5726,6 +5906,7 @@ video.video-player-frame{object-fit:contain}
         '<input type="checkbox" class="case-select case-select-audios" data-id="' + a.ID + '" onchange="toggleCaseSelection_(\'audios\',\'' + a.ID + '\')">' +
         '<div><div class="item-nom">🎧 ' + escapeHtml(a.Titre) + ' <span class="role-pill ' + (a.Type === "Payant" ? "role-admin" : "role-membre") + '">' + libellePrix + '</span></div>' +
         '<div class="item-desc">' + (a.Auteur ? "Par " + escapeHtml(a.Auteur) + " · " : "") + escapeHtml(a.Categorie) + " · " + escapeHtml(a.Visibilite) + " · Ajouté le " + escapeHtml(a.DateAjout) + '</div></div>' +
+        caseALaUne_("audio", a.ID, a.ALaUne === true) +
         '<button class="danger-outline small" onclick="supprimerEnregistrementAdmin(\'' + a.ID + '\')">Supprimer</button>' +
         '</div>';
     });
@@ -5792,6 +5973,7 @@ video.video-player-frame{object-fit:contain}
         '<input type="checkbox" class="case-select case-select-documents" data-id="' + d.ID + '" onchange="toggleCaseSelection_(\'documents\',\'' + d.ID + '\')">' +
         '<div><div class="item-nom">📄 ' + escapeHtml(d.Titre) + ' <span class="role-pill ' + pillClass + '">' + libellePrix + '</span></div>' +
         '<div class="item-desc">' + (d.Auteur ? "Par " + escapeHtml(d.Auteur) + " · " : "") + escapeHtml(d.Description || "") + " · Ajouté le " + escapeHtml(d.DateAjout) + '</div></div>' +
+        caseALaUne_("document", d.ID, d.ALaUne === true) +
         '<button class="danger-outline small" onclick="supprimerDocumentAdmin(\'' + d.ID + '\')">Supprimer</button>' +
         '</div>';
     });
@@ -5916,6 +6098,7 @@ video.video-player-frame{object-fit:contain}
         '<input type="checkbox" class="case-select case-select-videos" data-id="' + v.ID + '" onchange="toggleCaseSelection_(\'videos\',\'' + v.ID + '\')">' +
         '<div><div class="item-nom">🎬 ' + escapeHtml(v.Titre) + ' <span class="role-pill ' + (v.Type === "Payant" ? "role-admin" : "role-membre") + '">' + libellePrix + '</span></div>' +
         '<div class="item-desc">' + (v.Auteur ? "Par " + escapeHtml(v.Auteur) + " · " : "") + (v.Categorie ? escapeHtml(v.Categorie) + " · " : "Sans catégorie · ") + "Ajouté le " + escapeHtml(v.DateAjout) + '</div></div>' +
+        caseALaUne_("video", v.ID, v.ALaUne === true) +
         '<button class="danger-outline small" onclick="supprimerVideoPlateformeAdmin(\'' + v.ID + '\')">Supprimer</button>' +
         '</div>';
     });
