@@ -13,6 +13,11 @@
   <meta name="theme-color" content="#0b2f68">
   <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
   <style>
+.bloc-notes{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;margin:6px 0;font-size:12px;color:var(--muted)}
+.bloc-notes .etoiles{white-space:nowrap}
+.bloc-notes .etoile{font-size:22px;line-height:1;color:#cfd6e2;cursor:pointer;padding:0 1px;user-select:none}
+.bloc-notes .etoile.on{color:#f5a623}
+.bloc-notes .notes-vues{font-weight:700}
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap');
 :root{--blue:#0757a8;--blue2:#0b2f68;--red:#d71920;--red2:#a90812;--yellow:#f4c400;--ink:#17233c;--muted:#69758a;--bg:#f4f7fb;--card:#fff;--line:#e4e9f2;--green:#168653;--danger:#c62828;--shadow:0 12px 35px rgba(12,47,104,.09)}
 *{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:hidden;max-width:100vw}img,iframe{max-width:100%}body{margin:0;background:linear-gradient(180deg,#f7f9fd,#eef3f9);color:var(--ink);font-family:Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased;top:0 !important;position:static !important;overflow-x:hidden;max-width:100vw}.goog-te-banner-frame,.goog-te-gadget-icon,body>.skiptranslate{display:none !important}#google_translate_element{display:none !important}h1,h2,.display{font-family:Montserrat,Arial,sans-serif}.wrap{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:28px 0 70px}.center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 10% 10%,rgba(7,87,168,.13),transparent 35%),radial-gradient(circle at 90% 90%,rgba(215,25,32,.13),transparent 35%)}
@@ -239,6 +244,17 @@ video.video-player-frame{object-fit:contain}
 .menu-langue{position:fixed;top:64px;right:12px;z-index:9400;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.28);padding:6px;min-width:190px}
 .menu-langue button{display:block;width:100%;text-align:left;background:transparent;color:#1b2430;box-shadow:none;border-radius:10px;padding:10px 12px;font-size:14px;font-weight:700}
 .menu-langue button:active{background:#eef3f9}
+#evtNav{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}
+.evt-carte{cursor:pointer}.evt-img{width:100%;max-height:210px;object-fit:cover;border-radius:12px;margin-bottom:10px;display:block}
+.evt-puce{display:inline-block;font-size:11px;font-weight:800;padding:2px 9px;border-radius:999px;background:#eef3f9;color:#0b2f68;margin-right:4px}
+.evt-puce.ok{background:#dff6e3;color:#14692d}.evt-puce.att{background:#fff1cc;color:#8a5a00}.evt-puce.ko{background:#fde2e2;color:#a31d1d}
+.evt-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}.evt-actions button{width:100%;padding:8px;font-size:12px}
+.evt-ligne{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.evt-qte{display:flex;align-items:center;gap:8px}.evt-qte button{width:34px;height:34px;padding:0;font-size:18px}.evt-qte span{min-width:20px;text-align:center;font-weight:800}
+.evt-qr{display:flex;justify-content:center;padding:12px;background:#fff;border-radius:12px;margin:8px 0}
+.evt-barre{height:10px;border-radius:6px;background:#eef3f9;overflow:hidden}.evt-barre>div{height:100%;background:#0b2f68}
+.scan-res{border-radius:14px;padding:16px;text-align:center;font-weight:800;margin-top:10px;font-size:16px}
+.scan-res.ok{background:#14692d;color:#fff}.scan-res.dej{background:#b86e00;color:#fff}.scan-res.ko{background:#a31d1d;color:#fff}
 </style>
 </head>
 <body>
@@ -311,6 +327,7 @@ video.video-player-frame{object-fit:contain}
           <div class="tuile-visiteur" onclick="ouvrirGroupePriereVisiteur()"><span class="ic">💬</span><span class="lib">Groupe de prière</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('bible')"><span class="ic">📖</span><span class="lib">Bible</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('prieres')"><span class="ic">🙏</span><span class="lib">Séances directes</span></div>
+          <div class="tuile-visiteur" onclick="entrerModeVisiteur('evenements')"><span class="ic">🎫</span><span class="lib">Événements</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('audios')"><span class="ic">🎧</span><span class="lib">Audios</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('documents')"><span class="ic">📄</span><span class="lib">Documents</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('videos')"><span class="ic">▶️</span><span class="lib">Vidéos</span></div>
@@ -627,6 +644,12 @@ video.video-player-frame{object-fit:contain}
     </div>
 
     <!-- Bible (bilingue FR/EN) -->
+    <div class="section" id="section-evenements">
+      <div class="section-title"><span class="ic">🎫</span> Événements</div>
+      <div id="evtNav"></div>
+      <div id="evtContenu"></div>
+    </div>
+
     <div class="section" id="section-bible">
       <div class="section-title"><span class="ic">📖</span> Bible</div>
       <div class="card">
@@ -1038,6 +1061,13 @@ video.video-player-frame{object-fit:contain}
           <input id="adminMontantPublication" type="number" min="0" placeholder="Ex : 2000">
           <div id="erreurApparence" class="error" style="display:none;"></div>
           <button onclick="sauvegarderApparence()">Enregistrer</button>
+        </div>
+        <div class="card" id="carteEmailContact" style="display:none;">
+          <p class="field-label">📞 E-mail de la page Contact (Super Admin)</p>
+          <p class="subtitle left" style="margin:0 0 8px;font-size:11px;">Cette adresse s'affiche dans « Contactez-nous » et reçoit les messages envoyés par les visiteurs.</p>
+          <input id="adminEmailContact" type="email" placeholder="contact@exemple.com">
+          <div id="erreurEmailContact" class="error" style="display:none;"></div>
+          <button onclick="enregistrerEmailContact()">Enregistrer l'e-mail</button>
         </div>
         <div class="card" id="carteBadge">
           <label class="field-label">Badge des membres</label>
@@ -1570,18 +1600,20 @@ video.video-player-frame{object-fit:contain}
   // Les écrans appellent encore openKkiapayWidget / addKkiapayListener (anciens noms) : ces deux fonctions
   // ouvrent maintenant la fenêtre de paiement FedaPay. L'état du paiement est ensuite revérifié par le serveur.
   const ecouteursPaiement_ = [];
+  let contextePaiement_ = "autre";   // « evenement » pendant l'achat de billets : l'ancien écouteur de paiement ne doit alors rien faire
   function addKkiapayListener(evenement, fonction) {
     if (evenement === "success") ecouteursPaiement_.push(fonction);
   }
   function openKkiapayWidget(opts) {
+    contextePaiement_ = opts.contexte || "autre";
     if (typeof FedaPay === "undefined") { alert("Le module de paiement n'a pas pu se charger. Vérifiez votre connexion et réessayez."); return; }
     const m = membreCourant || {};
     const widget = FedaPay.init({
       public_key: opts.api_key,
       environment: String(opts.api_key || "").indexOf("pk_live_") === 0 ? "live" : "sandbox",
-      transaction: { amount: Math.round(Number(opts.amount)), description: "JESUS", custom_metadata: { code: String(opts.data || "") } },
+      transaction: { amount: Math.round(Number(opts.amount)), description: "JESUS", custom_metadata: Object.assign({ code: String(opts.data || "") }, opts.metadata || {}) },
       currency: { iso: "XOF" },
-      customer: { firstname: m.prenom || undefined, lastname: m.nom || undefined },
+      customer: { firstname: m.prenom || undefined, lastname: m.nom || undefined, email: m.email || undefined },
       onComplete: function (resp) {
         if (resp && resp.reason === FedaPay.CHECKOUT_COMPLETED && resp.transaction) {
           ecouteursPaiement_.forEach(function (f) { f({ transactionId: String(resp.transaction.id) }); });
@@ -1637,6 +1669,11 @@ video.video-player-frame{object-fit:contain}
     televerserVersR2_(fichier, usage, function (pct) { zone.textContent = "Envoi du fichier… " + pct + " %"; })
       .then(function (r2) { zone.style.display = "none"; zone.style.color = ""; suite(r2); })
       .catch(function (e) { zone.style.color = ""; zone.textContent = "Erreur : " + e.message; zone.style.display = "block"; });
+  }
+
+  // Texte d'échec de vérification d'un paiement : indique la raison renvoyée par le serveur (statut FedaPay, montant…).
+  function texteEchecPaiement_(res) {
+    return "Le paiement n'a pas pu être vérifié" + (res && res.raison ? " (" + res.raison + ")" : "") + ". Contactez un responsable.";
   }
 
   function afficherErreurZone(elementId, err) {
@@ -1993,7 +2030,7 @@ video.video-player-frame{object-fit:contain}
     const telContact = configApp && configApp.TelephoneContact;
     document.getElementById("contactTelephone").textContent = telContact || "";
     document.getElementById("contactTelephoneLigne").style.display = telContact ? "block" : "none";
-    document.getElementById("contactEmail").textContent = "arcontact@gmail.com";
+    document.getElementById("contactEmail").textContent = (configApp && configApp.EmailContact) || "arcontact@gmail.com";
     document.getElementById("ecranContact").classList.add("active");
   }
 
@@ -2270,7 +2307,7 @@ video.video-player-frame{object-fit:contain}
     'Admin_TG': ['finances'],
     'Admin_SG': ['demandesPriere'],
     'Admin_OG': ['contenus'],
-    'Admin_Super': ['finances', 'demandesPriere', 'contenus', 'systeme']
+    'Admin_Super': ['finances', 'demandesPriere', 'contenus', 'systeme', 'evenements']
   };
 
   // Droits d'un membre : ceux envoyés par le serveur (rôle fixe ou droits cochés pour un administrateur personnalisé).
@@ -2293,6 +2330,7 @@ video.video-player-frame{object-fit:contain}
         { id: "audios", label: "🎧 Audios" },
         { id: "documents", label: "📄 Documents" },
         { id: "videos", label: "▶️ Vidéos" },
+        { id: "evenements", label: "🎫 Événements" },
         { id: "offrandes", label: "🙌 Offrandes" },
         { id: "cotisation", label: "💳 Campagnes caritatives" },
         { id: "demandePriere", label: "✉️ Demande de prière" }
@@ -2305,6 +2343,7 @@ video.video-player-frame{object-fit:contain}
         { id: "offrandes", label: "Offrandes" },
         { id: "bible", label: "📖 Bible" },
         { id: "prieres", label: "🙏 Séances directes" },
+        { id: "evenements", label: "🎫 Événements" },
         { id: "tv", label: "📺 TV" },
         { id: "audios", label: "🎧 Audios" },
         { id: "documents", label: "📄 Documents" },
@@ -2672,7 +2711,7 @@ video.video-player-frame{object-fit:contain}
     if (m.estTvOwner) cartes.push('<div class="card" style="margin-top:12px;"><p class="field-label">📺 TV Owner</p><p class="item-desc">Gérez votre chaîne : logo, vidéos, playlists, boucle des temps morts, grille et lives.</p><button class="secondary" onclick="tvSousOnglet=\'studio\';afficherOnglet(\'tv\')">Mon studio TV</button></div>');
     const perms = permissionsDe_(m);
     if (perms.length) {
-      const domaines = { finances: "Finances et campagnes caritatives", demandesPriere: "Demandes de prière", contenus: "Contenus et TV", systeme: "Membres, annonces et réglages" };
+      const domaines = { finances: "Finances et campagnes caritatives", demandesPriere: "Demandes de prière", contenus: "Contenus et TV", evenements: "Événements et organisateurs", systeme: "Membres, annonces et réglages" };
       cartes.push('<div class="card" style="margin-top:12px;"><p class="field-label">⚙ ' + escapeHtml(LIBELLES_ROLES[m.role] || "Administrateur") + '</p><p class="item-desc">Vous gérez : ' + perms.map(function (p) { return domaines[p]; }).join(", ") + '.</p><button class="secondary" onclick="afficherOnglet(\'admin\')">Ouvrir l\'administration</button></div>');
     }
     document.getElementById("compteRoles").innerHTML = cartes.join("");
@@ -2743,6 +2782,7 @@ video.video-player-frame{object-fit:contain}
     else if (nom === "videos") chargerPlaylists();
     else if (nom === "prieres") chargerSeances();
     else if (nom === "tv") chargerTv();
+    else if (nom === "evenements") chargerEvenements();
     else if (nom === "soumissions") chargerMesSoumissions();
     else if (nom === "admin") chargerDonneesAdmin();
     marquerOngletVu_(nom);
@@ -3048,6 +3088,7 @@ video.video-player-frame{object-fit:contain}
   }
 
   addKkiapayListener("success", function (response) {
+    if (contextePaiement_ === "evenement") return;   // achat de billets : traité par evtApresPaiement_
     const transactionId = response.transactionId || (response.detail && response.detail.transactionId);
     const info = typeCotisationEnCours || { nom: "", montant: 0, periodicite: "", categorie: "Cotisation" };
 
@@ -3056,7 +3097,7 @@ video.video-player-frame{object-fit:contain}
       zoneDoc.textContent = "Vérification du paiement…";
       appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "FedaPay", info.nom, null, "Document")
         .then(function (res) {
-          if (!res.succes) { zoneDoc.className = "error"; zoneDoc.textContent = "Le paiement n'a pas pu être vérifié. Contactez un responsable."; return; }
+          if (!res.succes) { zoneDoc.className = "error"; zoneDoc.textContent = texteEchecPaiement_(res); return; }
           return appelServeur("getLienDocument", codeActuel(), info.nom, transactionId).then(function (lienRes) {
             if (!lienRes.succes) { zoneDoc.className = "error"; zoneDoc.textContent = lienRes.message || "Téléchargement indisponible."; return; }
             zoneDoc.className = "success-text";
@@ -3073,7 +3114,7 @@ video.video-player-frame{object-fit:contain}
       const zone = document.getElementById("lecteurAudioZone");
       appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "FedaPay", info.nom, null, "Audio")
         .then(function (res) {
-          if (!res.succes) { alert("Le paiement n'a pas pu être vérifié."); return; }
+          if (!res.succes) { alert(texteEchecPaiement_(res)); return; }
           audiosDeverrouilles[info.nom] = true;
           if (indexAudioActuel >= 0) jouerAudio(indexAudioActuel);
         }).catch(function (err) { alert("Erreur : " + err.message); });
@@ -3083,7 +3124,7 @@ video.video-player-frame{object-fit:contain}
     if (info.categorie === "Video") {
       appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "FedaPay", info.nom, null, "Video")
         .then(function (res) {
-          if (!res.succes) { alert("Le paiement n'a pas pu être vérifié."); return; }
+          if (!res.succes) { alert(texteEchecPaiement_(res)); return; }
           videosDeverrouillees[info.nom] = true;
           if (indexVideoActuel >= 0) jouerVideoPlateforme(indexVideoActuel);
         }).catch(function (err) { alert("Erreur : " + err.message); });
@@ -3093,7 +3134,7 @@ video.video-player-frame{object-fit:contain}
     if (info.categorie === "Seance") {
       appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "FedaPay", info.nom, null, "Seance")
         .then(function (res) {
-          if (!res.succes) { alert("Le paiement n'a pas pu être vérifié."); return; }
+          if (!res.succes) { alert(texteEchecPaiement_(res)); return; }
           return appelServeur("getLienSeance", codeActuel(), info.nom, transactionId).then(function (lienRes) {
             if (!lienRes.succes) { alert(lienRes.message || "Accès indisponible."); return; }
             window.open(lienRes.lien, "_blank");
@@ -3106,7 +3147,7 @@ video.video-player-frame{object-fit:contain}
     if (info.categorie === "Publication") {
       appelServeur("verifierEtEnregistrerPaiement", codeActuel(), transactionId, info.montant, "FedaPay", info.nom, null, "Publication")
         .then(function (res) {
-          alert(res.succes ? "✓ Paiement confirmé — votre contenu est maintenant publié !" : "Le paiement n'a pas pu être vérifié.");
+          alert(res.succes ? "✓ Paiement confirmé — votre contenu est maintenant publié !" : texteEchecPaiement_(res));
           chargerMesSoumissions();
         }).catch(function (err) { alert("Erreur : " + err.message); });
       return;
@@ -3124,7 +3165,7 @@ video.video-player-frame{object-fit:contain}
           if (!modeVisiteur) { if (estOffrande) chargerMesOffrandes(); else chargerMesCotisations(); afficherRecuApresPaiement_(transactionId); }
         } else {
           zoneMessage.className = "error";
-          zoneMessage.textContent = "Le paiement n'a pas pu être vérifié. Contactez un responsable.";
+          zoneMessage.textContent = texteEchecPaiement_(res);
         }
       }).catch(function (err) {
         zoneMessage.innerHTML = '<span class="error">Erreur : ' + escapeHtml(err.message) + "</span>";
@@ -3357,6 +3398,7 @@ video.video-player-frame{object-fit:contain}
         '<div class="item-nom">' + escapeHtml(a.Titre) + pillVisibilite + badgePremium + '</div>' +
         (a.Auteur ? '<div class="item-desc">Par ' + escapeHtml(a.Auteur) + '</div>' : '') +
         '<div class="item-desc">' + escapeHtml(a.DateAjout) + '</div>' +
+        blocNotes_("audio", a.ID) +
         boutonLyrics +
         '</div></div>';
     });
@@ -3418,12 +3460,13 @@ video.video-player-frame{object-fit:contain}
     const cover = audio.CoverBase64 ? '<img class="lecteur-cover" src="data:image/jpeg;base64,' + audio.CoverBase64 + '">' : '<div class="lecteur-cover" style="display:flex;align-items:center;justify-content:center;">🎧</div>';
     const entete = '<div class="lecteur-entete">' + cover +
       '<div><div class="item-nom">' + escapeHtml(audio.Titre) + '</div>' +
-      (audio.Auteur ? '<div class="item-desc">Par ' + escapeHtml(audio.Auteur) + '</div>' : '') + '</div></div>';
+      (audio.Auteur ? '<div class="item-desc">Par ' + escapeHtml(audio.Auteur) + '</div>' : '') + blocNotes_("audio", audio.ID) + '</div></div>';
 
     if (audio.Type === "Payant" && !audiosDeverrouilles[audio.ID]) {
       zone.innerHTML = btnFermer + entete + '<div style="padding:0 14px 14px;">' +
         '<p class="item-desc">Contenu payant — ' + Number(audio.Prix).toLocaleString("fr-FR") + ' FCFA</p>' +
-        '<button class="flame" onclick="acheterAudio(\'' + audio.ID + '\',' + Number(audio.Prix) + ')">💳 Acheter et écouter</button>' +
+        '<button class="flame" onclick="acheterAudio(\'' + audio.ID + '\',' + Number(audio.Prix) + ')">💳 Acheter et écouter</button> ' +
+        '<button class="secondary" onclick="PANIER.ajouter(\'audio\',\'' + audio.ID + '\',\'' + jsq_(audio.Titre) + '\',' + Number(audio.Prix) + ')">🛒 Ajouter au panier</button>' +
         '</div>';
       return;
     }
@@ -3433,6 +3476,7 @@ video.video-player-frame{object-fit:contain}
       const res = audioPrecharge_[audio.ID];
       delete audioPrecharge_[audio.ID];
       audiosDeverrouilles[audio.ID] = true;
+      compterVue_("audio", audio.ID);
       afficherLecteurActif(entete, res);
       precharger_AudioSuivant_();
       return;
@@ -3442,6 +3486,7 @@ video.video-player-frame{object-fit:contain}
     appelServeur("getLienAudio", codeActuel(), audio.ID, null).then(function (res) {
       if (!res.succes) { zone.innerHTML = btnFermer + entete + '<p class="error" style="padding:0 14px 14px;">' + escapeHtml(res.message) + '</p>'; return; }
       audiosDeverrouilles[audio.ID] = true;
+      compterVue_("audio", audio.ID);
       afficherLecteurActif(entete, res);
       precharger_AudioSuivant_();
     }).catch(function (err) { zone.innerHTML = btnFermer + entete + '<p class="error" style="padding:0 14px 14px;">Erreur : ' + escapeHtml(err.message) + '</p>'; });
@@ -3571,6 +3616,67 @@ video.video-player-frame{object-fit:contain}
     precharger_AudioSuivant_(); // le "suivant" a pu changer (ex : Répéter Tout activé près de la fin)
   }
 
+  // ==================== NOTES (étoiles) ET NOMBRE DE VUES ====================
+  let statsContenus_ = { stats: {}, mes: {}, charge: 0, enCours: false };
+  const vuesComptees_ = {};
+  function cleNote_() {
+    if (membreCourant) return membreCourant.code;
+    let id = "";
+    try { id = localStorage.getItem("jesus_appareil") || ""; } catch (e) {}
+    if (!id) {
+      id = "V-" + Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+      id = id.replace(/[^A-Za-z0-9-]/g, "");
+      try { localStorage.setItem("jesus_appareil", id); } catch (e) { statsContenus_.idMemoire = statsContenus_.idMemoire || id; id = statsContenus_.idMemoire; }
+    }
+    return id;
+  }
+  function chargerStatsContenus_() {
+    if (statsContenus_.enCours) return;
+    statsContenus_.enCours = true;
+    appelServeur("getStatsContenus", cleNote_()).then(function (r) {
+      statsContenus_.stats = r.stats || {}; statsContenus_.mes = r.mes || {}; statsContenus_.charge = Date.now();
+      statsContenus_.enCours = false; majBlocsNotes_();
+    }).catch(function () { statsContenus_.enCours = false; statsContenus_.charge = Date.now() - 60000; });   // en cas d'échec : réessai dans ~30 s
+  }
+  function htmlNotes_(type, id) {
+    if (Date.now() - statsContenus_.charge > 90000 && !statsContenus_.enCours) setTimeout(chargerStatsContenus_, 0);
+    const s = statsContenus_.stats[type + ":" + id] || { v: 0, n: 0, t: 0 };
+    const moyenne = s.n ? s.t / s.n : 0;
+    const ma = statsContenus_.mes[type + ":" + id] || 0;
+    const rempli = ma || Math.round(moyenne);
+    let etoiles = "";
+    for (let i = 1; i <= 5; i++) {
+      etoiles += '<span class="etoile' + (i <= rempli ? ' on' : '') + '" role="button" aria-label="' + i + ' étoile(s)" onclick="event.stopPropagation();noterContenu_(\'' + type + "','" + id + "'," + i + ')">★</span>';
+    }
+    const texte = s.n ? moyenne.toFixed(1).replace(".", ",") + "/5 (" + s.n + " avis)" : "Pas encore noté";
+    return '<span class="etoiles" title="Touchez une étoile pour noter">' + etoiles + "</span>" +
+      '<span class="notes-texte">' + texte + (ma ? " · votre note : " + ma : "") + "</span>" +
+      '<span class="notes-vues">👁 ' + Number(s.v || 0).toLocaleString("fr-FR") + " vue" + (s.v > 1 ? "s" : "") + "</span>";
+  }
+  function blocNotes_(type, id) {
+    return '<div class="bloc-notes" data-t="' + type + '" data-i="' + id + '" onclick="event.stopPropagation()">' + htmlNotes_(type, id) + "</div>";
+  }
+  function majBlocsNotes_() {
+    document.querySelectorAll(".bloc-notes").forEach(function (el) { el.innerHTML = htmlNotes_(el.getAttribute("data-t"), el.getAttribute("data-i")); });
+  }
+  function noterContenu_(type, id, note) {
+    appelServeur("noterContenu", type, id, cleNote_(), note).then(function (r) {
+      if (!r.succes) { alert(r.message || "Note non enregistrée."); return; }
+      statsContenus_.stats[type + ":" + id] = r.stat; statsContenus_.mes[type + ":" + id] = r.ma;
+      majBlocsNotes_();
+    }).catch(function (err) { alert("Erreur : " + err.message); });
+  }
+  // Une vue par contenu et par période de 30 minutes sur cet appareil (relecture immédiate = pas de double comptage).
+  function compterVue_(type, id) {
+    const cle = type + ":" + id, maintenant = Date.now();
+    if (vuesComptees_[cle] && maintenant - vuesComptees_[cle] < 1800000) return;
+    vuesComptees_[cle] = maintenant;
+    appelServeur("compterVue", type, id).then(function (r) {
+      const s = statsContenus_.stats[cle] || { v: 0, n: 0, t: 0 };
+      s.v = r.vues || (s.v + 1); statsContenus_.stats[cle] = s; majBlocsNotes_();
+    }).catch(function () { delete vuesComptees_[cle]; });
+  }
+
   function acheterAudio(audioId, prix) {
     if (!configApp || !configApp.paiementPublicKey) { alert(messagePaiementNonConfigure_()); return; }
     typeCotisationEnCours = { nom: audioId, montant: prix, periodicite: "", categorie: "Audio" };
@@ -3677,12 +3783,13 @@ video.video-player-frame{object-fit:contain}
     const zone = document.getElementById("lecteurVideoZone");
     zone.style.display = "block";
     const entete = '<button class="lecteur-fermer" onclick="fermerLecteurVideo_()" title="Fermer le lecteur">✕</button><div class="lecteur-entete"><div><div class="item-nom">' + escapeHtml(v.titre) + '</div>' +
-      (v.auteur ? '<div class="item-desc">Par ' + escapeHtml(v.auteur) + '</div>' : '') + '</div></div>';
+      (v.auteur ? '<div class="item-desc">Par ' + escapeHtml(v.auteur) + '</div>' : '') + blocNotes_("video", v.id) + '</div></div>';
 
     if (v.type === "Payant" && !videosDeverrouillees[v.id]) {
       zone.innerHTML = entete + '<div style="padding:0 14px 14px;">' +
         '<p class="item-desc">Contenu payant — ' + Number(v.prix).toLocaleString("fr-FR") + ' FCFA</p>' +
-        '<button class="flame" onclick="acheterVideo(\'' + v.id + '\',' + Number(v.prix) + ')">💳 Acheter et regarder</button>' +
+        '<button class="flame" onclick="acheterVideo(\'' + v.id + '\',' + Number(v.prix) + ')">💳 Acheter et regarder</button> ' +
+        '<button class="secondary" onclick="PANIER.ajouter(\'video\',\'' + v.id + '\',\'' + jsq_(v.titre) + '\',' + Number(v.prix) + ')">🛒 Ajouter au panier</button>' +
         '</div>';
       return;
     }
@@ -3691,6 +3798,7 @@ video.video-player-frame{object-fit:contain}
     appelServeur("getLienVideo", codeActuel(), v.id, null).then(function (res) {
       if (!res.succes) { zone.innerHTML = entete + '<p class="error" style="padding:0 14px 14px;">' + escapeHtml(res.message) + '</p>'; return; }
       videosDeverrouillees[v.id] = true;
+      compterVue_("video", v.id);
       const boutonTelecharger = (v.type === "Payant" ? '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + (res.lienTelechargement || res.lien) + '" target="_blank">⬇️ Télécharger</a></div>' : '');
       if (res.r2) {
         // Fichier hébergé sur Cloudflare R2 : lecteur natif (démarrage rapide, avance/retour, vidéo centrée).
@@ -3946,13 +4054,15 @@ video.video-player-frame{object-fit:contain}
     const titreEchappe = jsq_(d.Titre);
     const cover = d.CoverBase64 ? '<img src="data:image/jpeg;base64,' + d.CoverBase64 + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:10px;margin-bottom:8px;">' : '';
     const bouton = d.Type === "Payant"
-      ? '<button class="flame small full-mt" onclick="acheterDocument(\'' + d.ID + '\',\'' + titreEchappe + '\',' + Number(d.Prix) + ')">💳 Acheter (' + Number(d.Prix).toLocaleString("fr-FR") + ' F) et télécharger</button>'
+      ? '<button class="flame small full-mt" onclick="acheterDocument(\'' + d.ID + '\',\'' + titreEchappe + '\',' + Number(d.Prix) + ')">💳 Acheter (' + Number(d.Prix).toLocaleString("fr-FR") + ' F) et télécharger</button>' +
+        '<button class="secondary small full-mt" onclick="PANIER.ajouter(\'document\',\'' + d.ID + '\',\'' + titreEchappe + '\',' + Number(d.Prix) + ')">🛒 Ajouter au panier</button>'
       : '<div class="jeu-boutons full-mt"><button class="secondary small" onclick="lireDocument(\'' + d.ID + '\')">📖 Lire</button><button class="secondary small" onclick="telechargerDocument(\'' + d.ID + '\')">⬇️ Télécharger</button></div>';
     return '<div class="contenu-item">' + cover +
       '<div class="item-nom">📄 ' + escapeHtml(d.Titre) + badgePremium + '</div>' +
       (d.Auteur ? '<div class="item-desc">Par ' + escapeHtml(d.Auteur) + '</div>' : '') +
       (d.Description ? '<div class="item-desc">' + escapeHtml(d.Description) + '</div>' : '') +
       '<div class="item-desc">Ajouté le ' + escapeHtml(d.DateAjout) + '</div>' +
+      blocNotes_("document", d.ID) +
       bouton + '</div>';
   }
 
@@ -3981,6 +4091,7 @@ video.video-player-frame{object-fit:contain}
     appelServeur("getLienDocument", codeActuel(), documentId, null).then(function (res) {
       if (!res.succes) { if (fenetre) fenetre.close(); alert(res.message || "Téléchargement impossible."); return; }
       allerVers_(fenetre, res.lien);
+      compterVue_("document", documentId);
     }).catch(function (err) { if (fenetre) fenetre.close(); alert("Erreur : " + err.message); });
   }
 
@@ -3990,6 +4101,7 @@ video.video-player-frame{object-fit:contain}
     appelServeur("getLienDocument", codeActuel(), documentId, null).then(function (res) {
       if (!res.succes) { if (fenetre) fenetre.close(); alert(res.message || "Lecture impossible."); return; }
       allerVers_(fenetre, res.apercu || res.lien);
+      compterVue_("document", documentId);
     }).catch(function (err) { if (fenetre) fenetre.close(); alert("Erreur : " + err.message); });
   }
 
@@ -4143,12 +4255,16 @@ video.video-player-frame{object-fit:contain}
     lireVersetSuivant_();
   }
 
+  let minuteurSecoursBible_ = null;
+  let erreursLectureBible_ = 0;
+
   function lireVersetSuivant_() {
+    clearTimeout(minuteurSecoursBible_);
     if (indexVersetLectureBible_ >= versetsBibleActuels.length) {
       lectureBibleEnCours = false;
       if (lectureBibleContinue) {
         avancementAutomatiqueBible_ = true;
-        chapitreBibleSuivant();
+        chapitreBibleSuivant();      // chapitre suivant (ou livre suivant) : la lecture reprend toute seule
       } else {
         mettreAJourBoutonLectureBible_();
       }
@@ -4162,12 +4278,32 @@ video.video-player-frame{object-fit:contain}
     if (voixChoisie) utterance.voice = voixChoisie;
     utterance.rate = 0.92;
     utterance.pitch = 0.85; // légèrement plus grave, pour un ton plus posé et narratif
-    utterance.onend = function () {
-      if (!lectureBibleEnCours) return; // lecture arrêtée volontairement entretemps
+    const indexCourant = indexVersetLectureBible_;
+    let termine = false;
+    const passerAuSuivant = function () {
+      if (termine) return;
+      termine = true;
+      clearTimeout(minuteurSecoursBible_);
+      if (!lectureBibleEnCours || indexVersetLectureBible_ !== indexCourant) return;   // arrêt volontaire ou autre lecture entre-temps
       indexVersetLectureBible_++;
       lireVersetSuivant_();
     };
-    utterance.onerror = function () { lectureBibleEnCours = false; lectureBibleContinue = false; mettreAJourBoutonLectureBible_(); };
+    utterance.onend = function () { erreursLectureBible_ = 0; passerAuSuivant(); };
+    utterance.onerror = function (e) {
+      // Interruptions volontaires (arrêt, navigation) : on ne fait rien. Erreur ponctuelle d'un verset : on le saute.
+      const code = e && e.error;
+      if (code === "canceled" || code === "interrupted" || !lectureBibleEnCours) return;
+      if (++erreursLectureBible_ >= 3) { lectureBibleEnCours = false; lectureBibleContinue = false; mettreAJourBoutonLectureBible_(); return; }
+      setTimeout(passerAuSuivant, 150);
+    };
+    // Filet de sécurité : certains navigateurs mobiles n'envoient jamais « fin de lecture » ; si la voix est muette
+    // bien après la durée prévue, on passe au verset suivant.
+    const surveiller = function () {
+      if (termine || !lectureBibleEnCours) return;
+      if (window.speechSynthesis.speaking || window.speechSynthesis.pending) { minuteurSecoursBible_ = setTimeout(surveiller, 2500); return; }
+      passerAuSuivant();
+    };
+    minuteurSecoursBible_ = setTimeout(surveiller, Math.max(4000, verset.texte.length * 110 + 3000));
     synth.speak(utterance);
     lectureBibleEnCours = true;
     mettreAJourBoutonLectureBible_();
@@ -4176,6 +4312,7 @@ video.video-player-frame{object-fit:contain}
   // Arrêt volontaire (bouton, changement de langue, navigation manuelle, changement d'onglet)
   // — coupe aussi bien la lecture en cours que l'intention d'enchaîner sur la suite.
   function arreterLectureBible() {
+    clearTimeout(minuteurSecoursBible_);
     lectureBibleContinue = false;
     lectureBibleEnCours = false; // avant cancel() : empêche le onend du verset en cours d'enchaîner sur le suivant
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
@@ -4877,6 +5014,7 @@ video.video-player-frame{object-fit:contain}
         (miniature ? '<img class="video-thumb" src="' + miniature + '" alt="">' : '<div class="video-thumb" style="display:flex;align-items:center;justify-content:center;">🎬</div>') +
         '<div><div class="video-titre">' + escapeHtml(v.titre) + " " + badgePremium + '</div>' +
         '<div class="video-date">' + (v.auteur ? "Par " + escapeHtml(v.auteur) + " · " : "") + escapeHtml(v.dateAjout) + '</div>' +
+        blocNotes_("video", v.id) +
         boutonLyrics +
         '</div></div>';
     });
@@ -4910,7 +5048,7 @@ video.video-player-frame{object-fit:contain}
     { id: "audios", nom: "Audios" }, { id: "documents", nom: "Documents" }, { id: "videos", nom: "Vidéos" },
     { id: "offrandes", nom: "Offrandes" }, { id: "cotisation", nom: "Campagnes caritatives" },
     { id: "demandePriere", nom: "Demande de prière" }, { id: "groupes", nom: "Groupes" },
-    { id: "badge", nom: "Mon compte" }, { id: "messages", nom: "Messages" }, { id: "soumissions", nom: "Soumissions" }
+    { id: "evenements", nom: "Événements" }, { id: "badge", nom: "Mon compte" }, { id: "messages", nom: "Messages" }, { id: "soumissions", nom: "Soumissions" }
   ];
 
   function nomsRubriques_() {
@@ -5037,6 +5175,9 @@ video.video-player-frame{object-fit:contain}
     document.getElementById("adminYoutube").value = (configApp && configApp.LienYoutube) || "";
     document.getElementById("adminYoutubeChannelId").value = (configApp && configApp.YoutubeChannelId) || "";
     document.getElementById("adminMontantPublication").value = (configApp && configApp.MontantPublication) || 2000;
+    const estSuper_ = !!(membreCourant && membreCourant.role === "Admin_Super");
+    document.getElementById("carteEmailContact").style.display = estSuper_ ? "block" : "none";
+    document.getElementById("adminEmailContact").value = (configApp && configApp.EmailContact) || "";
     if (configApp && configApp.LogoBase64) {
       document.getElementById("logoPreview").innerHTML = '<img src="data:image/png;base64,' + configApp.LogoBase64 + '">';
     }
@@ -5082,6 +5223,16 @@ video.video-player-frame{object-fit:contain}
       err.textContent = "Erreur : " + e.message;
       err.style.display = "block";
     });
+  }
+
+  function enregistrerEmailContact() {
+    const email = document.getElementById("adminEmailContact").value.trim();
+    const err = document.getElementById("erreurEmailContact");
+    err.style.display = "none";
+    appelServeur("definirEmailContact", membreCourant.code, email).then(function () {
+      configApp.EmailContact = email.toLowerCase();
+      alert("E-mail de contact enregistré.");
+    }).catch(function (e) { err.textContent = "Erreur : " + e.message; err.style.display = "block"; });
   }
 
   function enregistrerLienGroupePriere() {
@@ -5452,6 +5603,7 @@ video.video-player-frame{object-fit:contain}
       { id: "finances", titre: "Finances", aide: "Paiements, campagnes caritatives et offrandes" },
       { id: "demandesPriere", titre: "Demandes de prière", aide: "Lire et traiter les demandes de prière" },
       { id: "contenus", titre: "Contenus", aide: "Groupes, séances, audios, documents, vidéos, TV, affiches, actualités, soumissions des auteurs" },
+      { id: "evenements", titre: "Événements", aide: "Valider les événements, gérer les organisateurs, leurs revenus et leurs versements" },
       { id: "systeme", titre: "Système", aide: "Membres, annonces, messages, codes d'accès, apparence. Donne beaucoup de pouvoir : à réserver aux personnes de confiance." }
     ];
     const actuels = Array.isArray(m.permissions) ? m.permissions : [];
@@ -7560,5 +7712,954 @@ video.video-player-frame{object-fit:contain}
   </script>
   <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <script type="text/javascript" src="https://www.youtube.com/iframe_api"></script>
+  <!-- ===== Rubrique Événements ===== -->
+  <script>
+/* ==========================================================================
+   JESUS — rubrique « Événements »
+   Billetterie, inscriptions, QR codes, votes en ligne, tableau de bord organisateur,
+   administration (modération, organisateurs, revenus).
+   À charger APRÈS le script principal de index.html :
+       (module intégré directement dans index.html)
+   ========================================================================== */
+(function () {
+  "use strict";
+  var E = (window.EVT = {});
+  var S = {
+    vue: "decouvrir", orgVue: "evenements", categorie: "Tous", filtre: "",
+    evenements: [], detail: null, panier: {}, paiement: null,
+    concours: [], mesVotes: {}, mesEvts: null, mesConcours: null, form: null, cform: null, scan: null
+  };
+  var CATEGORIES = ["Concert", "Conférence", "Séminaire", "Festival", "Autre"];
+  var TYPES_CONCOURS = ["Concours", "Élection", "Award"];
+
+  // ------------------------------------------------------------------ outils
+  function esc(t) { return escapeHtml(t == null ? "" : String(t)); }
+  function code() { return membreCourant ? membreCourant.code : null; }
+  function fcfa(n) { return Number(n || 0).toLocaleString("fr-FR") + " FCFA"; }
+  function quand(s) {
+    if (!s) return "";
+    var d = new Date(s);
+    return isNaN(d.getTime()) ? esc(s) : d.toLocaleString("fr-FR", { weekday: "short", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  }
+  function echec(e) { alert("Erreur : " + ((e && e.message) || e)); }
+  function zone() { return document.getElementById("evtContenu"); }
+  function qrUrl(texte, taille) { return "https://api.qrserver.com/v1/create-qr-code/?size=" + taille + "x" + taille + "&margin=6&data=" + encodeURIComponent(texte); }
+  function maintenantIso() {
+    var d = new Date(), p = function (n) { return String(n).padStart(2, "0"); };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + "T" + p(d.getHours()) + ":" + p(d.getMinutes());
+  }
+  function besoinMembre() {
+    if (membreCourant) return true;
+    confirmerApp_("Connectez-vous (ou créez un compte) pour continuer.", quitterVisiteurEtSeConnecter);
+    return false;
+  }
+  function puce(texte, type) { return '<span class="evt-puce ' + (type || "") + '">' + esc(texte) + "</span>"; }
+  function puceStatut(s) {
+    var m = { "Publié": ["Publié", "ok"], "EnAttente": ["En vérification", "att"], "Brouillon": ["Brouillon", ""], "Refusé": ["Refusé", "ko"], "Annulé": ["Annulé", "ko"] };
+    var x = m[s] || [s, ""];
+    return puce(x[0], x[1]);
+  }
+
+  // Fenêtre modale (au-dessus de l'application, sous les alertes)
+  function modal(html, large, surFermeture) {
+    var fond = document.createElement("div");
+    fond.className = "dlg-overlay";
+    fond.style.cssText = "z-index:9500;align-items:flex-start;overflow-y:auto;";
+    var boite = document.createElement("div");
+    boite.className = "dlg-boite";
+    boite.style.cssText = "max-width:" + (large ? "580px" : "420px") + ";margin:16px 0;";
+    boite.innerHTML = html;
+    fond.appendChild(boite);
+    document.body.appendChild(fond);
+    var obj = { el: boite, close: function () { if (fond.parentNode) fond.remove(); if (surFermeture) surFermeture(); } };
+    fond.addEventListener("click", function (e) { if (e.target === fond) obj.close(); });
+    S.modalCourante = obj;
+    return obj;
+  }
+  E.fermer = function () { if (S.modalCourante) S.modalCourante.close(); };
+
+  // Réduit une image choisie (recadrage centré) et la renvoie en JPEG base64
+  function reduireImage(fichier, w, h, q) {
+    return new Promise(function (ok, ko) {
+      var fr = new FileReader();
+      fr.onerror = function () { ko(new Error("Lecture de l'image impossible.")); };
+      fr.onload = function () {
+        var im = new Image();
+        im.onerror = function () { ko(new Error("Image illisible.")); };
+        im.onload = function () {
+          var c = document.createElement("canvas"); c.width = w; c.height = h;
+          var s = Math.max(w / im.width, h / im.height), dw = im.width * s, dh = im.height * s;
+          c.getContext("2d").drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh);
+          ok(c.toDataURL("image/jpeg", q));
+        };
+        im.src = fr.result;
+      };
+      fr.readAsDataURL(fichier);
+    });
+  }
+
+  // Un paiement lancé depuis une autre rubrique annule tout paiement d'événement resté en attente
+  var ouvrirOrigine = window.openKkiapayWidget;
+  window.openKkiapayWidget = function (o) {
+    if (!o || o.contexte !== "evenement") S.paiement = null;
+    return ouvrirOrigine.apply(this, arguments);
+  };
+
+  // ------------------------------------------------------------------ styles
+  var css = document.createElement("style");
+  css.textContent =
+    ".evt-grille{display:grid;gap:12px}.evt-carte{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}" +
+    ".evt-titre{font-family:Montserrat,Arial,sans-serif;font-weight:800;font-size:16px;color:var(--blue2);margin:6px 0}" +
+    ".evt-meta{font-size:12px;color:var(--muted);line-height:1.6}.evt-chip{width:auto;padding:7px 12px;font-size:12px;border-radius:999px}" +
+    ".evt-kpi{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}.evt-kpi div{background:#f4f7fb;border-radius:12px;padding:10px;text-align:center}" +
+    ".evt-kpi b{display:block;font-size:17px;color:var(--blue2)}.evt-kpi span{font-size:11px;color:var(--muted)}" +
+    ".evt-cand{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.evt-cand:last-child{border-bottom:0}" +
+    ".evt-cand img,.evt-cand .evt-av{width:52px;height:52px;border-radius:12px;object-fit:cover;background:#eef3f9;flex-shrink:0;display:flex;align-items:center;justify-content:center}" +
+    ".evt-ligne-form{border:1px dashed var(--line);border-radius:12px;padding:10px;margin-bottom:8px}.evt-ligne-form input{margin-bottom:6px}" +
+    ".evt-2col{display:grid;grid-template-columns:1fr 1fr;gap:6px}.evt-billet{text-align:center;border:2px solid var(--blue2);border-radius:16px;padding:12px;margin-bottom:12px}" +
+    ".evt-billet img{display:block;margin:8px auto}";
+  document.head.appendChild(css);
+
+  // ------------------------------------------------------------------ navigation
+  function nav() {
+    var o = [["decouvrir", "🎫 Découvrir"], ["votes", "🗳️ Votes"]];
+    if (membreCourant) { o.splice(1, 0, ["billets", "🎟️ Mes billets"]); o.push(["organisateur", "🧑‍💼 Espace organisateur"]); }
+    document.getElementById("evtNav").innerHTML = o.map(function (x) {
+      return '<button class="small ' + (S.vue === x[0] ? "" : "secondary") + '" onclick="EVT.vue(\'' + x[0] + '\')">' + x[1] + "</button>";
+    }).join("");
+  }
+  window.chargerEvenements = function () {
+    nav();
+    var v = S.vue;
+    if (v === "decouvrir") vueDecouvrir();
+    else if (v === "billets") vueBillets();
+    else if (v === "votes") vueVotes();
+    else if (v === "organisateur") vueOrganisateur();
+  };
+  E.vue = function (v) { S.vue = v; window.chargerEvenements(); };
+
+  // ------------------------------------------------------------------ DÉCOUVRIR
+  function vueDecouvrir() {
+    zone().innerHTML = '<div class="loading">Chargement…</div>';
+    appelServeur("getEvenements").then(function (r) { S.evenements = r.evenements || []; listeDecouvrir(); })
+      .catch(function (e) { afficherErreurZone("evtContenu", e); });
+  }
+  function listeDecouvrir() {
+    var h = '<input type="text" id="evtRecherche" placeholder="🔎 Rechercher un événement…" value="' + esc(S.filtre) + '" oninput="EVT.filtrer(this.value)">' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">' +
+      ["Tous"].concat(CATEGORIES).map(function (c) {
+        return '<button class="evt-chip ' + (S.categorie === c ? "" : "secondary") + '" onclick="EVT.cat(\'' + c + '\')">' + esc(c) + "</button>";
+      }).join("") + '</div><div id="evtListe" class="evt-grille"></div>';
+    zone().innerHTML = h;
+    cartes();
+  }
+  E.filtrer = function (v) { S.filtre = v; cartes(); };
+  E.cat = function (c) { S.categorie = c; listeDecouvrir(); };
+  function cartes() {
+    var q = S.filtre.trim().toLowerCase();
+    var liste = S.evenements.filter(function (e) {
+      return (S.categorie === "Tous" || e.categorie === S.categorie) &&
+        (!q || (e.titre + " " + e.lieu + " " + e.organisateur).toLowerCase().indexOf(q) !== -1);
+    });
+    var z = document.getElementById("evtListe");
+    if (!liste.length) { z.innerHTML = '<p class="empty-state">Aucun événement à venir pour le moment.</p>'; return; }
+    z.innerHTML = liste.map(function (e) {
+      var prix = e.complet ? puce("Complet", "ko") : (e.prixMin > 0 ? puce("Dès " + fcfa(e.prixMin), "") : puce("Gratuit", "ok"));
+      return '<div class="evt-carte evt-carte" onclick="EVT.ouvrir(\'' + jsq_(e.id) + '\')" style="cursor:pointer;">' +
+        (e.image ? '<img class="evt-img" src="' + e.image + '" alt="">' : "") +
+        puce(e.categorie, "") + " " + prix +
+        '<div class="evt-titre">' + esc(e.titre) + '</div><div class="evt-meta">📅 ' + quand(e.dateDebut) + "<br>📍 " + esc(e.lieu) + "</div></div>";
+    }).join("");
+  }
+
+  // ------------------------------------------------------------------ DÉTAIL + BILLETTERIE
+  E.ouvrir = function (id) {
+    zone().innerHTML = '<div class="loading">Chargement…</div>';
+    appelServeur("getEvenement", id, code()).then(function (r) {
+      if (!r.succes) { zone().innerHTML = '<p class="error">' + esc(r.message) + "</p>"; return; }
+      S.detail = r.evenement; S.panier = {}; detail();
+    }).catch(function (e) { afficherErreurZone("evtContenu", e); });
+  };
+  function detail() {
+    var e = S.detail;
+    var h = '<button class="secondary small" onclick="EVT.vue(\'decouvrir\')">← Retour</button>' +
+      '<div class="card" style="margin-top:10px;">' + (e.image ? '<img class="evt-img" src="' + e.image + '" alt="">' : "") +
+      puce(e.categorie, "") + " " + puceStatut(e.statut) +
+      '<div class="evt-titre" style="font-size:20px;">' + esc(e.titre) + "</div>" +
+      '<div class="evt-meta">📅 ' + quand(e.dateDebut) + " → " + quand(e.dateFin) + "<br>📍 " + esc(e.lieu) + (e.adresse ? " — " + esc(e.adresse) : "") +
+      "<br>👤 Organisé par " + esc(e.organisateur) + "</div>" +
+      '<p style="white-space:pre-wrap;font-size:14px;line-height:1.6;">' + esc(e.description) + "</p></div>";
+    if (e.statut !== "Publié") h += '<div class="form-public-note">Cet événement n\'est pas encore public (aperçu réservé à l\'organisateur).</div>';
+    else if (!e.inscriptionOuverte) h += '<div class="form-public-note">Les inscriptions sont closes.</div>';
+    else {
+      if (S.repPour !== e.id) { S.repPour = e.id; S.rep = {}; }
+      if ((e.questions || []).length) h += '<div class="card"><p class="field-label">📝 Formulaire d\'inscription</p>' + e.questions.map(champQuestion).join("") + "</div>";
+      h += '<div class="card"><p class="field-label">Billets</p><div id="evtBillets"></div></div>';
+    }
+    zone().innerHTML = h;
+    if (e.statut === "Publié" && e.inscriptionOuverte) billets();
+  }
+  function champQuestion(q) {
+    var v = (S.rep || {})[q.id] || "", id = jsq_(q.id);
+    var lib = '<label class="field-label">' + esc(q.libelle) + (q.obligatoire ? " *" : "") + "</label>";
+    var ev = ' oninput="EVT.rep(\'' + id + '\',this.value)"';
+    if (q.type === "paragraphe") return lib + '<textarea rows="3" maxlength="1000"' + ev + ">" + esc(v) + "</textarea>";
+    if (q.type === "nombre") return lib + '<input type="text" inputmode="decimal" maxlength="16" value="' + esc(v) + '"' + ev + ">";
+    if (q.type === "choix" || q.type === "oui_non") {
+      var opts = q.type === "oui_non" ? ["Oui", "Non"] : q.options;
+      return lib + '<select onchange="EVT.rep(\'' + id + '\',this.value)"><option value="">— Choisir —</option>' +
+        opts.map(function (o) { return "<option " + (o === v ? "selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select>";
+    }
+    return lib + '<input type="text" maxlength="300" value="' + esc(v) + '"' + ev + ">";
+  }
+  E.rep = function (id, v) { S.rep = S.rep || {}; S.rep[id] = v; };
+  function totalPanier() {
+    var t = 0, n = 0;
+    S.detail.billets.forEach(function (b) { var q = S.panier[b.id] || 0; t += q * b.prix; n += q; });
+    return { total: t, nb: n };
+  }
+  function billets() {
+    var e = S.detail;
+    var lignes = e.billets.map(function (b) {
+      var q = S.panier[b.id] || 0, plein = b.restants === 0;
+      var max = Math.min(10, b.restants == null ? 10 : b.restants);
+      return '<div class="evt-ligne"><div><div class="item-nom">' + esc(b.nom) + "</div>" +
+        '<div class="item-desc">' + (b.prix > 0 ? fcfa(b.prix) : "Gratuit") + (b.restants != null ? " · " + (plein ? "complet" : b.restants + " place(s)") : "") + "</div>" +
+        (b.description ? '<div class="item-desc">' + esc(b.description) + "</div>" : "") + "</div>" +
+        (plein ? puce("Complet", "ko") :
+          '<div class="evt-qte"><button class="secondary" onclick="EVT.qte(\'' + jsq_(b.id) + "'," + (-1) + "," + max + ')">−</button><span>' + q +
+          '</span><button class="secondary" onclick="EVT.qte(\'' + jsq_(b.id) + "'," + 1 + "," + max + ')">+</button></div>') + "</div>";
+    }).join("");
+    var t = totalPanier();
+    document.getElementById("evtBillets").innerHTML = lignes +
+      '<div style="margin-top:12px;font-weight:800;color:var(--blue2);">Total : ' + (t.total > 0 ? fcfa(t.total) : (t.nb ? "Gratuit" : "—")) + "</div>" +
+      '<button class="flame full-mt" ' + (t.nb ? "" : "disabled") + ' onclick="EVT.reserver()">' + (t.total > 0 ? "💳 Payer " + fcfa(t.total) : "✅ M'inscrire") + "</button>" +
+      (t.total > 0 && !(e.questions || []).length ? '<button class="secondary full-mt" onclick="EVT.auPanier()">🛒 Ajouter au panier</button>' : "") +
+      '<p class="item-desc" style="margin-top:8px;">Paiement par Mobile Money ou carte bancaire (FedaPay). Vous recevrez un QR code par billet.</p>';
+  }
+  E.qte = function (id, delta, max) {
+    var q = Math.max(0, Math.min(max, (S.panier[id] || 0) + delta));
+    var total = 0; S.detail.billets.forEach(function (b) { total += (b.id === id ? q : (S.panier[b.id] || 0)); });
+    if (total > 10) return;
+    S.panier[id] = q; billets();
+  };
+  E.auPanier = function () {
+    var e = S.detail, ajoutes = 0;
+    e.billets.forEach(function (b) {
+      var q = S.panier[b.id] || 0;
+      if (q > 0 && b.prix > 0) { PANIER.ajouter("billet", b.id, b.nom + " — " + e.titre, b.prix, q); ajoutes++; }
+    });
+    if (!ajoutes) alert("Choisissez au moins un billet payant.");
+    else { S.panier = {}; billets(); }
+  };
+  E.reserver = function () {
+    if (!besoinMembre()) return;
+    var lignes = [];
+    Object.keys(S.panier).forEach(function (id) { if (S.panier[id] > 0) lignes.push({ typeId: id, quantite: S.panier[id] }); });
+    if (!lignes.length) return;
+    var manque = (S.detail.questions || []).find(function (q) { return q.obligatoire && !String((S.rep || {})[q.id] || "").trim(); });
+    if (manque) { alert("Merci de répondre à : « " + manque.libelle + " »."); return; }
+    appelServeur("creerCommande", code(), S.detail.id, lignes, S.rep || {}).then(function (r) {
+      if (!r.succes) { alert(r.message || "Réservation impossible."); return; }
+      if (r.gratuit) { montrerBillets(r.billets, "✅ Inscription confirmée"); return; }
+      payer({ type: "billets", commandeId: r.commandeId }, r.montant);
+    }).catch(echec);
+  };
+  function payer(infos, montant) {
+    if (!configApp || !configApp.paiementPublicKey) { alert(messagePaiementNonConfigure_()); return; }
+    S.paiement = infos;
+    openKkiapayWidget({ amount: montant, api_key: configApp.paiementPublicKey, sandbox: false, data: code(), contexte: "evenement", metadata: { commande: infos.commandeId } });
+  }
+  addKkiapayListener("success", function (resp) {
+    var p = S.paiement;
+    if (!p) return;
+    S.paiement = null;
+    var tid = resp.transactionId || (resp.detail && resp.detail.transactionId);
+    var m = modal('<div class="loading">Vérification du paiement…</div>');
+    var appel = p.type === "vote" ? appelServeur("confirmerCommandeVote", code(), p.commandeId, tid)
+      : p.type === "panier" ? appelServeur("confirmerCommandePanier", code(), p.commandeId, tid)
+      : appelServeur("confirmerCommande", code(), p.commandeId, tid);
+    appel.then(function (r) {
+      m.close();
+      if (!r.succes) { alert(r.message || "Le paiement n'a pas pu être vérifié. Contactez un responsable."); return; }
+      if (p.type === "panier") { apresPaiementPanier(r); return; }
+      if (p.type === "vote") { alert("✅ Vote(s) enregistré(s). Merci !"); S.vue = "votes"; window.chargerEvenements(); }
+      else montrerBillets(r.billets, "✅ Paiement confirmé");
+    }).catch(function (e) { m.close(); echec(e); });
+  });
+
+  function htmlBillet(b) {
+    return '<div class="evt-billet"><div class="item-nom">' + esc(b.titre) + "</div>" +
+      '<div class="item-desc">' + quand(b.dateDebut) + " · " + esc(b.lieu) + "</div>" +
+      '<div style="margin-top:6px;">' + puce(b.type, "") + " " + (b.statut === "Utilisé" ? puce("Déjà utilisé", "att") : b.statut === "Annulé" ? puce("Annulé", "ko") : puce("Valide", "ok")) + "</div>" +
+      '<img src="' + qrUrl(b.qr, 200) + '" width="200" height="200" alt="QR code du billet">' +
+      '<div class="item-desc">' + esc(b.porteur) + " · " + esc(b.id) + "</div></div>";
+  }
+  function montrerBillets(liste, titre) {
+    modal('<div class="item-nom" style="font-size:16px;margin-bottom:10px;">' + esc(titre) + "</div>" + (liste || []).map(htmlBillet).join("") +
+      '<p class="item-desc">Présentez ce QR code à l\'entrée. Retrouvez-le à tout moment dans « Mes billets ».</p>' +
+      '<button class="flame full-mt" onclick="EVT.fermer();EVT.vue(\'billets\')">Voir mes billets</button>', true);
+  }
+
+  // ------------------------------------------------------------------ MES BILLETS
+  function vueBillets() {
+    zone().innerHTML = '<div class="loading">Chargement…</div>';
+    appelServeur("getMesBillets", code()).then(function (r) {
+      var l = r.billets || [];
+      zone().innerHTML = l.length ? l.map(htmlBillet).join("") : '<p class="empty-state">Vous n\'avez pas encore de billet.</p>';
+    }).catch(function (e) { afficherErreurZone("evtContenu", e); });
+  }
+
+  // ------------------------------------------------------------------ VOTES
+  function vueVotes() {
+    zone().innerHTML = '<div class="loading">Chargement…</div>';
+    var p = [appelServeur("getConcours")];
+    if (membreCourant) p.push(appelServeur("getMesVotes", code()));
+    Promise.all(p).then(function (r) {
+      S.concours = r[0].concours || []; S.mesVotes = (r[1] && r[1].votes) || {};
+      zone().innerHTML = S.concours.length ? S.concours.map(carteConcours).join("") : '<p class="empty-state">Aucun vote en cours pour le moment.</p>';
+    }).catch(function (e) { afficherErreurZone("evtContenu", e); });
+  }
+  function barres(c) {
+    var max = Math.max.apply(null, c.candidats.map(function (x) { return x.votes || 0; }).concat([1]));
+    return max;
+  }
+  function carteConcours(c) {
+    var utilises = S.mesVotes[c.id] || 0, restants = Math.max(0, c.votesParMembre - utilises);
+    var etat = c.ouvert ? puce("Vote ouvert", "ok") : puce("Vote clos", "ko");
+    var max = c.scoresVisibles ? barres(c) : 1;
+    var h = '<div class="card">' + puce(c.type, "") + " " + etat + (c.prixVote > 0 ? " " + puce(fcfa(c.prixVote) + " / vote", "att") : "") +
+      '<div class="evt-titre">' + esc(c.titre) + "</div>" +
+      (c.description ? '<p class="item-desc" style="white-space:pre-wrap;">' + esc(c.description) + "</p>" : "") +
+      '<div class="evt-meta">' + (c.dateFin ? "⏰ Fin : " + quand(c.dateFin) + "<br>" : "") +
+      (c.prixVote > 0 ? "" : (membreCourant ? "Il vous reste " + restants + " vote(s)." : "1 vote minimum par membre connecté.")) +
+      (c.scoresVisibles ? "<br>" + c.totalVotes + " vote(s) au total" : "<br>Résultats visibles à la clôture") + "</div>";
+    h += c.candidats.map(function (x) {
+      var pct = c.scoresVisibles ? Math.round(((x.votes || 0) / Math.max(1, c.totalVotes)) * 100) : 0;
+      var peutVoter = c.ouvert && (c.prixVote > 0 || restants > 0);
+      return '<div class="evt-cand">' + (x.image ? '<img src="' + x.image + '" alt="">' : '<div class="evt-av">👤</div>') +
+        '<div style="flex:1;min-width:0;"><div class="item-nom">' + esc(x.nom) + "</div>" +
+        (x.description ? '<div class="item-desc">' + esc(x.description) + "</div>" : "") +
+        (c.scoresVisibles ? '<div class="evt-barre" style="margin-top:6px;"><div style="width:' + Math.round((x.votes || 0) / max * 100) + '%"></div></div><div class="item-desc">' + x.votes + " vote(s) · " + pct + " %</div>" : "") + "</div>" +
+        (peutVoter ? '<button class="flame small" style="width:auto;" onclick="EVT.voter(\'' + jsq_(c.id) + "','" + jsq_(x.id) + '\')">' + (c.prixVote > 0 ? "Voter" : "🗳️ Voter") + "</button>" : "") + "</div>";
+    }).join("");
+    return h + "</div>";
+  }
+  function trouverCandidat(cid, xid) {
+    var c = S.concours.find(function (y) { return y.id === cid; });
+    return { c: c, x: c && c.candidats.find(function (y) { return y.id === xid; }) };
+  }
+  E.voter = function (cid, xid) {
+    if (!besoinMembre()) return;
+    var t = trouverCandidat(cid, xid);
+    if (!t.c || !t.x) return;
+    if (t.c.prixVote > 0) {
+      var m = modal('<div class="item-nom">Voter pour « ' + esc(t.x.nom) + ' »</div><p class="item-desc">' + fcfa(t.c.prixVote) + ' par vote.</p>' +
+        '<label class="field-label">Nombre de votes</label><input id="evtNbVotes" type="number" min="1" max="100" value="1" oninput="EVT.majTotalVote(' + t.c.prixVote + ')">' +
+        '<div id="evtTotalVote" class="item-nom" style="margin-bottom:10px;">Total : ' + fcfa(t.c.prixVote) + '</div>' +
+        '<button class="flame" onclick="EVT.payerVote(\'' + jsq_(cid) + "','" + jsq_(xid) + '\')">💳 Payer et voter</button>');
+      return;
+    }
+    confirmerApp_("Voter pour « " + t.x.nom + " » ? Ce vote est définitif.", function () {
+      appelServeur("voter", code(), cid, xid).then(function (r) {
+        if (!r.succes) { alert(r.message || "Vote impossible."); return; }
+        alert("✅ Vote enregistré. Il vous reste " + r.restants + " vote(s)."); vueVotes();
+      }).catch(echec);
+    });
+  };
+  E.majTotalVote = function (prix) {
+    var n = Math.max(1, Math.min(100, parseInt(document.getElementById("evtNbVotes").value, 10) || 1));
+    document.getElementById("evtTotalVote").textContent = "Total : " + fcfa(n * prix);
+  };
+  E.payerVote = function (cid, xid) {
+    var n = Math.max(1, Math.min(100, parseInt(document.getElementById("evtNbVotes").value, 10) || 1));
+    appelServeur("creerCommandeVote", code(), cid, xid, n).then(function (r) {
+      if (!r.succes) { alert(r.message || "Impossible de lancer le paiement."); return; }
+      E.fermer();
+      payer({ type: "vote", commandeId: r.commandeId }, r.montant);
+    }).catch(echec);
+  };
+
+  // ------------------------------------------------------------------ ESPACE ORGANISATEUR
+  function vueOrganisateur() {
+    zone().innerHTML = '<div class="loading">Chargement…</div>';
+    appelServeur("getMesEvenements", code()).then(function (r) {
+      S.mesEvts = r;
+      if (!r.organisateur && !(r.controles || []).length) {
+        zone().innerHTML = '<div class="card"><div class="item-nom">🧑‍💼 Devenir organisateur</div><p class="item-desc">Vous pouvez organiser des concerts, conférences, séminaires et festivals, vendre des billets et lancer des votes. Contactez l\'administration pour obtenir le statut d\'organisateur.</p>' +
+          '<button class="secondary" onclick="afficherEcranContact()">📞 Contacter l\'administration</button></div>';
+        return;
+      }
+      orgPanneau();
+    }).catch(function (e) { afficherErreurZone("evtContenu", e); });
+  }
+  function orgPanneau() {
+    var r = S.mesEvts;
+    var onglets = [["evenements", "Événements"], ["concours", "Votes"], ["revenus", "💰 Revenus"], ["scan", "📷 Contrôle"]];
+    if (!r.organisateur) onglets = [["scan", "📷 Contrôle"]], S.orgVue = "scan";
+    var h = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">' + onglets.map(function (o) {
+      return '<button class="evt-chip ' + (S.orgVue === o[0] ? "" : "secondary") + '" onclick="EVT.org(\'' + o[0] + '\')">' + o[1] + "</button>";
+    }).join("") + '</div><div id="evtOrg"></div>';
+    zone().innerHTML = h;
+    var v = S.orgVue;
+    if (v === "evenements") orgEvenements();
+    else if (v === "concours") orgConcours();
+    else if (v === "revenus") orgRevenus();
+    else orgScan();
+  }
+  E.org = function (v) { S.orgVue = v; orgPanneau(); };
+  function orgZone() { return document.getElementById("evtOrg"); }
+
+  // ----- Mes événements
+  function orgEvenements() {
+    var l = S.mesEvts.evenements || [];
+    var h = '<button class="flame" onclick="EVT.nouveau()">＋ Créer un événement</button><div style="margin-top:12px;" class="evt-grille">';
+    h += l.length ? l.map(function (e) {
+      var peutSoumettre = e.statut === "Brouillon" || e.statut === "Refusé";
+      return '<div class="evt-carte">' + puceStatut(e.statut) + " " + puce(e.categorie, "") +
+        '<div class="evt-titre">' + esc(e.titre) + '</div><div class="evt-meta">📅 ' + quand(e.dateDebut) + "<br>📍 " + esc(e.lieu) + "</div>" +
+        (e.statut === "Refusé" && e.motifRefus ? '<div class="error" style="margin:6px 0;">Motif du refus : ' + esc(e.motifRefus) + "</div>" : "") +
+        '<div class="evt-kpi"><div><b>' + e.vendus + "</b><span>billets</span></div><div><b>" + e.entrees + "</b><span>entrées</span></div><div><b>" + fcfa(e.brut) + "</b><span>ventes</span></div><div><b>" + fcfa(e.net) + "</b><span>net</span></div></div>" +
+        '<div class="evt-actions">' +
+        '<button class="secondary" onclick="EVT.modifier(\'' + jsq_(e.id) + '\')">✏️ Modifier</button>' +
+        (peutSoumettre ? '<button onclick="EVT.soumettre(\'' + jsq_(e.id) + '\')">📤 Soumettre</button>' : '<button class="secondary" onclick="EVT.voir(\'' + jsq_(e.id) + '\')">👁 Voir</button>') +
+        '<button class="secondary" onclick="EVT.stats(\'' + jsq_(e.id) + '\')">📊 Statistiques</button>' +
+        '<button class="secondary" onclick="EVT.participants(\'' + jsq_(e.id) + "','" + jsq_(e.titre) + '\')">👥 Participants</button>' +
+        '<button class="secondary" onclick="EVT.controleurs(\'' + jsq_(e.id) + '\')">🛂 Contrôleurs</button>' +
+        (e.statut !== "Annulé" ? '<button class="danger-outline" onclick="EVT.annuler(\'' + jsq_(e.id) + '\')">Annuler</button>' : "") + "</div></div>";
+    }).join("") : '<p class="empty-state">Vous n\'avez pas encore créé d\'événement.</p>';
+    orgZone().innerHTML = h + "</div>";
+  }
+  E.voir = function (id) { S.vue = "decouvrir"; nav(); E.ouvrir(id); };
+  E.soumettre = function (id) {
+    confirmerApp_("Envoyer cet événement à l'administration pour vérification ? Il sera publié après validation.", function () {
+      appelServeur("soumettreEvenement", code(), id).then(function () { vueOrganisateur(); }).catch(echec);
+    });
+  };
+  E.annuler = function (id) {
+    confirmerApp_("Annuler cet événement ? Il ne sera plus visible. Les billets déjà vendus devront être remboursés par vos soins.", function () {
+      appelServeur("annulerEvenement", code(), id).then(function () { vueOrganisateur(); }).catch(echec);
+    });
+  };
+
+  // ----- Formulaire événement
+  E.nouveau = function () {
+    S.form = { id: "", image: "", questions: [], billets: [{ nom: "Entrée", description: "", prix: 0, quota: 0 }] };
+    formEvenement({ titre: "", categorie: "Concert", description: "", lieu: "", adresse: "", dateDebut: "", dateFin: "", inscriptionOuverte: true });
+  };
+  E.modifier = function (id) {
+    var e = (S.mesEvts.evenements || []).find(function (x) { return x.id === id; });
+    if (!e) return;
+    S.form = { id: e.id, image: e.image || "", questions: (e.questions || []).map(function (q) { return { id: q.id, libelle: q.libelle, type: q.type, obligatoire: q.obligatoire, optTxt: (q.options || []).join("\n") }; }), billets: e.billets.map(function (b) { return { id: b.id, nom: b.nom, description: b.description, prix: b.prix, quota: b.quota, vendus: b.vendus }; }) };
+    formEvenement(e);
+  };
+  function formEvenement(e) {
+    var h = '<div class="item-nom" style="font-size:16px;">' + (S.form.id ? "Modifier l'événement" : "Nouvel événement") + "</div>" +
+      '<label class="field-label" style="margin-top:10px;">Titre *</label><input id="efTitre" maxlength="120" value="' + esc(e.titre) + '">' +
+      '<label class="field-label">Catégorie</label><select id="efCat">' + CATEGORIES.map(function (c) { return '<option ' + (c === e.categorie ? "selected" : "") + ">" + c + "</option>"; }).join("") + "</select>" +
+      '<label class="field-label">Description *</label><textarea id="efDesc" rows="5" maxlength="4000">' + esc(e.description) + "</textarea>" +
+      '<label class="field-label">Lieu *</label><input id="efLieu" maxlength="150" value="' + esc(e.lieu) + '">' +
+      '<label class="field-label">Adresse</label><input id="efAdr" maxlength="200" value="' + esc(e.adresse) + '">' +
+      '<div class="evt-2col"><div><label class="field-label">Début *</label><input id="efDebut" type="datetime-local" value="' + esc(e.dateDebut) + '"></div>' +
+      '<div><label class="field-label">Fin *</label><input id="efFin" type="datetime-local" value="' + esc(e.dateFin) + '"></div></div>' +
+      '<label class="field-label">Affiche (image)</label><div id="efApercu">' + (S.form.image ? '<img class="evt-img" src="' + S.form.image + '">' : "") + "</div>" +
+      '<label class="file-btn-label">🖼️ Choisir une image<input type="file" accept="image/*" style="display:none;" onchange="EVT.imageEvt(event)"></label>' +
+      '<label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:13px;"><input type="checkbox" id="efOuvert" style="width:auto;margin:0;" ' + (e.inscriptionOuverte !== false ? "checked" : "") + "> Inscriptions ouvertes</label>" +
+      '<p class="field-label">Billets (laissez le prix à 0 pour une inscription gratuite)</p><div id="efBillets"></div>' +
+      '<button class="secondary small" onclick="EVT.ajouterBillet()">＋ Ajouter un type de billet</button>' +
+      '<p class="field-label" style="margin-top:16px;">📝 Formulaire d\'inscription (questions personnalisées)</p>' +
+      '<p class="item-desc">Nom, téléphone et e-mail viennent déjà du profil du membre. Ajoutez ici vos propres questions (12 maximum).</p>' +
+      '<div id="efQuestions"></div><button class="secondary small" onclick="EVT.ajouterQuestion()">＋ Ajouter une question</button>' +
+      '<div id="efErreur" class="error" style="display:none;margin-top:10px;"></div>' +
+      '<div class="evt-actions"><button class="secondary" onclick="EVT.fermer()">Annuler</button><button class="flame" onclick="EVT.enregistrer()">Enregistrer</button></div>';
+    modal(h, true);
+    lignesBillets();
+    lignesQuestions();
+  }
+  function lignesBillets() {
+    document.getElementById("efBillets").innerHTML = S.form.billets.map(function (b, i) {
+      if (b.supprimer) return "";
+      return '<div class="evt-ligne-form"><input placeholder="Nom (ex : VIP, Standard)" maxlength="60" value="' + esc(b.nom) + '" oninput="EVT.bm(' + i + ",'nom',this.value)\">" +
+        '<input placeholder="Description (facultative)" maxlength="200" value="' + esc(b.description) + '" oninput="EVT.bm(' + i + ",'description',this.value)\">" +
+        '<div class="evt-2col"><input type="number" min="0" placeholder="Prix FCFA" value="' + (b.prix || 0) + '" ' + (b.vendus ? "disabled title=\"Des billets sont vendus\"" : "") + ' oninput="EVT.bm(' + i + ",'prix',this.value)\">" +
+        '<input type="number" min="0" placeholder="Places (0 = illimité)" value="' + (b.quota || 0) + '" oninput="EVT.bm(' + i + ",'quota',this.value)\"></div>" +
+        '<button class="danger-outline small" onclick="EVT.rm(' + i + ')">Retirer</button>' + (b.vendus ? ' <span class="item-desc">' + b.vendus + " vendu(s)</span>" : "") + "</div>";
+    }).join("");
+  }
+  var TYPES_Q = [["texte", "Texte court"], ["paragraphe", "Texte long"], ["nombre", "Nombre"], ["choix", "Liste de choix"], ["oui_non", "Oui / Non"]];
+  function lignesQuestions() {
+    document.getElementById("efQuestions").innerHTML = S.form.questions.map(function (q, i) {
+      return '<div class="evt-ligne-form"><input placeholder="Votre question (ex : Quelle est votre église ?)" maxlength="160" value="' + esc(q.libelle) + '" oninput="EVT.qm(' + i + ",'libelle',this.value)\">" +
+        '<div class="evt-2col"><select onchange="EVT.qm(' + i + ",'type',this.value);EVT.qr()\">" +
+        TYPES_Q.map(function (t) { return '<option value="' + t[0] + '" ' + (t[0] === q.type ? "selected" : "") + ">" + t[1] + "</option>"; }).join("") + "</select>" +
+        '<label style="display:flex;gap:6px;align-items:center;font-size:13px;"><input type="checkbox" style="width:auto;margin:0;" ' + (q.obligatoire ? "checked" : "") + ' onchange="EVT.qm(' + i + ",'obligatoire',this.checked)\"> Obligatoire</label></div>" +
+        (q.type === "choix" ? '<textarea rows="3" placeholder="Un choix par ligne" oninput="EVT.qm(' + i + ",'optTxt',this.value)\">" + esc(q.optTxt || "") + "</textarea>" : "") +
+        '<button class="danger-outline small" onclick="EVT.qs(' + i + ')">Retirer</button></div>';
+    }).join("");
+  }
+  E.qr = lignesQuestions;
+  E.qm = function (i, champ, v) { S.form.questions[i][champ] = v; };
+  E.qs = function (i) { S.form.questions.splice(i, 1); lignesQuestions(); };
+  E.ajouterQuestion = function () {
+    if (S.form.questions.length >= 12) { alert("12 questions maximum."); return; }
+    S.form.questions.push({ libelle: "", type: "texte", obligatoire: false, optTxt: "" }); lignesQuestions();
+  };
+  E.bm = function (i, champ, v) { S.form.billets[i][champ] = (champ === "prix" || champ === "quota") ? Number(v) || 0 : v; };
+  E.rm = function (i) { var b = S.form.billets[i]; if (b.id) b.supprimer = true; else S.form.billets.splice(i, 1); lignesBillets(); };
+  E.ajouterBillet = function () { S.form.billets.push({ nom: "", description: "", prix: 0, quota: 0 }); lignesBillets(); };
+  E.imageEvt = function (ev) {
+    var f = ev.target.files[0]; if (!f) return;
+    reduireImage(f, 960, 540, 0.72).then(function (d) {
+      if (d.length > 390000) { alert("Image trop lourde, choisissez-en une plus simple."); return; }
+      S.form.image = d; document.getElementById("efApercu").innerHTML = '<img class="evt-img" src="' + d + '">';
+    }).catch(echec);
+  };
+  E.enregistrer = function () {
+    var err = document.getElementById("efErreur"); err.style.display = "none";
+    var d = {
+      id: S.form.id || undefined, titre: document.getElementById("efTitre").value, categorie: document.getElementById("efCat").value,
+      description: document.getElementById("efDesc").value, lieu: document.getElementById("efLieu").value, adresse: document.getElementById("efAdr").value,
+      dateDebut: document.getElementById("efDebut").value, dateFin: document.getElementById("efFin").value, image: S.form.image,
+      inscriptionOuverte: document.getElementById("efOuvert").checked, billets: S.form.billets,
+      questions: S.form.questions.map(function (q) {
+        return { id: q.id, libelle: q.libelle, type: q.type, obligatoire: !!q.obligatoire, options: q.type === "choix" ? String(q.optTxt || "").split("\n").map(function (o) { return o.trim(); }).filter(Boolean) : [] };
+      })
+    };
+    appelServeur("enregistrerEvenement", code(), d).then(function (r) {
+      if (r && r.succes === false) throw new Error(r.message);
+      E.fermer(); vueOrganisateur();
+      if (!S.form.id) alert("✅ Événement enregistré en brouillon. Appuyez sur « Soumettre » pour demander sa publication.");
+    }).catch(function (e) { err.textContent = e.message; err.style.display = "block"; });
+  };
+
+  // ----- Statistiques / participants / contrôleurs
+  E.stats = function (id) {
+    var m = modal('<div class="loading">Chargement…</div>', true);
+    appelServeur("getStatsEvenement", code(), id).then(function (r) {
+      var maxJ = Math.max.apply(null, r.parJour.map(function (j) { return j.montant || j.billets; }).concat([1]));
+      m.el.innerHTML = '<div class="item-nom" style="font-size:16px;">📊 ' + esc(r.evenement.titre) + "</div>" +
+        '<div class="evt-kpi"><div><b>' + r.totalBillets + "</b><span>billets</span></div><div><b>" + r.entrees + "</b><span>entrées</span></div>" +
+        "<div><b>" + fcfa(r.brut) + "</b><span>ventes brutes</span></div><div><b>" + fcfa(r.net) + "</b><span>net organisateur</span></div></div>" +
+        '<div class="item-desc">Commission de la plateforme : ' + fcfa(r.commission) + "</div>" +
+        '<p class="field-label" style="margin-top:12px;">Par type de billet</p>' + r.parType.map(function (t) {
+          var pct = t.quota ? Math.round(t.vendus / t.quota * 100) : null;
+          return '<div style="margin-bottom:10px;"><div class="item-nom">' + esc(t.nom) + " · " + (t.prix ? fcfa(t.prix) : "Gratuit") + '</div><div class="evt-barre"><div style="width:' + (pct == null ? 100 : pct) + '%"></div></div>' +
+            '<div class="item-desc">' + t.vendus + (t.quota ? " / " + t.quota : "") + " vendu(s) · " + t.entrees + " entrée(s) · " + fcfa(t.revenu) + "</div></div>";
+        }).join("") +
+        '<p class="field-label" style="margin-top:12px;">Ventes par jour (30 derniers jours)</p>' +
+        (r.parJour.length ? r.parJour.map(function (j) {
+          return '<div class="item-desc">' + esc(j.jour) + " — " + j.billets + " billet(s) · " + fcfa(j.montant) + '</div><div class="evt-barre" style="margin-bottom:6px;"><div style="width:' + Math.round((j.montant || j.billets) / maxJ * 100) + '%"></div></div>';
+        }).join("") : '<p class="item-desc">Aucune vente pour le moment.</p>') +
+        '<button class="secondary full-mt" onclick="EVT.fermer()">Fermer</button>';
+    }).catch(function (e) { m.close(); echec(e); });
+  };
+  E.participants = function (id, titre) {
+    var m = modal('<div class="loading">Chargement…</div>', true);
+    appelServeur("getParticipants", code(), id).then(function (r) {
+      S.liste = r.participants; S.questions = r.questions || [];
+      m.el.innerHTML = '<div class="item-nom" style="font-size:16px;">👥 ' + esc(titre) + " — " + r.participants.length + ' billet(s)</div>' +
+        '<button class="secondary small full-mt" onclick="EVT.csv(\'' + jsq_(titre) + '\')">⬇️ Exporter en CSV</button>' +
+        '<table class="mini-table" style="margin-top:10px;"><tr><th>Nom</th><th>Billet</th><th>Téléphone</th><th>Statut</th></tr>' +
+        r.participants.map(function (p) {
+          var rep = (p.reponses || []).filter(function (x) { return x.reponse; }).map(function (x) { return "<div class=\"item-desc\"><b>" + esc(x.question) + " :</b> " + esc(x.reponse) + "</div>"; }).join("");
+          return "<tr><td>" + esc(p.nom) + "</td><td>" + esc(p.type) + "</td><td>" + esc(p.telephone || "") + "</td><td>" + esc(p.statut) + "</td></tr>" +
+            (rep ? '<tr><td colspan="4" style="background:#f6f9fd;">' + rep + "</td></tr>" : "");
+        }).join("") +
+        '</table><button class="secondary full-mt" onclick="EVT.fermer()">Fermer</button>';
+    }).catch(function (e) { m.close(); echec(e); });
+  };
+  E.csv = function (titre) {
+    var cell = function (v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; };
+    var lignes = [["Nom", "Code membre", "Type de billet", "Prix", "Statut", "Téléphone", "E-mail", "Achat", "Entrée"].concat((S.questions || []).map(function (q) { return q.libelle; }))].concat((S.liste || []).map(function (p) {
+      return [p.nom, p.code, p.type, p.prix, p.statut, p.telephone, p.email, p.achat, p.entree].concat((S.questions || []).map(function (q) {
+        var r = (p.reponses || []).find(function (x) { return x.id === q.id; }); return r ? r.reponse : "";
+      }));
+    }));
+    var blob = new Blob(["\ufeff" + lignes.map(function (l) { return l.map(cell).join(";"); }).join("\n")], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "participants-" + titre.replace(/[^\w]+/g, "_") + ".csv";
+    document.body.appendChild(a); a.click(); a.remove();
+  };
+  E.controleurs = function (id) {
+    var m = modal('<div class="loading">Chargement…</div>');
+    var rendre = function (liste) {
+      m.el.innerHTML = '<div class="item-nom" style="font-size:16px;">🛂 Contrôleurs d\'entrée</div><p class="item-desc">Ces membres peuvent scanner les billets de cet événement.</p>' +
+        (liste.length ? liste.map(function (c) { return '<div class="evt-ligne"><div>' + esc(c.nom) + '<div class="item-desc">' + esc(c.code) + '</div></div><button class="danger-outline small" onclick="EVT.ctrl(\'' + jsq_(id) + "','" + jsq_(c.code) + "',false)\">Retirer</button></div>"; }).join("") : '<p class="item-desc">Aucun contrôleur pour le moment.</p>') +
+        '<label class="field-label" style="margin-top:12px;">Ajouter par code membre (MB-…)</label><input id="ctrlCode" placeholder="MB-XXXXXXXX">' +
+        '<button class="flame" onclick="EVT.ctrl(\'' + jsq_(id) + "',document.getElementById('ctrlCode').value,true)\">Ajouter</button>" +
+        '<button class="secondary full-mt" onclick="EVT.fermer()">Fermer</button>';
+    };
+    S.rendreCtrl = rendre;
+    appelServeur("getControleurs", code(), id).then(function (r) { rendre(r.controleurs); }).catch(function (e) { m.close(); echec(e); });
+  };
+  E.ctrl = function (id, codeCtrl, ajouter) {
+    if (!String(codeCtrl).trim()) return;
+    appelServeur("definirControleur", code(), id, codeCtrl, ajouter).then(function () {
+      return appelServeur("getControleurs", code(), id);
+    }).then(function (r) { S.rendreCtrl(r.controleurs); }).catch(echec);
+  };
+
+  // ----- Concours / votes (organisateur)
+  function orgConcours() {
+    orgZone().innerHTML = '<div class="loading">Chargement…</div>';
+    appelServeur("getMesConcours", code()).then(function (r) {
+      S.mesConcours = r.concours || [];
+      var h = '<button class="flame" onclick="EVT.nouveauConcours()">＋ Créer un vote (concours, élection, award)</button><div style="margin-top:12px;">';
+      h += S.mesConcours.length ? S.mesConcours.map(function (c) {
+        var max = barres(c);
+        return '<div class="card">' + puce(c.type, "") + " " + (c.statut === "Ouvert" ? (c.ouvert ? puce("Ouvert", "ok") : puce("Terminé (date)", "ko")) : c.statut === "Clos" ? puce("Clos", "ko") : puce("Brouillon", "")) +
+          (c.prixVote > 0 ? " " + puce(fcfa(c.prixVote) + " / vote", "att") : "") +
+          '<div class="evt-titre">' + esc(c.titre) + '</div><div class="item-desc">' + c.totalVotes + " vote(s)" + (c.dateFin ? " · fin " + quand(c.dateFin) : "") + "</div>" +
+          c.candidats.map(function (x) {
+            return '<div class="evt-cand"><div style="flex:1;"><div class="item-nom">' + esc(x.nom) + '</div><div class="evt-barre"><div style="width:' + Math.round(x.votes / max * 100) + '%"></div></div></div><b>' + x.votes + "</b></div>";
+          }).join("") +
+          '<div class="evt-actions"><button class="secondary" onclick="EVT.modifierConcours(\'' + jsq_(c.id) + '\')">✏️ Modifier</button>' +
+          (c.statut !== "Ouvert" ? '<button onclick="EVT.statutConcours(\'' + jsq_(c.id) + '\',\'Ouvert\')">▶ Ouvrir</button>' : '<button class="danger-outline" onclick="EVT.statutConcours(\'' + jsq_(c.id) + '\',\'Clos\')">⏹ Clore</button>') + "</div></div>";
+      }).join("") : '<p class="empty-state">Aucun vote créé pour le moment.</p>';
+      orgZone().innerHTML = h + "</div>";
+    }).catch(function (e) { afficherErreurZone("evtOrg", e); });
+  }
+  E.statutConcours = function (id, statut) {
+    var go = function () { appelServeur("changerStatutConcours", code(), id, statut).then(orgConcours).catch(echec); };
+    if (statut === "Clos") confirmerApp_("Clore ce vote ? Plus personne ne pourra voter.", go); else go();
+  };
+  E.nouveauConcours = function () {
+    S.cform = { id: "", candidats: [{ nom: "", description: "", image: "" }, { nom: "", description: "", image: "" }] };
+    formConcours({ titre: "", description: "", type: "Concours", dateFin: "", votesParMembre: 1, prixVote: 0, afficherResultats: "Direct", evenementId: "" });
+  };
+  E.modifierConcours = function (id) {
+    var c = S.mesConcours.find(function (x) { return x.id === id; });
+    if (!c) return;
+    S.cform = { id: c.id, candidats: c.candidats.map(function (x) { return { id: x.id, nom: x.nom, description: x.description, image: x.image, votes: x.votes }; }), aDesVotes: c.totalVotes > 0 };
+    formConcours(c);
+  };
+  function formConcours(c) {
+    var evts = (S.mesEvts && S.mesEvts.evenements) || [];
+    var h = '<div class="item-nom" style="font-size:16px;">' + (S.cform.id ? "Modifier le vote" : "Nouveau vote") + "</div>" +
+      '<label class="field-label" style="margin-top:10px;">Titre *</label><input id="cfTitre" maxlength="120" value="' + esc(c.titre) + '">' +
+      '<label class="field-label">Type</label><select id="cfType">' + TYPES_CONCOURS.map(function (t) { return "<option " + (t === c.type ? "selected" : "") + ">" + t + "</option>"; }).join("") + "</select>" +
+      '<label class="field-label">Description</label><textarea id="cfDesc" rows="3" maxlength="2000">' + esc(c.description) + "</textarea>" +
+      '<label class="field-label">Événement lié (facultatif)</label><select id="cfEvt"><option value="">Aucun</option>' + evts.map(function (e) { return '<option value="' + esc(e.id) + '" ' + (e.id === c.evenementId ? "selected" : "") + ">" + esc(e.titre) + "</option>"; }).join("") + "</select>" +
+      '<label class="field-label">Fin du vote (facultatif)</label><input id="cfFin" type="datetime-local" value="' + esc(c.dateFin) + '">' +
+      '<div class="evt-2col"><div><label class="field-label">Votes par membre</label><input id="cfNb" type="number" min="1" max="100" value="' + (c.votesParMembre || 1) + '"></div>' +
+      '<div><label class="field-label">Prix du vote (0 = gratuit)</label><input id="cfPrix" type="number" min="0" value="' + (c.prixVote || 0) + '" ' + (S.cform.aDesVotes ? "disabled" : "") + "></div></div>" +
+      '<label class="field-label">Résultats</label><select id="cfRes"><option value="Direct" ' + (c.afficherResultats !== "Apres" ? "selected" : "") + '>Visibles en direct</option><option value="Apres" ' + (c.afficherResultats === "Apres" ? "selected" : "") + ">Visibles après la clôture</option></select>" +
+      '<p class="field-label" style="margin-top:12px;">Candidats (2 minimum)</p><div id="cfCands"></div>' +
+      '<button class="secondary small" onclick="EVT.ajouterCandidat()">＋ Ajouter un candidat</button>' +
+      '<div id="cfErreur" class="error" style="display:none;margin-top:10px;"></div>' +
+      '<div class="evt-actions"><button class="secondary" onclick="EVT.fermer()">Annuler</button><button class="flame" onclick="EVT.enregistrerConcours()">Enregistrer</button></div>';
+    modal(h, true);
+    lignesCandidats();
+  }
+  function lignesCandidats() {
+    document.getElementById("cfCands").innerHTML = S.cform.candidats.map(function (x, i) {
+      if (x.supprimer) return "";
+      return '<div class="evt-ligne-form"><div style="display:flex;gap:8px;align-items:center;">' +
+        (x.image ? '<img src="' + x.image + '" style="width:44px;height:44px;border-radius:10px;object-fit:cover;">' : '<div class="evt-av" style="width:44px;height:44px;border-radius:10px;background:#eef3f9;display:flex;align-items:center;justify-content:center;">👤</div>') +
+        '<label class="file-btn-label" style="margin:0;">Photo<input type="file" accept="image/*" style="display:none;" onchange="EVT.imageCand(event,' + i + ')"></label></div>' +
+        '<input placeholder="Nom du candidat *" maxlength="80" value="' + esc(x.nom) + '" oninput="EVT.cm(' + i + ",'nom',this.value)\" style=\"margin-top:6px;\">" +
+        '<input placeholder="Description (facultative)" maxlength="300" value="' + esc(x.description) + '" oninput="EVT.cm(' + i + ",'description',this.value)\">" +
+        '<button class="danger-outline small" onclick="EVT.rc(' + i + ')">Retirer</button>' + (x.votes ? ' <span class="item-desc">' + x.votes + " vote(s)</span>" : "") + "</div>";
+    }).join("");
+  }
+  E.cm = function (i, champ, v) { S.cform.candidats[i][champ] = v; };
+  E.rc = function (i) { var x = S.cform.candidats[i]; if (x.id) x.supprimer = true; else S.cform.candidats.splice(i, 1); lignesCandidats(); };
+  E.ajouterCandidat = function () { S.cform.candidats.push({ nom: "", description: "", image: "" }); lignesCandidats(); };
+  E.imageCand = function (ev, i) {
+    var f = ev.target.files[0]; if (!f) return;
+    reduireImage(f, 320, 320, 0.7).then(function (d) { S.cform.candidats[i].image = d; lignesCandidats(); }).catch(echec);
+  };
+  E.enregistrerConcours = function () {
+    var err = document.getElementById("cfErreur"); err.style.display = "none";
+    var d = {
+      id: S.cform.id || undefined, titre: document.getElementById("cfTitre").value, type: document.getElementById("cfType").value,
+      description: document.getElementById("cfDesc").value, evenementId: document.getElementById("cfEvt").value, dateFin: document.getElementById("cfFin").value,
+      votesParMembre: document.getElementById("cfNb").value, prixVote: document.getElementById("cfPrix").value, afficherResultats: document.getElementById("cfRes").value,
+      candidats: S.cform.candidats
+    };
+    appelServeur("enregistrerConcours", code(), d).then(function () { E.fermer(); orgConcours(); })
+      .catch(function (e) { err.textContent = e.message; err.style.display = "block"; });
+  };
+
+  // ----- Revenus (organisateur)
+  function htmlRevenus(r, titre) {
+    return (titre ? '<div class="item-nom">' + esc(titre) + "</div>" : "") +
+      '<div class="evt-kpi"><div><b>' + fcfa(r.brut) + "</b><span>ventes brutes</span></div><div><b>" + fcfa(r.commission) + "</b><span>commission plateforme</span></div>" +
+      "<div><b>" + fcfa(r.net) + "</b><span>net</span></div><div><b>" + fcfa(r.solde) + "</b><span>solde à recevoir</span></div></div>" +
+      '<p class="field-label">Reversements reçus (' + fcfa(r.verse) + ")</p>" +
+      (r.reversements.length ? r.reversements.map(function (x) { return '<div class="evt-ligne"><div>' + fcfa(x.montant) + '<div class="item-desc">' + quand(x.date) + (x.note ? " · " + esc(x.note) : "") + "</div></div></div>"; }).join("") : '<p class="item-desc">Aucun reversement pour le moment.</p>');
+  }
+  function orgRevenus() {
+    orgZone().innerHTML = '<div class="loading">Chargement…</div>';
+    appelServeur("getRevenus", code()).then(function (r) {
+      orgZone().innerHTML = '<div class="card">' + htmlRevenus(r) + '<p class="item-desc">Le solde vous est reversé par l\'administration (Mobile Money ou virement).</p></div>';
+    }).catch(function (e) { afficherErreurZone("evtOrg", e); });
+  }
+
+  // ----- Contrôle d'entrée (scan des QR codes)
+  function orgScan() {
+    var r = S.mesEvts, liste = (r.evenements || []).filter(function (e) { return e.statut === "Publié"; }).concat(r.controles || []);
+    orgZone().innerHTML = liste.length ? '<p class="item-desc">Choisissez l\'événement dont vous contrôlez l\'entrée :</p>' + liste.map(function (e) {
+      return '<div class="evt-carte" style="margin-bottom:10px;"><div class="item-nom">' + esc(e.titre) + '</div><div class="evt-meta">' + quand(e.dateDebut) + '</div><button class="flame full-mt" onclick="EVT.scanner(\'' + jsq_(e.id) + "','" + jsq_(e.titre) + '\')">📷 Scanner les billets</button></div>';
+    }).join("") : '<p class="empty-state">Aucun événement publié à contrôler.</p>';
+  }
+  E.scanner = function (id, titre) {
+    S.scan = { id: id, occupe: false, dernier: "", t: 0, timer: null, flux: null };
+    var m = modal('<div class="item-nom">📷 Contrôle — ' + esc(titre) + '</div>' +
+      '<video id="evtVideo" playsinline muted style="width:100%;border-radius:12px;background:#000;margin-top:10px;max-height:300px;"></video>' +
+      '<div id="evtScanRes"></div><label class="field-label" style="margin-top:10px;">Ou saisir le code du billet</label><input id="evtManuel" placeholder="BIL-…">' +
+      '<button class="secondary" onclick="EVT.manuel()">Valider ce code</button><button class="flame full-mt" onclick="EVT.fermer()">Terminer</button>', true, arreterScan);
+    var video = document.getElementById("evtVideo");
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { document.getElementById("evtScanRes").innerHTML = '<p class="item-desc">Caméra indisponible : utilisez la saisie manuelle.</p>'; return; }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function (flux) {
+      if (!S.scan) { flux.getTracks().forEach(function (t) { t.stop(); }); return; }
+      S.scan.flux = flux; video.srcObject = flux; video.play();
+      var detecteur = window.BarcodeDetector ? new BarcodeDetector({ formats: ["qr_code"] }) : null;
+      if (!detecteur && !window.jsQR) { var s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"; document.head.appendChild(s); }
+      var canvas = document.createElement("canvas");
+      var boucle = function () {
+        if (!S.scan) return;
+        if (video.readyState >= 2 && !S.scan.occupe) {
+          if (detecteur) detecteur.detect(video).then(function (res) { if (res.length) traiterScan(res[0].rawValue); }).catch(function () {});
+          else if (window.jsQR) {
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            var ctx = canvas.getContext("2d"); ctx.drawImage(video, 0, 0);
+            var img = ctx.getImageData(0, 0, canvas.width, canvas.height), res = jsQR(img.data, img.width, img.height);
+            if (res && res.data) traiterScan(res.data);
+          }
+        }
+        if (S.scan) S.scan.timer = setTimeout(boucle, 300);
+      };
+      boucle();
+    }).catch(function () { document.getElementById("evtScanRes").innerHTML = '<p class="item-desc">Accès à la caméra refusé : utilisez la saisie manuelle.</p>'; });
+  };
+  function arreterScan() {
+    if (!S.scan) return;
+    clearTimeout(S.scan.timer);
+    if (S.scan.flux) S.scan.flux.getTracks().forEach(function (t) { t.stop(); });
+    S.scan = null;
+  }
+  function traiterScan(texte) {
+    var s = S.scan; if (!s || s.occupe) return;
+    if (texte === s.dernier && Date.now() - s.t < 4000) return;
+    s.occupe = true; s.dernier = texte; s.t = Date.now();
+    appelServeur("scannerBillet", code(), s.id, texte).then(function (r) {
+      var cls = r.resultat === "VALIDE" ? "ok" : (r.resultat === "DEJA_UTILISE" ? "dej" : "ko");
+      var z = document.getElementById("evtScanRes");
+      if (z) z.innerHTML = '<div class="scan-res ' + cls + '">' + (r.resultat === "VALIDE" ? "✅ " : "⚠️ ") + esc(r.message) + (r.porteur ? "<br>" + esc(r.porteur) + " · " + esc(r.type) : "") + "</div>";
+      try { if (navigator.vibrate) navigator.vibrate(r.resultat === "VALIDE" ? 80 : [120, 60, 120]); } catch (e) {}
+    }).catch(function (e) {
+      var z = document.getElementById("evtScanRes"); if (z) z.innerHTML = '<div class="scan-res ko">' + esc(e.message) + "</div>";
+    }).then(function () { if (S.scan) S.scan.occupe = false; });
+  }
+  E.manuel = function () {
+    var v = (document.getElementById("evtManuel").value || "").trim().toUpperCase();
+    if (!v) return;
+    traiterScan(v.indexOf("JB1.") === 0 ? v : "JB1." + v);
+  };
+
+  // ------------------------------------------------------------------ ADMINISTRATION
+  function peutAdminEvt() {
+    var p = membreCourant ? permissionsDe_(membreCourant) : [];
+    return p.indexOf("evenements") !== -1 || p.indexOf("systeme") !== -1;
+  }
+  function injecterAdmin() {
+    var section = document.getElementById("section-admin");
+    if (!section || document.getElementById("admin-evenements")) return;
+    var d = document.createElement("div");
+    d.className = "admin-section"; d.id = "admin-evenements";
+    d.innerHTML = '<div id="evtAdminCommission"></div><div class="card"><p class="field-label">Événements à valider</p><div id="evtAdminModeration"><div class="loading">Chargement…</div></div></div>' +
+      '<div class="card"><p class="field-label">Ajouter un organisateur</p><input id="evtOrgCode" placeholder="Code du membre (MB-…)"><button onclick="EVT.addOrga()">Donner le statut d\'organisateur</button></div>' +
+      '<div class="card"><p class="field-label">Organisateurs, revenus et reversements</p><div id="evtAdminOrgas"><div class="loading">Chargement…</div></div></div>';
+    section.appendChild(d);
+  }
+  var construireOrigine = window.construireAdminSubtabs;
+  window.construireAdminSubtabs = function () {
+    var visibles = construireOrigine.apply(this, arguments);
+    if (!peutAdminEvt()) return visibles;
+    injecterAdmin();
+    var barre = document.getElementById("adminSubtabs");
+    var seul = !visibles.length;
+    var t = document.createElement("div");
+    t.className = "admin-subtab" + (seul ? " active" : ""); t.dataset.sub = "evenements"; t.textContent = "🎫 Événements";
+    t.onclick = function () { afficherSousOnglet("evenements"); };
+    barre.appendChild(t);
+    if (seul) { document.getElementById("admin-evenements").classList.add("active"); return [{ id: "evenements" }]; }
+    return visibles;
+  };
+  var sousOngletOrigine = window.afficherSousOnglet;
+  window.afficherSousOnglet = function (nom) {
+    sousOngletOrigine.apply(this, arguments);
+    if (nom === "evenements") adminCharger();
+  };
+  function adminCharger() {
+    injecterAdmin();
+    // Commission : seul le droit « système » peut la modifier (mettreAJourConfig)
+    var sys = permissionsDe_(membreCourant).indexOf("systeme") !== -1;
+    appelServeur("getOrganisateurs", code()).then(function (r) {
+      document.getElementById("evtAdminCommission").innerHTML = sys ?
+        '<div class="card"><p class="field-label">Commission de la plateforme (%)</p><div class="cotisation-pay-row"><input id="evtCommission" type="number" min="0" max="100" value="' + r.commission + '"><button class="small" onclick="EVT.commission()">Enregistrer</button></div><p class="item-desc">Prélevée sur chaque vente de billets et de votes payants, pour les nouvelles commandes uniquement.</p></div>' :
+        '<div class="card"><p class="item-desc">Commission actuelle : ' + r.commission + " %</p></div>";
+      document.getElementById("evtAdminOrgas").innerHTML = r.organisateurs.length ? r.organisateurs.map(function (o) {
+        return '<div class="item-block"><div class="item-nom">' + esc(o.nom) + '</div><div class="item-desc">' + esc(o.code) + " · " + esc(o.telephone) + " · " + o.evenements + " événement(s)</div>" +
+          '<div class="evt-kpi"><div><b>' + fcfa(o.brut) + "</b><span>ventes</span></div><div><b>" + fcfa(o.net) + "</b><span>net</span></div><div><b>" + fcfa(o.verse) + "</b><span>déjà versé</span></div><div><b>" + fcfa(o.solde) + "</b><span>à verser</span></div></div>" +
+          '<div class="evt-actions"><button onclick="EVT.versement(\'' + jsq_(o.code) + "','" + jsq_(o.nom) + "'," + o.solde + ')">💸 Enregistrer un versement</button>' +
+          '<button class="secondary" onclick="EVT.revenusOrga(\'' + jsq_(o.code) + "','" + jsq_(o.nom) + '\')">Historique</button>' +
+          '<button class="danger-outline" onclick="EVT.retirerOrga(\'' + jsq_(o.code) + "','" + jsq_(o.nom) + '\')">Retirer le statut</button></div></div>';
+      }).join("") : '<p class="empty-state">Aucun organisateur.</p>';
+    }).catch(function (e) { afficherErreurZone("evtAdminOrgas", e); });
+    appelServeur("getEvenementsAModerer", code()).then(function (r) {
+      document.getElementById("evtAdminModeration").innerHTML = r.evenements.length ? r.evenements.map(function (e) {
+        return '<div class="item-block"><div class="item-nom">' + esc(e.titre) + " " + puce(e.categorie, "") + '</div><div class="item-desc">Par ' + esc(e.organisateur) + " · " + quand(e.dateDebut) + " · " + esc(e.lieu) + "</div>" +
+          '<p class="item-desc" style="white-space:pre-wrap;">' + esc(e.description.slice(0, 400)) + "</p>" +
+          '<div class="item-desc">' + e.billets.map(function (b) { return esc(b.nom) + " (" + (b.prix ? fcfa(b.prix) : "gratuit") + ")"; }).join(" · ") + "</div>" +
+          '<div class="evt-actions"><button onclick="EVT.moderer(\'' + jsq_(e.id) + '\',\'Publié\')">✅ Publier</button><button class="danger-outline" onclick="EVT.refuser(\'' + jsq_(e.id) + '\')">✖ Refuser</button></div></div>';
+      }).join("") : '<p class="empty-state">Aucun événement en attente.</p>';
+    }).catch(function (e) { afficherErreurZone("evtAdminModeration", e); });
+  }
+  E.commission = function () {
+    var v = Number(document.getElementById("evtCommission").value);
+    if (!(v >= 0 && v <= 100)) { alert("Indiquez un pourcentage entre 0 et 100."); return; }
+    appelServeur("mettreAJourConfig", code(), "CommissionEvenements", v).then(function () { alert("Commission enregistrée : " + v + " %."); }).catch(echec);
+  };
+  E.moderer = function (id, decision) { appelServeur("moderEvenement", code(), id, decision, "").then(adminCharger).catch(echec); };
+  E.refuser = function (id) {
+    demanderTexteApp_("Motif du refus (visible par l'organisateur) :", function (motif) {
+      appelServeur("moderEvenement", code(), id, "Refusé", motif).then(adminCharger).catch(echec);
+    });
+  };
+  E.addOrga = function () {
+    var c = document.getElementById("evtOrgCode").value.trim();
+    if (!c) return;
+    appelServeur("definirOrganisateur", code(), c, true).then(function (r) { document.getElementById("evtOrgCode").value = ""; alert("✅ " + r.nom + " est maintenant organisateur."); adminCharger(); }).catch(echec);
+  };
+  E.retirerOrga = function (c, nom) {
+    confirmerApp_("Retirer le statut d'organisateur à " + nom + " ? Ses événements restent en place.", function () {
+      appelServeur("definirOrganisateur", code(), c, false).then(adminCharger).catch(echec);
+    });
+  };
+  E.revenusOrga = function (c, nom) {
+    var m = modal('<div class="loading">Chargement…</div>', true);
+    appelServeur("getRevenus", code(), c).then(function (r) {
+      m.el.innerHTML = htmlRevenus(r, "💰 " + nom) + '<button class="secondary full-mt" onclick="EVT.fermer()">Fermer</button>';
+    }).catch(function (e) { m.close(); echec(e); });
+  };
+  E.versement = function (c, nom, solde) {
+    var m = modal('<div class="item-nom">💸 Versement à ' + esc(nom) + '</div><p class="item-desc">Solde à verser : ' + fcfa(solde) + '. Enregistrez ici le versement après l\'avoir effectué (Mobile Money, virement…).</p>' +
+      '<label class="field-label">Montant (FCFA)</label><input id="vsMontant" type="number" min="1" max="' + solde + '" value="' + solde + '">' +
+      '<label class="field-label">Note (référence, moyen de paiement)</label><input id="vsNote" maxlength="200">' +
+      '<div class="evt-actions"><button class="secondary" onclick="EVT.fermer()">Annuler</button><button class="flame" onclick="EVT.validerVersement(\'' + jsq_(c) + '\')">Enregistrer</button></div>');
+  };
+  E.validerVersement = function (c) {
+    appelServeur("enregistrerReversement", code(), c, Number(document.getElementById("vsMontant").value), document.getElementById("vsNote").value)
+      .then(function () { E.fermer(); adminCharger(); }).catch(echec);
+  };
+
+  // ================================================================== PANIER (documents, audios, vidéos, billets)
+  var CLE_PANIER = "jesus_panier_v1";
+  var P = (window.PANIER = {});
+  function lirePanier() {
+    try { var j = JSON.parse(localStorage.getItem(CLE_PANIER) || "[]"); return Array.isArray(j) ? j : []; }
+    catch (e) { return S.panierMem || []; }
+  }
+  function ecrirePanier(l) {
+    S.panierMem = l;
+    try { localStorage.setItem(CLE_PANIER, JSON.stringify(l)); } catch (e) { /* stockage indisponible : on garde en mémoire */ }
+    majPanierBouton();
+  }
+  function nbArticles(l) { return l.reduce(function (s, a) { return s + (a.k === "billet" ? a.qte : 1); }, 0); }
+  function totalPanierGlobal(l) { return l.reduce(function (s, a) { return s + a.prix * (a.k === "billet" ? a.qte : 1); }, 0); }
+  var cssP = document.createElement("style");
+  cssP.textContent = "#panierFlottant{position:fixed;right:14px;bottom:86px;z-index:900;width:54px;height:54px;border-radius:50%;border:0;background:var(--blue2,#1a4a8a);color:#fff;font-size:24px;box-shadow:0 4px 14px rgba(0,0,0,.28);cursor:pointer;display:none;padding:0}" +
+    "#panierFlottant b{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:#e0431f;color:#fff;font-size:12px;line-height:20px;padding:0 5px;box-sizing:border-box}" +
+    "#panierToast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);z-index:9800;background:#222;color:#fff;padding:10px 16px;border-radius:20px;font-size:13px;max-width:90%;text-align:center;display:none}";
+  document.head.appendChild(cssP);
+  var btnP = document.createElement("button");
+  btnP.id = "panierFlottant"; btnP.title = "Mon panier"; btnP.setAttribute("onclick", "PANIER.ouvrir()");
+  document.body.appendChild(btnP);
+  var toastP = document.createElement("div"); toastP.id = "panierToast"; document.body.appendChild(toastP);
+  function toast(msg) {
+    toastP.textContent = msg; toastP.style.display = "block";
+    clearTimeout(toast.t); toast.t = setTimeout(function () { toastP.style.display = "none"; }, 2200);
+  }
+  function majPanierBouton() {
+    var l = lirePanier(), n = nbArticles(l);
+    var surAuth = !!document.querySelector(".auth-screen.active");
+    btnP.style.display = (!surAuth && (membreCourant || n)) ? "block" : "none";
+    btnP.innerHTML = "🛒" + (n ? "<b>" + n + "</b>" : "");
+  }
+  setInterval(majPanierBouton, 1500);
+  majPanierBouton();
+
+  // k : "document" | "audio" | "video" | "billet"
+  P.ajouter = function (k, id, titre, prix, qte, extra) {
+    prix = Number(prix) || 0;
+    if (!(prix > 0)) { alert("Seuls les articles payants se mettent dans le panier."); return; }
+    var l = lirePanier(), ex = l.find(function (a) { return a.k === k && a.id === id; });
+    if (ex) {
+      if (k === "billet") { ex.qte = Math.min(10, ex.qte + (qte || 1)); toast("Quantité mise à jour dans le panier"); }
+      else { toast("Déjà dans votre panier"); return; }
+    } else { l.push({ k: k, id: id, titre: titre, prix: prix, qte: k === "billet" ? Math.min(10, qte || 1) : 1, sous: (extra && extra.sous) || "" }); toast("🛒 Ajouté au panier"); }
+    ecrirePanier(l);
+  };
+  P.retirer = function (k, id) { ecrirePanier(lirePanier().filter(function (a) { return !(a.k === k && a.id === id); })); P.ouvrir(true); };
+  P.qte = function (id, delta) {
+    var l = lirePanier(), a = l.find(function (x) { return x.k === "billet" && x.id === id; });
+    if (!a) return;
+    a.qte = Math.max(1, Math.min(10, a.qte + delta)); ecrirePanier(l); P.ouvrir(true);
+  };
+  P.vider = function () { confirmerApp_("Vider tout le panier ?", function () { ecrirePanier([]); E.fermer(); }); };
+  var ICONES_P = { document: "📄", audio: "🎧", video: "🎬", billet: "🎫" };
+  P.ouvrir = function (remplacer) {
+    if (remplacer === true) E.fermer();
+    var l = lirePanier(), tot = totalPanierGlobal(l);
+    var h = '<div class="item-nom" style="font-size:17px;margin-bottom:8px;">🛒 Mon panier</div>';
+    if (!l.length) h += '<p class="empty-state">Votre panier est vide.<br><span class="item-desc">Ajoutez des documents, audios, vidéos ou billets payants avec « 🛒 Ajouter au panier ».</span></p>';
+    else {
+      h += l.map(function (a) {
+        return '<div class="evt-ligne"><div><div class="item-nom">' + ICONES_P[a.k] + " " + esc(a.titre) + "</div>" +
+          '<div class="item-desc">' + (a.k === "billet" ? a.qte + " × " + fcfa(a.prix) + " = " + fcfa(a.qte * a.prix) : fcfa(a.prix)) + "</div></div>" +
+          '<div style="display:flex;gap:6px;align-items:center;">' +
+          (a.k === "billet" ? '<button class="secondary small" onclick="PANIER.qte(\'' + jsq_(a.id) + '\',-1)">−</button><span>' + a.qte + '</span><button class="secondary small" onclick="PANIER.qte(\'' + jsq_(a.id) + '\',1)">+</button>' : "") +
+          '<button class="danger-outline small" onclick="PANIER.retirer(\'' + a.k + "','" + jsq_(a.id) + '\')">✕</button></div></div>';
+      }).join("") +
+        '<div style="margin-top:12px;font-weight:800;font-size:16px;color:var(--blue2);">Total : ' + fcfa(tot) + "</div>" +
+        '<button class="flame full-mt" onclick="PANIER.payer()">💳 Payer ' + fcfa(tot) + "</button>" +
+        '<button class="secondary small full-mt" onclick="PANIER.vider()">Vider le panier</button>' +
+        '<p class="item-desc" style="margin-top:8px;">Un seul paiement (Mobile Money ou carte bancaire) pour tout le panier. Les prix sont revérifiés par le serveur.</p>';
+    }
+    modal(h + '<button class="secondary full-mt" onclick="EVT.fermer()">Fermer</button>', true);
+  };
+  P.payer = function () {
+    if (!besoinMembre()) return;
+    var l = lirePanier();
+    if (!l.length) return;
+    var envoye = l.map(function (a) { return { k: a.k, id: a.id, qte: a.qte }; });
+    appelServeur("creerCommandePanier", code(), envoye).then(function (r) {
+      if (r.dejaAchetes && r.dejaAchetes.length) {
+        ecrirePanier(lirePanier().filter(function (a) { return r.dejaAchetes.indexOf(a.k + ":" + a.id) === -1; }));
+      }
+      if (!r.succes) { alert(r.message || "Commande impossible."); P.ouvrir(true); return; }
+      S.panierEnvoye = envoye;
+      E.fermer();
+      if (r.dejaAchetes && r.dejaAchetes.length) alert("Certains articles étaient déjà à vous : ils ont été retirés du panier. Nouveau total : " + fcfa(r.montant));
+      payer({ type: "panier", commandeId: r.commandeId }, r.montant);
+    }).catch(echec);
+  };
+  function apresPaiementPanier(r) {
+    var env = S.panierEnvoye || [];
+    S.panierEnvoye = null;
+    ecrirePanier(lirePanier().filter(function (a) { return !env.some(function (x) { return x.k === a.k && x.id === a.id; }); }));
+    var h = '<div class="item-nom" style="font-size:17px;margin-bottom:8px;">✅ Paiement confirmé</div>';
+    if ((r.achats || []).length) {
+      h += '<p class="field-label">Débloqués pour vous</p>' + r.achats.map(function (a) { return '<div class="item-desc">' + ICONES_P[a.k] + " " + esc(a.nom) + "</div>"; }).join("") +
+        '<p class="item-desc" style="margin-top:6px;">Retrouvez-les dans les rubriques Documents, Audios et Vidéos : ils s\'ouvrent maintenant sans repayer.</p>';
+    }
+    if ((r.billets || []).length) h += '<p class="field-label" style="margin-top:12px;">Vos billets</p>' + r.billets.map(htmlBillet).join("");
+    (r.echecs || []).forEach(function (m) { h += '<div class="error" style="display:block;margin-top:8px;">' + esc(m) + "</div>"; });
+    modal(h + '<button class="flame full-mt" onclick="EVT.fermer()">Fermer</button>', true);
+  }
+})();
+
+  </script>
 </body>
 </html>
