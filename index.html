@@ -424,7 +424,7 @@ video.video-player-frame{object-fit:contain}
         <h1 class="titre">Code d'accès requis</h1>
         <p class="subtitle">Pour créer un compte, vous devez posséder un code d'accès remis par un administrateur de JESUS.</p>
         <label class="field-label">Votre code d'accès</label>
-        <input id="codeInscription" type="text" autocomplete="off" placeholder="Ex : ARC-AB12CD34" style="text-transform:uppercase;letter-spacing:1.5px;font-weight:800;text-align:center;">
+        <input id="codeInscription" type="text" autocomplete="off" placeholder="Ex : JES-AB12CD34" style="text-transform:uppercase;letter-spacing:1.5px;font-weight:800;text-align:center;">
         <div id="erreurCodeInscription" class="error" style="display:none;"></div>
         <button onclick="validerCodeInscription()">Vérifier le code</button>
         <button class="ghost-link" onclick="retourVersVisiteur_()">← Retour</button>
@@ -7729,7 +7729,7 @@ video.video-player-frame{object-fit:contain}
     evenements: [], detail: null, panier: {}, paiement: null,
     concours: [], mesVotes: {}, mesEvts: null, mesConcours: null, form: null, cform: null, scan: null
   };
-  var CATEGORIES = ["Concert", "Conférence", "Séminaire", "Festival", "Autre"];
+  var CATEGORIES = ["Concert", "Conférence", "Séminaire", "Festival", "Compétition", "Autre"];
   var TYPES_CONCOURS = ["Concours", "Élection", "Award"];
 
   // ------------------------------------------------------------------ outils
@@ -8284,7 +8284,7 @@ video.video-player-frame{object-fit:contain}
     var rendre = function (liste) {
       m.el.innerHTML = '<div class="item-nom" style="font-size:16px;">🛂 Contrôleurs d\'entrée</div><p class="item-desc">Ces membres peuvent scanner les billets de cet événement.</p>' +
         (liste.length ? liste.map(function (c) { return '<div class="evt-ligne"><div>' + esc(c.nom) + '<div class="item-desc">' + esc(c.code) + '</div></div><button class="danger-outline small" onclick="EVT.ctrl(\'' + jsq_(id) + "','" + jsq_(c.code) + "',false)\">Retirer</button></div>"; }).join("") : '<p class="item-desc">Aucun contrôleur pour le moment.</p>') +
-        '<label class="field-label" style="margin-top:12px;">Ajouter par code membre (MB-…)</label><input id="ctrlCode" placeholder="MB-XXXXXXXX">' +
+        '<label class="field-label" style="margin-top:12px;">Ajouter un contrôleur (code, téléphone ou nom complet)</label><input id="ctrlCode" placeholder="Code, téléphone ou nom du membre">' +
         '<button class="flame" onclick="EVT.ctrl(\'' + jsq_(id) + "',document.getElementById('ctrlCode').value,true)\">Ajouter</button>" +
         '<button class="secondary full-mt" onclick="EVT.fermer()">Fermer</button>';
     };
@@ -8468,7 +8468,7 @@ video.video-player-frame{object-fit:contain}
     var d = document.createElement("div");
     d.className = "admin-section"; d.id = "admin-evenements";
     d.innerHTML = '<div id="evtAdminCommission"></div><div class="card"><p class="field-label">Événements à valider</p><div id="evtAdminModeration"><div class="loading">Chargement…</div></div></div>' +
-      '<div class="card"><p class="field-label">Ajouter un organisateur</p><input id="evtOrgCode" placeholder="Code du membre (MB-…)"><button onclick="EVT.addOrga()">Donner le statut d\'organisateur</button></div>' +
+      '<div class="card"><p class="field-label">Ajouter un organisateur</p><input id="evtOrgCode" placeholder="Code, téléphone ou nom complet du membre"><button onclick="EVT.addOrga()">Donner le statut d\'organisateur</button></div>' +
       '<div class="card"><p class="field-label">Organisateurs, revenus et reversements</p><div id="evtAdminOrgas"><div class="loading">Chargement…</div></div></div>';
     section.appendChild(d);
   }
@@ -8584,7 +8584,7 @@ video.video-player-frame{object-fit:contain}
   function majPanierBouton() {
     var l = lirePanier(), n = nbArticles(l);
     var surAuth = !!document.querySelector(".auth-screen.active");
-    btnP.style.display = (!surAuth && (membreCourant || n)) ? "block" : "none";
+    btnP.style.display = surAuth ? "none" : "block";   // visible aussi pour les visiteurs
     btnP.innerHTML = "🛒" + (n ? "<b>" + n + "</b>" : "");
   }
   setInterval(majPanierBouton, 1500);
