@@ -13,6 +13,34 @@
   <meta name="theme-color" content="#0b2f68">
   <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
   <style>
+
+/* ===== Présentation « marketplace » : affiches carrées côte à côte ===== */
+.mkt-grille{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media(min-width:640px){.mkt-grille{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}}
+@media(min-width:900px){.mkt-grille{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:1150px){.mkt-grille{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.mkt-carte{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;box-shadow:0 4px 14px rgba(12,47,104,.07);transition:transform .15s,box-shadow .15s;min-width:0}
+.mkt-carte:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(12,47,104,.14)}
+.mkt-img{position:relative;aspect-ratio:1/1;background:#eef3f9;overflow:hidden}
+.mkt-img img{width:100%;height:100%;object-fit:cover;display:block}
+.mkt-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:46px;background:linear-gradient(135deg,#eef3f9,#dfe8f5)}
+.mkt-badge{position:absolute;top:7px;left:7px;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;background:#f4c400;color:#3b2f00;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.mkt-badge.mem{left:auto;right:7px;background:#0b2f68;color:#fff}
+.mkt-badge.cat{background:#fff;color:var(--blue2)}
+.mkt-badge.ko{background:#d71920;color:#fff}
+.mkt-corps{padding:9px 10px 11px;display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.mkt-titre{font-weight:800;font-size:13px;line-height:1.25;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.mkt-sous{font-size:11px;color:var(--muted);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mkt-sous.deux{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.mkt-prix{font-weight:800;font-size:14px;color:var(--blue2)}
+.mkt-prix.gratuit{color:var(--green)}
+.mkt-stats{font-size:11px;color:var(--muted);font-weight:700;display:flex;flex-wrap:wrap;gap:2px 8px;margin-top:1px;cursor:pointer}
+.mkt-stats .st{color:#f5a623}
+.mkt-actions{display:flex;gap:6px;margin-top:6px}
+.mkt-actions button,.mkt-carte .mkt-mini{width:auto;flex:1;min-width:0;padding:8px 4px;font-size:12px;margin:0;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
+.mkt-carte .mkt-mini{flex:none;margin-top:6px;width:100%}
+#notationCarte{position:fixed;inset:0;z-index:9700;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+#notationCarte .boite{background:#fff;border-radius:16px;padding:18px;max-width:340px;width:100%;text-align:center}
 .bloc-notes{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;margin:6px 0;font-size:12px;color:var(--muted)}
 .bloc-notes .etoiles{white-space:nowrap}
 .bloc-notes .etoile{font-size:22px;line-height:1;color:#cfd6e2;cursor:pointer;padding:0 1px;user-select:none}
@@ -240,7 +268,7 @@ button:not(:disabled):active,.tuile-visiteur:active{transform:scale(.94)!importa
 .bible-resultat .ref{font-weight:800;color:var(--blue2);font-size:12px}
 .bible-resultat mark{background:#ffe066;border-radius:3px;padding:0 1px}
 video.video-player-frame{object-fit:contain}
-.btn-langue{width:auto;padding:8px 11px;font-size:18px;line-height:1;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.55);border-radius:12px;box-shadow:none;flex-shrink:0}
+.btn-langue{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;padding:0;font-size:18px;line-height:1;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.55);border-radius:12px;box-shadow:none;flex-shrink:0}
 .menu-langue{position:fixed;top:64px;right:12px;z-index:9400;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.28);padding:6px;min-width:190px}
 .menu-langue button{display:block;width:100%;text-align:left;background:transparent;color:#1b2430;box-shadow:none;border-radius:10px;padding:10px 12px;font-size:14px;font-weight:700}
 .menu-langue button:active{background:#eef3f9}
@@ -284,7 +312,8 @@ video.video-player-frame{object-fit:contain}
       <div class="topbar-nom" id="topbarNom">JESUS</div>
       <div class="topbar-sub" id="topbarSub">Espace membres</div>
     </div>
-    <button id="btnLangue" class="btn-langue" onclick="ouvrirMenuLangue_(event)" title="Changer la langue de l'application" aria-label="Changer la langue">🌐</button>
+    <button id="btnCompte" class="btn-langue" onclick="afficherOnglet('badge')" title="Mon compte" aria-label="Mon compte" style="display:none;"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></button>
+    <button id="btnLangue" class="btn-langue" onclick="ouvrirMenuLangue_(event)" title="Changer la langue de l'application" aria-label="Changer la langue"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg></button>
     <div class="topbar-actions">
       <button id="btnContact" onclick="afficherEcranContact()" class="btn-topbar-fort btn-contact" title="Contactez-nous">📞 Contact</button>
       <button id="btnDeconnexion" onclick="quitterSession()" class="btn-topbar-fort btn-session" style="display:none;">Se déconnecter</button>
@@ -306,7 +335,7 @@ video.video-player-frame{object-fit:contain}
         <button class="secondary full-mt" onclick="demarrerInscription()">Créer un compte</button>
         <button class="ghost-link full-mt" onclick="afficherEcranContact()">📞 Contactez-nous</button>
         <select id="selecteurTraduction" onchange="traduireVers(this.value)" style="margin-top:10px;">
-          <option value="">🌐 Traduire l'application…</option>
+          <option value="">Traduire l'application…</option>
           <option value="fr">Français (original)</option>
           <option value="en">English</option>
           <option value="es">Español</option>
@@ -332,7 +361,7 @@ video.video-player-frame{object-fit:contain}
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('documents')"><span class="ic">📄</span><span class="lib">Documents</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('videos')"><span class="ic">▶️</span><span class="lib">Vidéos</span></div>
           <div class="tuile-visiteur" onclick="entrerModeVisiteur('offrandes')"><span class="ic">🙌</span><span class="lib">Offrandes & Dons</span></div>
-          <div class="tuile-visiteur" onclick="entrerModeVisiteur('cotisation')"><span class="ic">💳</span><span class="lib">Campagnes caritatives</span></div>
+          <div class="tuile-visiteur" onclick="entrerModeVisiteur('cotisation')"><span class="ic">💳</span><span class="lib">Collectes</span></div>
           <div class="tuile-visiteur" style="grid-column:span 2;" onclick="entrerModeVisiteur('demandePriere')"><span class="ic">✉️</span><span class="lib">Demande de prière</span></div>
         </div>
       </div>
@@ -612,7 +641,7 @@ video.video-player-frame{object-fit:contain}
     </div>
 
     <div class="section" id="section-cotisation">
-      <div class="section-title"><span class="ic">💳</span> Campagnes caritatives</div>
+      <div class="section-title"><span class="ic">💳</span> Collectes</div>
       <div class="card" id="listeTypesCotisation"><div class="loading">Chargement…</div></div>
       <div id="messagePaiement" style="margin: -6px 0 14px; font-size:13px;"></div>
       <div class="stat-grid">
@@ -1231,11 +1260,11 @@ video.video-player-frame{object-fit:contain}
 
       <div class="admin-section" id="admin-cotisation">
         <div class="card">
-          <label class="field-label">Créer une campagne caritative</label>
+          <label class="field-label">Créer une collecte</label>
           <input id="ntcNom" type="text" placeholder="Ex : Cotisation mensuelle, Construction du temple…">
           <label class="field-label">Montant suggéré par personne (FCFA)</label>
           <input id="ntcMontant" type="number" placeholder="Ex : 2000">
-          <label class="field-label">Objectif collectif de la campagne (FCFA, facultatif)</label>
+          <label class="field-label">Objectif collectif de la collecte (FCFA, facultatif)</label>
           <input id="ntcObjectif" type="number" placeholder="Ex : 500000 — laisser vide si pas d'objectif global">
           <label class="field-label">Date de début</label>
           <input id="ntcDateDebut" type="date">
@@ -1250,7 +1279,7 @@ video.video-player-frame{object-fit:contain}
             <option value="Ponctuelle">Ponctuelle</option>
           </select>
           <div id="erreurTypeCotisation" class="error" style="display:none;"></div>
-          <button onclick="creerTypeCotisation()">Créer la campagne</button>
+          <button onclick="creerTypeCotisation()">Créer la collecte</button>
         </div>
         <div class="card" id="adminListeTypesCotisation"><div class="loading">Chargement…</div></div>
       </div>
@@ -2332,14 +2361,13 @@ video.video-player-frame{object-fit:contain}
         { id: "videos", label: "▶️ Vidéos" },
         { id: "evenements", label: "🎫 Événements" },
         { id: "offrandes", label: "🙌 Offrandes" },
-        { id: "cotisation", label: "💳 Campagnes caritatives" },
+        { id: "cotisation", label: "💳 Collectes" },
         { id: "demandePriere", label: "✉️ Demande de prière" }
       ];
     } else {
       onglets = [
         { id: "groupes", label: "Groupes" },
-        { id: "badge", label: "👤 Mon compte" },
-        { id: "cotisation", label: "Campagnes caritatives" },
+        { id: "cotisation", label: "Collectes" },
         { id: "offrandes", label: "Offrandes" },
         { id: "bible", label: "📖 Bible" },
         { id: "prieres", label: "🙏 Séances directes" },
@@ -2381,6 +2409,7 @@ video.video-player-frame{object-fit:contain}
     document.querySelectorAll(".auth-screen").forEach(function (s) { s.classList.remove("active"); });
     document.getElementById("ecranDashboard").style.display = "block";
     document.getElementById("topbar").style.display = "flex";
+    document.getElementById("btnCompte").style.display = "inline-flex";
     document.getElementById("btnDeconnexion").style.display = "inline-flex";
     document.getElementById("btnDeconnexion").textContent = "Se déconnecter";
     document.getElementById("btnDeconnexion").onclick = quitterSession;
@@ -2403,6 +2432,7 @@ video.video-player-frame{object-fit:contain}
     document.getElementById("ecranDashboard").style.display = "block";
     document.getElementById("topbar").style.display = "flex";
     document.getElementById("topbarSub").textContent = "Espace visiteur";
+    document.getElementById("btnCompte").style.display = "none";
     document.getElementById("btnDeconnexion").style.display = "inline-flex";
     document.getElementById("btnDeconnexion").textContent = "Se connecter";
     document.getElementById("btnDeconnexion").onclick = quitterVisiteurEtSeConnecter;
@@ -2711,7 +2741,7 @@ video.video-player-frame{object-fit:contain}
     if (m.estTvOwner) cartes.push('<div class="card" style="margin-top:12px;"><p class="field-label">📺 TV Owner</p><p class="item-desc">Gérez votre chaîne : logo, vidéos, playlists, boucle des temps morts, grille et lives.</p><button class="secondary" onclick="tvSousOnglet=\'studio\';afficherOnglet(\'tv\')">Mon studio TV</button></div>');
     const perms = permissionsDe_(m);
     if (perms.length) {
-      const domaines = { finances: "Finances et campagnes caritatives", demandesPriere: "Demandes de prière", contenus: "Contenus et TV", evenements: "Événements et organisateurs", systeme: "Membres, annonces et réglages" };
+      const domaines = { finances: "Finances et collectes", demandesPriere: "Demandes de prière", contenus: "Contenus et TV", evenements: "Événements et organisateurs", systeme: "Membres, annonces et réglages" };
       cartes.push('<div class="card" style="margin-top:12px;"><p class="field-label">⚙ ' + escapeHtml(LIBELLES_ROLES[m.role] || "Administrateur") + '</p><p class="item-desc">Vous gérez : ' + perms.map(function (p) { return domaines[p]; }).join(", ") + '.</p><button class="secondary" onclick="afficherOnglet(\'admin\')">Ouvrir l\'administration</button></div>');
     }
     document.getElementById("compteRoles").innerHTML = cartes.join("");
@@ -2804,7 +2834,7 @@ video.video-player-frame{object-fit:contain}
       { id: "membres", label: "Membres", permission: "systeme" },
       { id: "annonces", label: "📢 Annonces", permission: "systeme" },
       { id: "paiements", label: "Paiements", permission: "finances" },
-      { id: "cotisation", label: "Campagnes caritatives", permission: "finances" },
+      { id: "cotisation", label: "Collectes", permission: "finances" },
       { id: "demandesPriere", label: "Demandes de prière", permission: "demandesPriere" },
       { id: "soumissions", label: "✍️ Soumissions", permission: "contenus" },
       { id: "tv", label: "📺 TV", permission: "contenus" },
@@ -3002,7 +3032,7 @@ video.video-player-frame{object-fit:contain}
   function afficherTypesCotisationMembre(types) {
     types = types || [];
     const zone = document.getElementById("listeTypesCotisation");
-    if (!types.length) { zone.innerHTML = '<p class="empty-state">Aucune campagne caritative pour le moment.</p>'; return; }
+    if (!types.length) { zone.innerHTML = '<p class="empty-state">Aucune collecte pour le moment.</p>'; return; }
     zone.innerHTML = types.map(function (t) {
       const nomEchappe = jsq_(t.Nom);
       const aObjectif = Number(t.MontantObjectif) > 0;
@@ -3387,22 +3417,19 @@ video.video-player-frame{object-fit:contain}
     if (titreZone) entete += '<p class="field-label">' + escapeHtml(titreZone) + '</p>';
     if (!audios.length) { zone.innerHTML = entete + '<p class="empty-state">Aucun audio ici pour le moment.</p>'; return; }
     const cartes = audios.map(function (a, i) {
-      const pillVisibilite = a.Visibilite === "Membres" ? '<span class="vis-pill">Membres</span>' : '';
-      const badgePremium = a.Type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : '';
-      const cover = a.CoverBase64 ? '<img class="lecteur-cover" src="data:image/jpeg;base64,' + a.CoverBase64 + '">' : '<div class="lecteur-cover" style="display:flex;align-items:center;justify-content:center;">🎧</div>';
+      const payant = a.Type === "Payant";
+      const cover = a.CoverBase64 ? '<img src="data:image/jpeg;base64,' + a.CoverBase64 + '" alt="" loading="lazy">' : '<div class="mkt-ph">🎧</div>';
       const boutonLyrics = (a.Paroles && a.Paroles.trim()) || a.ParolesFichierLien
-        ? '<button class="secondary small" style="width:auto;margin-top:6px;" onclick="event.stopPropagation();afficherParolesAudioClick_(' + i + ')">📜 Lyrics</button>' : '';
-      return '<div class="contenu-item" style="display:flex;gap:12px;align-items:center;cursor:pointer;" onclick="jouerAudio(' + i + ')">' +
-        cover +
-        '<div style="flex:1;">' +
-        '<div class="item-nom">' + escapeHtml(a.Titre) + pillVisibilite + badgePremium + '</div>' +
-        (a.Auteur ? '<div class="item-desc">Par ' + escapeHtml(a.Auteur) + '</div>' : '') +
-        '<div class="item-desc">' + escapeHtml(a.DateAjout) + '</div>' +
-        blocNotes_("audio", a.ID) +
-        boutonLyrics +
-        '</div></div>';
+        ? '<button class="secondary small mkt-mini" onclick="event.stopPropagation();afficherParolesAudioClick_(' + i + ')">📜 Lyrics</button>' : '';
+      return '<div class="mkt-carte" onclick="jouerAudio(' + i + ')">' +
+        '<div class="mkt-img">' + cover + (payant ? '<span class="mkt-badge">⭐ Premium</span>' : '') + (a.Visibilite === "Membres" ? '<span class="mkt-badge mem">Membres</span>' : '') + '</div>' +
+        '<div class="mkt-corps"><div class="mkt-titre">' + escapeHtml(a.Titre) + '</div>' +
+        (a.Auteur ? '<div class="mkt-sous">Par ' + escapeHtml(a.Auteur) + '</div>' : '') +
+        '<div class="mkt-prix' + (payant ? '' : ' gratuit') + '">' + (payant ? Number(a.Prix).toLocaleString("fr-FR") + " F" : "Gratuit") + '</div>' +
+        statsCompactes_("audio", a.ID, a.Titre) +
+        '<div class="mkt-sous">' + escapeHtml(a.DateAjout) + '</div>' + boutonLyrics + '</div></div>';
     });
-    zone.innerHTML = entete + cartes.join("");
+    zone.innerHTML = entete + '<div class="mkt-grille">' + cartes.join("") + '</div>';
   }
 
   function afficherParolesAudioClick_(index) {
@@ -3657,7 +3684,26 @@ video.video-player-frame{object-fit:contain}
   function blocNotes_(type, id) {
     return '<div class="bloc-notes" data-t="' + type + '" data-i="' + id + '" onclick="event.stopPropagation()">' + htmlNotes_(type, id) + "</div>";
   }
+  // Version compacte pour les cartes « marketplace » : ★ moyenne (avis) · 👁 vues. Un toucher ouvre la notation.
+  function htmlStatsCompactes_(type, id) {
+    const s = statsContenus_.stats[type + ":" + id] || { v: 0, n: 0, t: 0 };
+    const note = s.n ? '<span><span class="st">★</span> ' + (s.t / s.n).toFixed(1).replace(".", ",") + " (" + s.n + ")</span>" : '<span><span class="st">☆</span> Noter</span>';
+    return note + "<span>👁 " + Number(s.v || 0).toLocaleString("fr-FR") + "</span>";
+  }
+  function statsCompactes_(type, id, titre) {
+    if (Date.now() - statsContenus_.charge > 90000 && !statsContenus_.enCours) setTimeout(chargerStatsContenus_, 0);
+    return '<div class="mkt-stats bloc-stats" data-t="' + type + '" data-i="' + id + '" title="Touchez pour noter" onclick="event.stopPropagation();noterDepuisCarte_(\'' + type + "','" + id + "','" + jsq_(titre || "") + '\')">' + htmlStatsCompactes_(type, id) + "</div>";
+  }
+  function noterDepuisCarte_(type, id, titre) {
+    const fond = document.createElement("div");
+    fond.id = "notationCarte";
+    fond.innerHTML = '<div class="boite"><div class="item-nom" style="margin-bottom:6px;">' + escapeHtml(titre || "Noter") + '</div><p class="item-desc" style="margin:0 0 6px;">Touchez une étoile pour donner votre note.</p>' +
+      blocNotes_(type, id) + '<button class="secondary small full-mt" style="width:100%;">Fermer</button></div>';
+    fond.addEventListener("click", function (e) { if (e.target === fond || e.target.tagName === "BUTTON") fond.remove(); });
+    document.body.appendChild(fond);
+  }
   function majBlocsNotes_() {
+    document.querySelectorAll(".bloc-stats").forEach(function (el) { el.innerHTML = htmlStatsCompactes_(el.getAttribute("data-t"), el.getAttribute("data-i")); });
     document.querySelectorAll(".bloc-notes").forEach(function (el) { el.innerHTML = htmlNotes_(el.getAttribute("data-t"), el.getAttribute("data-i")); });
   }
   function noterContenu_(type, id, note) {
@@ -4117,27 +4163,28 @@ video.video-player-frame{object-fit:contain}
   }
 
   function construireCarteDocument_(d) {
-    const badgePremium = d.Type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : '';
+    const payant = d.Type === "Payant";
     const titreEchappe = jsq_(d.Titre);
-    const cover = d.CoverBase64 ? '<img src="data:image/jpeg;base64,' + d.CoverBase64 + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:10px;margin-bottom:8px;">' : '';
-    const bouton = d.Type === "Payant"
-      ? '<button class="flame small full-mt" onclick="acheterDocument(\'' + d.ID + '\',\'' + titreEchappe + '\',' + Number(d.Prix) + ')">💳 Acheter (' + Number(d.Prix).toLocaleString("fr-FR") + ' F) et télécharger</button>' +
-        '<button class="secondary small full-mt" onclick="PANIER.ajouter(\'document\',\'' + d.ID + '\',\'' + titreEchappe + '\',' + Number(d.Prix) + ')">🛒 Ajouter au panier</button>'
-      : '<div class="jeu-boutons full-mt"><button class="secondary small" onclick="lireDocument(\'' + d.ID + '\')">📖 Lire</button><button class="secondary small" onclick="telechargerDocument(\'' + d.ID + '\')">⬇️ Télécharger</button></div>';
-    return '<div class="contenu-item">' + cover +
-      '<div class="item-nom">📄 ' + escapeHtml(d.Titre) + badgePremium + '</div>' +
-      (d.Auteur ? '<div class="item-desc">Par ' + escapeHtml(d.Auteur) + '</div>' : '') +
-      (d.Description ? '<div class="item-desc">' + escapeHtml(d.Description) + '</div>' : '') +
-      '<div class="item-desc">Ajouté le ' + escapeHtml(d.DateAjout) + '</div>' +
-      blocNotes_("document", d.ID) +
-      bouton + '</div>';
+    const cover = d.CoverBase64 ? '<img src="data:image/jpeg;base64,' + d.CoverBase64 + '" alt="" loading="lazy">' : '<div class="mkt-ph">📄</div>';
+    const actions = payant
+      ? '<div class="mkt-actions"><button class="flame small" onclick="acheterDocument(\'' + d.ID + '\',\'' + titreEchappe + '\',' + Number(d.Prix) + ')">💳 Acheter</button>' +
+        '<button class="secondary small" onclick="PANIER.ajouter(\'document\',\'' + d.ID + '\',\'' + titreEchappe + '\',' + Number(d.Prix) + ')">🛒</button></div>'
+      : '<div class="mkt-actions"><button class="secondary small" onclick="lireDocument(\'' + d.ID + '\')">📖 Lire</button><button class="secondary small" onclick="telechargerDocument(\'' + d.ID + '\')">⬇️</button></div>';
+    return '<div class="mkt-carte" style="cursor:default;">' +
+      '<div class="mkt-img">' + cover + (payant ? '<span class="mkt-badge">⭐ Premium</span>' : '') + '</div>' +
+      '<div class="mkt-corps"><div class="mkt-titre">' + escapeHtml(d.Titre) + '</div>' +
+      (d.Auteur ? '<div class="mkt-sous">Par ' + escapeHtml(d.Auteur) + '</div>' : '') +
+      (d.Description ? '<div class="mkt-sous deux">' + escapeHtml(d.Description) + '</div>' : '') +
+      '<div class="mkt-prix' + (payant ? '' : ' gratuit') + '">' + (payant ? Number(d.Prix).toLocaleString("fr-FR") + " F" : "Gratuit") + '</div>' +
+      statsCompactes_("document", d.ID, d.Titre) +
+      '<div class="mkt-sous">' + escapeHtml(d.DateAjout) + '</div>' + actions + '</div></div>';
   }
 
   function afficherDocuments(documents) {
     documents = documents || [];
     const zone = document.getElementById("listeDocuments");
     if (!documents.length) { zone.innerHTML = '<p class="empty-state">Aucun document pour le moment.</p>'; return; }
-    zone.innerHTML = documents.map(construireCarteDocument_).join("");
+    zone.innerHTML = '<div class="mkt-grille">' + documents.map(construireCarteDocument_).join("") + "</div>";
   }
 
   // Ouvre tout de suite un onglet d'attente, DANS le clic : les navigateurs bloquent les fenêtres ouvertes plus tard
@@ -5066,26 +5113,24 @@ video.video-player-frame{object-fit:contain}
     if (!videos.length) { zone.innerHTML = entete + '<p class="empty-state">Aucune vidéo trouvée.</p>'; return; }
     const cartes = videos.map(function (v, i) {
       if (v.source === "youtube") {
-        const titreEchappe = jsq_(v.titre);
-        return '<div class="video-item" onclick="lireVideoUnifiee(' + i + ')">' +
-          '<img class="video-thumb" src="' + v.miniature + '" alt="">' +
-          '<div><div class="video-titre">' + escapeHtml(v.titre) + '</div>' +
-          '<div class="video-date">' + escapeHtml(v.datePublication) + '</div></div>' +
-          '</div>';
+        return '<div class="mkt-carte" onclick="lireVideoUnifiee(' + i + ')">' +
+          '<div class="mkt-img"><img src="' + v.miniature + '" alt="" loading="lazy"><span class="mkt-badge cat">▶ YouTube</span></div>' +
+          '<div class="mkt-corps"><div class="mkt-titre">' + escapeHtml(v.titre) + '</div>' +
+          '<div class="mkt-prix gratuit">Gratuit</div><div class="mkt-sous">' + escapeHtml(v.datePublication) + '</div></div></div>';
       }
-      const badgePremium = v.type === "Payant" ? '<span class="badge-premium">⭐ Premium</span>' : '';
-      const miniature = v.cover ? 'data:image/jpeg;base64,' + v.cover : '';
+      const payant = v.type === "Payant";
+      const cover = v.cover ? '<img src="data:image/jpeg;base64,' + v.cover + '" alt="" loading="lazy">' : '<div class="mkt-ph">🎬</div>';
       const boutonLyrics = (v.paroles && v.paroles.trim()) || v.parolesFichierLien
-        ? '<button class="secondary small" style="width:auto;margin-top:4px;" onclick="event.stopPropagation();afficherParolesVideoClick_(' + i + ')">📜 Lyrics</button>' : '';
-      return '<div class="video-item" onclick="lireVideoUnifiee(' + i + ')">' +
-        (miniature ? '<img class="video-thumb" src="' + miniature + '" alt="">' : '<div class="video-thumb" style="display:flex;align-items:center;justify-content:center;">🎬</div>') +
-        '<div><div class="video-titre">' + escapeHtml(v.titre) + " " + badgePremium + '</div>' +
-        '<div class="video-date">' + (v.auteur ? "Par " + escapeHtml(v.auteur) + " · " : "") + escapeHtml(v.dateAjout) + '</div>' +
-        blocNotes_("video", v.id) +
-        boutonLyrics +
-        '</div></div>';
+        ? '<button class="secondary small mkt-mini" onclick="event.stopPropagation();afficherParolesVideoClick_(' + i + ')">📜 Lyrics</button>' : '';
+      return '<div class="mkt-carte" onclick="lireVideoUnifiee(' + i + ')">' +
+        '<div class="mkt-img">' + cover + (payant ? '<span class="mkt-badge">⭐ Premium</span>' : '') + '</div>' +
+        '<div class="mkt-corps"><div class="mkt-titre">' + escapeHtml(v.titre) + '</div>' +
+        (v.auteur ? '<div class="mkt-sous">Par ' + escapeHtml(v.auteur) + '</div>' : '') +
+        '<div class="mkt-prix' + (payant ? '' : ' gratuit') + '">' + (payant ? Number(v.prix).toLocaleString("fr-FR") + " F" : "Gratuit") + '</div>' +
+        statsCompactes_("video", v.id, v.titre) +
+        '<div class="mkt-sous">' + escapeHtml(v.dateAjout) + '</div>' + boutonLyrics + '</div></div>';
     });
-    zone.innerHTML = entete + cartes.join("");
+    zone.innerHTML = entete + '<div class="mkt-grille">' + cartes.join("") + '</div>';
   }
 
   function afficherParolesVideoClick_(index) {
@@ -5113,7 +5158,7 @@ video.video-player-frame{object-fit:contain}
   const RUBRIQUES = [
     { id: "bible", nom: "Bible" }, { id: "prieres", nom: "Séances directes" }, { id: "tv", nom: "TV" },
     { id: "audios", nom: "Audios" }, { id: "documents", nom: "Documents" }, { id: "videos", nom: "Vidéos" },
-    { id: "offrandes", nom: "Offrandes" }, { id: "cotisation", nom: "Campagnes caritatives" },
+    { id: "offrandes", nom: "Offrandes" }, { id: "cotisation", nom: "Collectes" },
     { id: "demandePriere", nom: "Demande de prière" }, { id: "groupes", nom: "Groupes" },
     { id: "evenements", nom: "Événements" }, { id: "badge", nom: "Mon compte" }, { id: "messages", nom: "Messages" }, { id: "soumissions", nom: "Soumissions" }
   ];
@@ -5667,7 +5712,7 @@ video.video-player-frame{object-fit:contain}
     if (!m) return;
     const nom = ((m.prenom || "") + " " + (m.nom || "")).trim() || m.telephone || code;
     const droits = [
-      { id: "finances", titre: "Finances", aide: "Paiements, campagnes caritatives et offrandes" },
+      { id: "finances", titre: "Finances", aide: "Paiements, collectes et offrandes" },
       { id: "demandesPriere", titre: "Demandes de prière", aide: "Lire et traiter les demandes de prière" },
       { id: "contenus", titre: "Contenus", aide: "Groupes, séances, audios, documents, vidéos, TV, affiches, actualités, soumissions des auteurs" },
       { id: "evenements", titre: "Événements", aide: "Valider les événements, gérer les organisateurs, leurs revenus et leurs versements" },
@@ -5958,7 +6003,7 @@ video.video-player-frame{object-fit:contain}
   function afficherTypesCotisationAdmin(types) {
     types = types || [];
     const zone = document.getElementById("adminListeTypesCotisation");
-    if (!types.length) { zone.innerHTML = '<p class="empty-state">Aucune campagne de cotisation.</p>'; return; }
+    if (!types.length) { zone.innerHTML = '<p class="empty-state">Aucune collecte.</p>'; return; }
     zone.innerHTML = types.map(function (t) {
       const aObjectif = Number(t.MontantObjectif) > 0;
       const barre = aObjectif
@@ -6004,7 +6049,7 @@ video.video-player-frame{object-fit:contain}
   }
 
   function supprimerTypeCotisationAdmin(id) {
-    confirmerApp_("Supprimer cette campagne de cotisation ?", function () {
+    confirmerApp_("Supprimer cette collecte ?", function () {
     appelServeur("supprimerTypeCotisation", membreCourant.code, id).then(function () {
       appelServeur("getTypesCotisation").then(afficherTypesCotisationAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
@@ -7802,6 +7847,8 @@ video.video-player-frame{object-fit:contain}
   // ------------------------------------------------------------------ outils
   function esc(t) { return escapeHtml(t == null ? "" : String(t)); }
   function code() { return membreCourant ? membreCourant.code : null; }
+  // Identité pour voter : le code du membre connecté, sinon la clé anonyme de cet appareil (vote sans compte).
+  function cleVote() { return membreCourant ? membreCourant.code : cleNote_(); }
   function fcfa(n) { return Number(n || 0).toLocaleString("fr-FR") + " FCFA"; }
   function quand(s) {
     if (!s) return "";
@@ -7959,7 +8006,7 @@ video.video-player-frame{object-fit:contain}
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">' +
       ["Tous"].concat(CATEGORIES).map(function (c) {
         return '<button class="evt-chip ' + (S.categorie === c ? "" : "secondary") + '" onclick="EVT.cat(\'' + c + '\')">' + esc(c) + "</button>";
-      }).join("") + '</div><div id="evtListe" class="evt-grille"></div>';
+      }).join("") + '</div><div id="evtListe"></div>';
     zone().innerHTML = h;
     cartes();
   }
@@ -7973,14 +8020,19 @@ video.video-player-frame{object-fit:contain}
     });
     var z = document.getElementById("evtListe");
     if (!liste.length) { z.innerHTML = '<p class="empty-state">Aucun événement à venir pour le moment.</p>'; return; }
-    z.innerHTML = liste.map(function (e) {
-      var prix = e.complet ? puce("Complet", "ko") : (e.prixMin > 0 ? puce("Dès " + fcfa(e.prixMin), "") : puce("Gratuit", "ok"));
-      return '<div class="evt-carte evt-carte" onclick="EVT.ouvrir(\'' + jsq_(e.id) + '\')" style="cursor:pointer;">' +
-        (e.image ? '<img class="evt-img" src="' + e.image + '" alt="">' : "") +
-        puce(e.categorie, "") + " " + prix +
-        '<div class="evt-titre">' + esc(e.titre) + '</div><div class="evt-meta">📅 ' + quand(e.dateDebut) + "<br>📍 " + esc(e.lieu) + "</div>" +
-        '<button class="flame full-mt" onclick="event.stopPropagation();EVT.ouvrir(\'' + jsq_(e.id) + '\')">Découvrir</button></div>';
-    }).join("");
+    z.innerHTML = '<div class="mkt-grille">' + liste.map(function (e) {
+      var prixTxt = e.complet ? "Complet" : (e.prixMin > 0 ? "Dès " + fcfa(e.prixMin) : "Gratuit");
+      return '<div class="mkt-carte" onclick="EVT.ouvrir(\'' + jsq_(e.id) + '\')">' +
+        '<div class="mkt-img">' + (e.image ? '<img src="' + e.image + '" alt="" loading="lazy">' : '<div class="mkt-ph">🎫</div>') +
+        '<span class="mkt-badge cat">' + esc(e.categorie) + "</span>" + (e.complet ? '<span class="mkt-badge mem ko">Complet</span>' : "") + "</div>" +
+        '<div class="mkt-corps"><div class="mkt-titre">' + esc(e.titre) + "</div>" +
+        '<div class="mkt-sous">📅 ' + quand(e.dateDebut) + "</div>" +
+        '<div class="mkt-sous">📍 ' + esc(e.lieu) + "</div>" +
+        '<div class="mkt-prix' + (!e.complet && !(e.prixMin > 0) ? " gratuit" : "") + '">' + prixTxt + "</div>" +
+        statsCompactes_("evenement", e.id, e.titre) +
+        (e.organisateur ? '<div class="mkt-sous">Par ' + esc(e.organisateur) + "</div>" : "") +
+        '<button class="flame small mkt-mini" onclick="event.stopPropagation();EVT.ouvrir(\'' + jsq_(e.id) + '\')">Découvrir</button></div></div>';
+    }).join("") + "</div>";
   }
 
   // ------------------------------------------------------------------ DÉTAIL + BILLETTERIE
@@ -7988,7 +8040,7 @@ video.video-player-frame{object-fit:contain}
     zone().innerHTML = '<div class="loading">Chargement…</div>';
     appelServeur("getEvenement", id, code()).then(function (r) {
       if (!r.succes) { zone().innerHTML = '<p class="error">' + esc(r.message) + "</p>"; return; }
-      S.detail = r.evenement; S.panier = {}; detail();
+      S.detail = r.evenement; S.panier = {}; detail(); compterVue_("evenement", id);
       try { zone().scrollIntoView({ block: "start" }); window.scrollTo(0, 0); } catch (x) {}
     }).catch(function (e) { afficherErreurZone("evtContenu", e); });
   };
@@ -7999,7 +8051,7 @@ video.video-player-frame{object-fit:contain}
       puce(e.categorie, "") + " " + puceStatut(e.statut) +
       '<div class="evt-titre" style="font-size:20px;">' + esc(e.titre) + "</div>" +
       '<div class="evt-meta">📅 ' + quand(e.dateDebut) + " → " + quand(e.dateFin) + "<br>📍 " + esc(e.lieu) + (e.adresse ? " — " + esc(e.adresse) : "") +
-      "<br>👤 Organisé par " + esc(e.organisateur) + "</div>" +
+      "<br>👤 Organisé par " + esc(e.organisateur) + "</div>" + blocNotes_("evenement", e.id) +
       '<p style="white-space:pre-wrap;font-size:14px;line-height:1.6;">' + esc(e.description) + "</p></div>";
     if (e.statut !== "Publié") h += '<div class="form-public-note">Cet événement n\'est pas encore public (aperçu réservé à l\'organisateur).</div>';
     else if (!e.inscriptionOuverte) h += '<div class="form-public-note">Les inscriptions sont closes.</div>';
@@ -8080,7 +8132,7 @@ video.video-player-frame{object-fit:contain}
   function payer(infos, montant) {
     if (!configApp || !configApp.paiementPublicKey) { alert(messagePaiementNonConfigure_()); return; }
     S.paiement = infos;
-    openKkiapayWidget({ amount: montant, api_key: configApp.paiementPublicKey, sandbox: false, data: code(), contexte: "evenement", metadata: { commande: infos.commandeId } });
+    openKkiapayWidget({ amount: montant, api_key: configApp.paiementPublicKey, sandbox: false, data: infos.cle || code(), contexte: "evenement", metadata: { commande: infos.commandeId } });
   }
   addKkiapayListener("success", function (resp) {
     var p = S.paiement;
@@ -8088,7 +8140,7 @@ video.video-player-frame{object-fit:contain}
     S.paiement = null;
     var tid = resp.transactionId || (resp.detail && resp.detail.transactionId);
     var m = modal('<div class="loading">Vérification du paiement…</div>');
-    var appel = p.type === "vote" ? appelServeur("confirmerCommandeVote", code(), p.commandeId, tid)
+    var appel = p.type === "vote" ? appelServeur("confirmerCommandeVote", p.cle || code(), p.commandeId, tid)
       : p.type === "panier" ? appelServeur("confirmerCommandePanier", code(), p.commandeId, tid)
       : appelServeur("confirmerCommande", code(), p.commandeId, tid);
     appel.then(function (r) {
@@ -8126,7 +8178,7 @@ video.video-player-frame{object-fit:contain}
   function vueVotes() {
     zone().innerHTML = '<div class="loading">Chargement…</div>';
     var p = [appelServeur("getConcours")];
-    if (membreCourant) p.push(appelServeur("getMesVotes", code()));
+    p.push(appelServeur("getMesVotes", cleVote()));
     Promise.all(p).then(function (r) {
       S.concours = r[0].concours || []; S.mesVotes = (r[1] && r[1].votes) || {};
       zone().innerHTML = S.concours.length ? avecRecherche(S.concours.map(carteConcours).join(""), "Rechercher un vote ou un candidat…") : '<p class="empty-state">Aucun vote en cours pour le moment.</p>';
@@ -8144,7 +8196,7 @@ video.video-player-frame{object-fit:contain}
       '<div class="evt-titre">' + esc(c.titre) + "</div>" +
       (c.description ? '<p class="item-desc" style="white-space:pre-wrap;">' + esc(c.description) + "</p>" : "") +
       '<div class="evt-meta">' + (c.dateFin ? "⏰ Fin : " + quand(c.dateFin) + "<br>" : "") +
-      (c.prixVote > 0 ? "" : (membreCourant ? "Il vous reste " + restants + " vote(s)." : "1 vote minimum par membre connecté.")) +
+      (c.prixVote > 0 ? (c.exigerCompte && !membreCourant ? "🔒 Un compte est requis pour voter." : "") : (c.exigerCompte && !membreCourant ? "🔒 Un compte est requis pour voter." : "Il vous reste " + restants + " vote(s). Pas besoin de compte.")) +
       (c.scoresVisibles ? "<br>" + c.totalVotes + " vote(s) au total" : "<br>Résultats visibles à la clôture") + "</div>";
     h += c.candidats.map(function (x) {
       var pct = c.scoresVisibles ? Math.round(((x.votes || 0) / Math.max(1, c.totalVotes)) * 100) : 0;
@@ -8153,7 +8205,7 @@ video.video-player-frame{object-fit:contain}
         '<div style="flex:1;min-width:0;"><div class="item-nom">' + esc(x.nom) + "</div>" +
         (x.description ? '<div class="item-desc">' + esc(x.description) + "</div>" : "") +
         (c.scoresVisibles ? '<div class="evt-barre" style="margin-top:6px;"><div style="width:' + Math.round((x.votes || 0) / max * 100) + '%"></div></div><div class="item-desc">' + x.votes + " vote(s) · " + pct + " %</div>" : "") + "</div>" +
-        (peutVoter ? '<button class="flame small" style="width:auto;" onclick="EVT.voter(\'' + jsq_(c.id) + "','" + jsq_(x.id) + '\')">' + (c.prixVote > 0 ? "Voter" : "🗳️ Voter") + "</button>" : "") + "</div>";
+        (peutVoter ? '<button class="flame small" style="width:auto;" onclick="EVT.voter(\'' + jsq_(c.id) + "','" + jsq_(x.id) + '\')">' + (c.exigerCompte && !membreCourant ? "🔒 Se connecter pour voter" : (c.prixVote > 0 ? "Voter" : "🗳️ Voter")) + "</button>" : "") + "</div>";
     }).join("");
     return h + "</div>";
   }
@@ -8162,9 +8214,9 @@ video.video-player-frame{object-fit:contain}
     return { c: c, x: c && c.candidats.find(function (y) { return y.id === xid; }) };
   }
   E.voter = function (cid, xid) {
-    if (!besoinMembre()) return;
     var t = trouverCandidat(cid, xid);
     if (!t.c || !t.x) return;
+    if (t.c.exigerCompte && !besoinMembre()) return;   // sinon : on peut voter sans compte
     if (t.c.prixVote > 0) {
       var m = modal('<div class="item-nom">Voter pour « ' + esc(t.x.nom) + ' »</div><p class="item-desc">' + fcfa(t.c.prixVote) + ' par vote.</p>' +
         '<label class="field-label">Nombre de votes</label><input id="evtNbVotes" type="number" min="1" max="100" value="1" oninput="EVT.majTotalVote(' + t.c.prixVote + ')">' +
@@ -8173,7 +8225,7 @@ video.video-player-frame{object-fit:contain}
       return;
     }
     confirmerApp_("Voter pour « " + t.x.nom + " » ? Ce vote est définitif.", function () {
-      appelServeur("voter", code(), cid, xid).then(function (r) {
+      appelServeur("voter", cleVote(), cid, xid).then(function (r) {
         if (!r.succes) { alert(r.message || "Vote impossible."); return; }
         alert("✅ Vote enregistré. Il vous reste " + r.restants + " vote(s)."); vueVotes();
       }).catch(echec);
@@ -8185,10 +8237,10 @@ video.video-player-frame{object-fit:contain}
   };
   E.payerVote = function (cid, xid) {
     var n = Math.max(1, Math.min(100, parseInt(document.getElementById("evtNbVotes").value, 10) || 1));
-    appelServeur("creerCommandeVote", code(), cid, xid, n).then(function (r) {
+    appelServeur("creerCommandeVote", cleVote(), cid, xid, n).then(function (r) {
       if (!r.succes) { alert(r.message || "Impossible de lancer le paiement."); return; }
       E.fermer();
-      payer({ type: "vote", commandeId: r.commandeId }, r.montant);
+      payer({ type: "vote", commandeId: r.commandeId, cle: cleVote() }, r.montant);
     }).catch(echec);
   };
 
@@ -8437,7 +8489,7 @@ video.video-player-frame{object-fit:contain}
   };
   E.nouveauConcours = function () {
     S.cform = { id: "", candidats: [{ nom: "", description: "", image: "" }, { nom: "", description: "", image: "" }] };
-    formConcours({ titre: "", description: "", type: "Concours", dateFin: "", votesParMembre: 1, prixVote: 0, afficherResultats: "Direct", evenementId: "" });
+    formConcours({ titre: "", description: "", type: "Concours", dateFin: "", votesParMembre: 1, prixVote: 0, afficherResultats: "Direct", evenementId: "", exigerCompte: false });
   };
   E.modifierConcours = function (id) {
     var c = S.mesConcours.find(function (x) { return x.id === id; });
@@ -8453,8 +8505,9 @@ video.video-player-frame{object-fit:contain}
       '<label class="field-label">Description</label><textarea id="cfDesc" rows="3" maxlength="2000">' + esc(c.description) + "</textarea>" +
       '<label class="field-label">Événement lié (facultatif)</label><select id="cfEvt"><option value="">Aucun</option>' + evts.map(function (e) { return '<option value="' + esc(e.id) + '" ' + (e.id === c.evenementId ? "selected" : "") + ">" + esc(e.titre) + "</option>"; }).join("") + "</select>" +
       '<label class="field-label">Fin du vote (facultatif)</label><input id="cfFin" type="datetime-local" value="' + esc(c.dateFin) + '">' +
-      '<div class="evt-2col"><div><label class="field-label">Votes par membre</label><input id="cfNb" type="number" min="1" max="100" value="' + (c.votesParMembre || 1) + '"></div>' +
+      '<div class="evt-2col"><div><label class="field-label">Votes par personne</label><input id="cfNb" type="number" min="1" max="100" value="' + (c.votesParMembre || 1) + '"></div>' +
       '<div><label class="field-label">Prix du vote (0 = gratuit)</label><input id="cfPrix" type="number" min="0" value="' + (c.prixVote || 0) + '" ' + (S.cform.aDesVotes ? "disabled" : "") + "></div></div>" +
+      '<label style="display:flex;gap:8px;align-items:center;margin:4px 0 12px;font-size:13px;"><input type="checkbox" id="cfCompte" style="width:auto;margin:0;" ' + (c.exigerCompte ? "checked" : "") + '> Exiger un compte pour voter (recommandé pour une élection : un seul vote par personne garanti)</label>' +
       '<label class="field-label">Résultats</label><select id="cfRes"><option value="Direct" ' + (c.afficherResultats !== "Apres" ? "selected" : "") + '>Visibles en direct</option><option value="Apres" ' + (c.afficherResultats === "Apres" ? "selected" : "") + ">Visibles après la clôture</option></select>" +
       '<p class="field-label" style="margin-top:12px;">Candidats (2 minimum)</p><div id="cfCands"></div>' +
       '<button class="secondary small" onclick="EVT.ajouterCandidat()">＋ Ajouter un candidat</button>' +
@@ -8486,7 +8539,7 @@ video.video-player-frame{object-fit:contain}
     var d = {
       id: S.cform.id || undefined, titre: document.getElementById("cfTitre").value, type: document.getElementById("cfType").value,
       description: document.getElementById("cfDesc").value, evenementId: document.getElementById("cfEvt").value, dateFin: document.getElementById("cfFin").value,
-      votesParMembre: document.getElementById("cfNb").value, prixVote: document.getElementById("cfPrix").value, afficherResultats: document.getElementById("cfRes").value,
+      votesParMembre: document.getElementById("cfNb").value, prixVote: document.getElementById("cfPrix").value, afficherResultats: document.getElementById("cfRes").value, exigerCompte: document.getElementById("cfCompte").checked,
       candidats: S.cform.candidats
     };
     appelServeur("enregistrerConcours", code(), d).then(function () { E.fermer(); orgConcours(); })
