@@ -3543,7 +3543,8 @@ video.video-player-frame{object-fit:contain}
       '<button id="btnRepeterToutAudio" class="' + (modeRepetitionAudio === "tout" ? "actif" : "") + '" onclick="definirRepetitionAudio(\'tout\')" title="Revenir au premier audio après le dernier">🔁 Tout</button>' +
       '<button onclick="audioSuivant()">⏭️</button>' +
       '</div>' +
-      '<div style="padding:0 14px 14px;"><a class="secondary small" style="display:block;text-align:center;text-decoration:none;" href="' + res.lien + '" target="_blank" download>⬇️ Télécharger</a></div>';
+      '<div style="padding:0 14px 14px;"><button class="secondary small" id="btnTelechargerAudio" style="width:100%;" onclick="telechargerAudioPage_()">⬇️ Télécharger</button></div>';
+    audioATelecharger_ = { lien: res.lien || "", base64: res.audioBase64 || "", mime: res.audioMimeType || "", titre: audio.Titre || "audio" };
 
     const element = document.getElementById("audioElementActuel");
     initialiserVolumeAudio_(element);
@@ -3633,8 +3634,8 @@ video.video-player-frame{object-fit:contain}
   function chargerStatsContenus_() {
     if (statsContenus_.enCours) return;
     statsContenus_.enCours = true;
-    appelServeur("getStatsContenus", cleNote_()).then(function (r) {
-      statsContenus_.stats = r.stats || {}; statsContenus_.mes = r.mes || {}; statsContenus_.charge = Date.now();
+    Promise.all([appelServeur("getStatsContenus"), appelServeur("getMesNotes", cleNote_())]).then(function (rs) {
+      statsContenus_.stats = rs[0].stats || {}; statsContenus_.mes = rs[1].mes || {}; statsContenus_.charge = Date.now();
       statsContenus_.enCours = false; majBlocsNotes_();
     }).catch(function () { statsContenus_.enCours = false; statsContenus_.charge = Date.now() - 60000; });   // en cas d'échec : réessai dans ~30 s
   }
@@ -3662,7 +3663,9 @@ video.video-player-frame{object-fit:contain}
   function noterContenu_(type, id, note) {
     appelServeur("noterContenu", type, id, cleNote_(), note).then(function (r) {
       if (!r.succes) { alert(r.message || "Note non enregistrée."); return; }
-      statsContenus_.stats[type + ":" + id] = r.stat; statsContenus_.mes[type + ":" + id] = r.ma;
+      const s = statsContenus_.stats[type + ":" + id] || { v: 0, n: 0, t: 0 };
+      s.n += r.dn || 0; s.t += r.dt || 0;
+      statsContenus_.stats[type + ":" + id] = s; statsContenus_.mes[type + ":" + id] = r.ma;
       majBlocsNotes_();
     }).catch(function (err) { alert("Erreur : " + err.message); });
   }
@@ -3673,8 +3676,72 @@ video.video-player-frame{object-fit:contain}
     vuesComptees_[cle] = maintenant;
     appelServeur("compterVue", type, id).then(function (r) {
       const s = statsContenus_.stats[cle] || { v: 0, n: 0, t: 0 };
-      s.v = r.vues || (s.v + 1); statsContenus_.stats[cle] = s; majBlocsNotes_();
+      s.v += 1; statsContenus_.stats[cle] = s; majBlocsNotes_();
     }).catch(function () { delete vuesComptees_[cle]; });
+  }
+
+  // Téléchargement d'un audio SANS quitter la page : le fichier est reçu en direct, le bouton affiche le pourcentage,
+  // puis l'enregistrement se déclenche tout seul.
+  let audioATelecharger_ = null, telechargementAudioEnCours_ = false;
+  function extensionAudio_(mime) {
+    const m = String(mime || "").toLowerCase();
+    if (m.indexOf("mp4") > -1 || m.indexOf("m4a") > -1) return "m4a";
+    if (m.indexOf("wav") > -1) return "wav";
+    if (m.indexOf("ogg") > -1) return "ogg";
+    if (m.indexOf("aac") > -1) return "aac";
+    if (m.indexOf("webm") > -1) return "webm";
+    return "mp3";
+  }
+  function enregistrerBlobAudio_(blob, titre) {
+    const nom = String(titre || "audio").replace(/[\\/:*?"<>|\r\n]+/g, " ").trim().slice(0, 90) + "." + extensionAudio_(blob.type);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = nom; a.style.display = "none";
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 60000);
+  }
+  function telechargerAudioPage_() {
+    const src = audioATelecharger_, btn = document.getElementById("btnTelechargerAudio");
+    if (!src || !btn || telechargementAudioEnCours_) return;
+    const libelle = btn.innerHTML;
+    const progres = function (texte, pct) {
+      btn.textContent = texte;
+      btn.style.background = pct == null ? "" : "linear-gradient(to right, #bcd3f7 " + pct + "%, #eef3fb " + pct + "%)";
+    };
+    const fin = function () { telechargementAudioEnCours_ = false; btn.disabled = false; btn.innerHTML = libelle; btn.style.background = ""; };
+    telechargementAudioEnCours_ = true; btn.disabled = true;
+    if (src.base64) {   // petit fichier déjà reçu avec le lecteur : rien à attendre
+      try {
+        const bin = atob(src.base64), octets = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) octets[i] = bin.charCodeAt(i);
+        enregistrerBlobAudio_(new Blob([octets], { type: src.mime || "audio/mpeg" }), src.titre);
+        progres("✓ Téléchargé (100 %)", 100); setTimeout(fin, 2500);
+      } catch (e) { fin(); alert("Téléchargement impossible : " + e.message); }
+      return;
+    }
+    if (!src.lien) { fin(); alert("Téléchargement indisponible pour cet audio."); return; }
+    if (src.lien.indexOf("/media/") === -1) { fin(); window.open(src.lien, "_blank"); return; }   // fichier hébergé ailleurs : ancien comportement
+    progres("Téléchargement… 0 %", 0);
+    fetch(src.lien).then(function (rep) {
+      if (!rep.ok) throw new Error("Lien expiré ou invalide (code " + rep.status + "). Relancez la lecture puis réessayez.");
+      const total = Number(rep.headers.get("Content-Length")) || 0;
+      const type = rep.headers.get("Content-Type") || "audio/mpeg";
+      if (!rep.body || !rep.body.getReader) return rep.blob();
+      const lecteur = rep.body.getReader(), morceaux = [];
+      let recu = 0;
+      const lire = function () {
+        return lecteur.read().then(function (r) {
+          if (r.done) return new Blob(morceaux, { type: type });
+          morceaux.push(r.value); recu += r.value.length;
+          if (total) { const p = Math.min(100, Math.floor(recu * 100 / total)); progres("Téléchargement… " + p + " %", p); }
+          else progres("Téléchargement… " + (recu / 1048576).toFixed(1).replace(".", ",") + " Mo", null);
+          return lire();
+        });
+      };
+      return lire();
+    }).then(function (blob) {
+      enregistrerBlobAudio_(blob, src.titre);
+      progres("✓ Téléchargé (100 %)", 100); setTimeout(fin, 2500);
+    }).catch(function (err) { fin(); alert("Téléchargement impossible : " + err.message); });
   }
 
   function acheterAudio(audioId, prix) {
@@ -7838,6 +7905,49 @@ video.video-player-frame{object-fit:contain}
   };
   E.vue = function (v) { S.vue = v; window.chargerEvenements(); };
 
+  // ------------------------------------------------------------------ RECHERCHE GÉNÉRIQUE + IMAGE EN GRAND
+  function normaliser(t) { return String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+  // Entoure une liste d'éléments (class "evt-item") d'une barre de recherche qui masque ceux qui ne correspondent pas.
+  function avecRecherche(contenu, placeholder) {
+    return '<div class="evt-zone-rech"><input type="search" class="evt-rech" placeholder="🔎 ' + esc(placeholder) + '" oninput="EVT.chercher(this)" autocomplete="off">' +
+      contenu + '<p class="empty-state evt-aucun" style="display:none;">Aucun résultat.</p></div>';
+  }
+  E.chercher = function (inp) {
+    var racine = inp.closest(".evt-zone-rech"), q = normaliser(inp.value).trim(), visibles = 0;
+    racine.querySelectorAll(".evt-item").forEach(function (el) {
+      var ok = !q || normaliser(el.textContent).indexOf(q) !== -1;
+      el.style.display = ok ? "" : "none";
+      if (ok) visibles++;
+    });
+    racine.querySelector(".evt-aucun").style.display = visibles ? "none" : "block";
+  };
+  var cssZ = document.createElement("style");
+  cssZ.textContent = ".evt-rech{margin-bottom:12px}.evt-item img,img.evt-img,img.evt-zoom{cursor:zoom-in}#evtListe img{cursor:pointer}" +
+    "#evtVisionneuse{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.93);display:flex;align-items:center;justify-content:center;padding:10px;box-sizing:border-box}" +
+    "#evtVisionneuse img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;touch-action:pinch-zoom}" +
+    "#evtVisionneuse button{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.2);color:#fff;font-size:22px;cursor:pointer;padding:0}";
+  document.head.appendChild(cssZ);
+  function fermerVisionneuse() { var v = document.getElementById("evtVisionneuse"); if (v) v.remove(); }
+  E.agrandir = function (src, alt) {
+    fermerVisionneuse();
+    var v = document.createElement("div"); v.id = "evtVisionneuse";
+    var im = document.createElement("img"); im.src = src; im.alt = alt || "";
+    var b = document.createElement("button"); b.textContent = "✕"; b.setAttribute("aria-label", "Fermer");
+    v.appendChild(im); v.appendChild(b);
+    v.addEventListener("click", fermerVisionneuse);
+    document.body.appendChild(v);
+  };
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") fermerVisionneuse(); });
+  // Un clic sur une image de la rubrique Événements (affiche, candidat, QR code…) l'ouvre en plein écran.
+  document.addEventListener("click", function (e) {
+    var im = e.target;
+    if (!im || im.tagName !== "IMG" || im.closest("#evtVisionneuse") || im.closest("#evtListe")) return;
+    if (!im.closest("#evtContenu, #admin-evenements, .dlg-overlay")) return;
+    if (!im.src) return;
+    e.stopPropagation();
+    E.agrandir(im.src, im.alt);
+  }, true);
+
   // ------------------------------------------------------------------ DÉCOUVRIR
   function vueDecouvrir() {
     zone().innerHTML = '<div class="loading">Chargement…</div>';
@@ -7868,7 +7978,8 @@ video.video-player-frame{object-fit:contain}
       return '<div class="evt-carte evt-carte" onclick="EVT.ouvrir(\'' + jsq_(e.id) + '\')" style="cursor:pointer;">' +
         (e.image ? '<img class="evt-img" src="' + e.image + '" alt="">' : "") +
         puce(e.categorie, "") + " " + prix +
-        '<div class="evt-titre">' + esc(e.titre) + '</div><div class="evt-meta">📅 ' + quand(e.dateDebut) + "<br>📍 " + esc(e.lieu) + "</div></div>";
+        '<div class="evt-titre">' + esc(e.titre) + '</div><div class="evt-meta">📅 ' + quand(e.dateDebut) + "<br>📍 " + esc(e.lieu) + "</div>" +
+        '<button class="flame full-mt" onclick="event.stopPropagation();EVT.ouvrir(\'' + jsq_(e.id) + '\')">Découvrir</button></div>';
     }).join("");
   }
 
@@ -7878,6 +7989,7 @@ video.video-player-frame{object-fit:contain}
     appelServeur("getEvenement", id, code()).then(function (r) {
       if (!r.succes) { zone().innerHTML = '<p class="error">' + esc(r.message) + "</p>"; return; }
       S.detail = r.evenement; S.panier = {}; detail();
+      try { zone().scrollIntoView({ block: "start" }); window.scrollTo(0, 0); } catch (x) {}
     }).catch(function (e) { afficherErreurZone("evtContenu", e); });
   };
   function detail() {
@@ -7989,7 +8101,7 @@ video.video-player-frame{object-fit:contain}
   });
 
   function htmlBillet(b) {
-    return '<div class="evt-billet"><div class="item-nom">' + esc(b.titre) + "</div>" +
+    return '<div class="evt-billet evt-item"><div class="item-nom">' + esc(b.titre) + "</div>" +
       '<div class="item-desc">' + quand(b.dateDebut) + " · " + esc(b.lieu) + "</div>" +
       '<div style="margin-top:6px;">' + puce(b.type, "") + " " + (b.statut === "Utilisé" ? puce("Déjà utilisé", "att") : b.statut === "Annulé" ? puce("Annulé", "ko") : puce("Valide", "ok")) + "</div>" +
       '<img src="' + qrUrl(b.qr, 200) + '" width="200" height="200" alt="QR code du billet">' +
@@ -8006,7 +8118,7 @@ video.video-player-frame{object-fit:contain}
     zone().innerHTML = '<div class="loading">Chargement…</div>';
     appelServeur("getMesBillets", code()).then(function (r) {
       var l = r.billets || [];
-      zone().innerHTML = l.length ? l.map(htmlBillet).join("") : '<p class="empty-state">Vous n\'avez pas encore de billet.</p>';
+      zone().innerHTML = l.length ? avecRecherche(l.map(htmlBillet).join(""), "Rechercher un billet (événement, lieu, type…)") : '<p class="empty-state">Vous n\'avez pas encore de billet.</p>';
     }).catch(function (e) { afficherErreurZone("evtContenu", e); });
   }
 
@@ -8017,7 +8129,7 @@ video.video-player-frame{object-fit:contain}
     if (membreCourant) p.push(appelServeur("getMesVotes", code()));
     Promise.all(p).then(function (r) {
       S.concours = r[0].concours || []; S.mesVotes = (r[1] && r[1].votes) || {};
-      zone().innerHTML = S.concours.length ? S.concours.map(carteConcours).join("") : '<p class="empty-state">Aucun vote en cours pour le moment.</p>';
+      zone().innerHTML = S.concours.length ? avecRecherche(S.concours.map(carteConcours).join(""), "Rechercher un vote ou un candidat…") : '<p class="empty-state">Aucun vote en cours pour le moment.</p>';
     }).catch(function (e) { afficherErreurZone("evtContenu", e); });
   }
   function barres(c) {
@@ -8028,7 +8140,7 @@ video.video-player-frame{object-fit:contain}
     var utilises = S.mesVotes[c.id] || 0, restants = Math.max(0, c.votesParMembre - utilises);
     var etat = c.ouvert ? puce("Vote ouvert", "ok") : puce("Vote clos", "ko");
     var max = c.scoresVisibles ? barres(c) : 1;
-    var h = '<div class="card">' + puce(c.type, "") + " " + etat + (c.prixVote > 0 ? " " + puce(fcfa(c.prixVote) + " / vote", "att") : "") +
+    var h = '<div class="card evt-item">' + puce(c.type, "") + " " + etat + (c.prixVote > 0 ? " " + puce(fcfa(c.prixVote) + " / vote", "att") : "") +
       '<div class="evt-titre">' + esc(c.titre) + "</div>" +
       (c.description ? '<p class="item-desc" style="white-space:pre-wrap;">' + esc(c.description) + "</p>" : "") +
       '<div class="evt-meta">' + (c.dateFin ? "⏰ Fin : " + quand(c.dateFin) + "<br>" : "") +
@@ -8113,10 +8225,11 @@ video.video-player-frame{object-fit:contain}
   // ----- Mes événements
   function orgEvenements() {
     var l = S.mesEvts.evenements || [];
-    var h = '<button class="flame" onclick="EVT.nouveau()">＋ Créer un événement</button><div style="margin-top:12px;" class="evt-grille">';
-    h += l.length ? l.map(function (e) {
+    var h = '<button class="flame" onclick="EVT.nouveau()">＋ Créer un événement</button><div style="margin-top:12px;"></div>';
+    var cartesOrg = "";
+    cartesOrg = l.length ? l.map(function (e) {
       var peutSoumettre = e.statut === "Brouillon" || e.statut === "Refusé";
-      return '<div class="evt-carte">' + puceStatut(e.statut) + " " + puce(e.categorie, "") +
+      return '<div class="evt-carte evt-item">' + puceStatut(e.statut) + " " + puce(e.categorie, "") +
         '<div class="evt-titre">' + esc(e.titre) + '</div><div class="evt-meta">📅 ' + quand(e.dateDebut) + "<br>📍 " + esc(e.lieu) + "</div>" +
         (e.statut === "Refusé" && e.motifRefus ? '<div class="error" style="margin:6px 0;">Motif du refus : ' + esc(e.motifRefus) + "</div>" : "") +
         '<div class="evt-kpi"><div><b>' + e.vendus + "</b><span>billets</span></div><div><b>" + e.entrees + "</b><span>entrées</span></div><div><b>" + fcfa(e.brut) + "</b><span>ventes</span></div><div><b>" + fcfa(e.net) + "</b><span>net</span></div></div>" +
@@ -8127,8 +8240,8 @@ video.video-player-frame{object-fit:contain}
         '<button class="secondary" onclick="EVT.participants(\'' + jsq_(e.id) + "','" + jsq_(e.titre) + '\')">👥 Participants</button>' +
         '<button class="secondary" onclick="EVT.controleurs(\'' + jsq_(e.id) + '\')">🛂 Contrôleurs</button>' +
         (e.statut !== "Annulé" ? '<button class="danger-outline" onclick="EVT.annuler(\'' + jsq_(e.id) + '\')">Annuler</button>' : "") + "</div></div>";
-    }).join("") : '<p class="empty-state">Vous n\'avez pas encore créé d\'événement.</p>';
-    orgZone().innerHTML = h + "</div>";
+    }).join("") : "";
+    orgZone().innerHTML = h + (l.length ? avecRecherche('<div class="evt-grille">' + cartesOrg + "</div>", "Rechercher parmi mes événements…") : '<p class="empty-state">Vous n\'avez pas encore créé d\'événement.</p>');
   }
   E.voir = function (id) { S.vue = "decouvrir"; nav(); E.ouvrir(id); };
   E.soumettre = function (id) {
@@ -8303,10 +8416,10 @@ video.video-player-frame{object-fit:contain}
     orgZone().innerHTML = '<div class="loading">Chargement…</div>';
     appelServeur("getMesConcours", code()).then(function (r) {
       S.mesConcours = r.concours || [];
-      var h = '<button class="flame" onclick="EVT.nouveauConcours()">＋ Créer un vote (concours, élection, award)</button><div style="margin-top:12px;">';
-      h += S.mesConcours.length ? S.mesConcours.map(function (c) {
+      var h = '<button class="flame" onclick="EVT.nouveauConcours()">＋ Créer un vote (concours, élection, award)</button><div style="margin-top:12px;"></div>';
+      var cartesC = S.mesConcours.length ? S.mesConcours.map(function (c) {
         var max = barres(c);
-        return '<div class="card">' + puce(c.type, "") + " " + (c.statut === "Ouvert" ? (c.ouvert ? puce("Ouvert", "ok") : puce("Terminé (date)", "ko")) : c.statut === "Clos" ? puce("Clos", "ko") : puce("Brouillon", "")) +
+        return '<div class="card evt-item">' + puce(c.type, "") + " " + (c.statut === "Ouvert" ? (c.ouvert ? puce("Ouvert", "ok") : puce("Terminé (date)", "ko")) : c.statut === "Clos" ? puce("Clos", "ko") : puce("Brouillon", "")) +
           (c.prixVote > 0 ? " " + puce(fcfa(c.prixVote) + " / vote", "att") : "") +
           '<div class="evt-titre">' + esc(c.titre) + '</div><div class="item-desc">' + c.totalVotes + " vote(s)" + (c.dateFin ? " · fin " + quand(c.dateFin) : "") + "</div>" +
           c.candidats.map(function (x) {
@@ -8314,8 +8427,8 @@ video.video-player-frame{object-fit:contain}
           }).join("") +
           '<div class="evt-actions"><button class="secondary" onclick="EVT.modifierConcours(\'' + jsq_(c.id) + '\')">✏️ Modifier</button>' +
           (c.statut !== "Ouvert" ? '<button onclick="EVT.statutConcours(\'' + jsq_(c.id) + '\',\'Ouvert\')">▶ Ouvrir</button>' : '<button class="danger-outline" onclick="EVT.statutConcours(\'' + jsq_(c.id) + '\',\'Clos\')">⏹ Clore</button>') + "</div></div>";
-      }).join("") : '<p class="empty-state">Aucun vote créé pour le moment.</p>';
-      orgZone().innerHTML = h + "</div>";
+      }).join("") : "";
+      orgZone().innerHTML = h + (S.mesConcours.length ? avecRecherche(cartesC, "Rechercher un vote ou un candidat…") : '<p class="empty-state">Aucun vote créé pour le moment.</p>');
     }).catch(function (e) { afficherErreurZone("evtOrg", e); });
   }
   E.statutConcours = function (id, statut) {
@@ -8499,21 +8612,21 @@ video.video-player-frame{object-fit:contain}
       document.getElementById("evtAdminCommission").innerHTML = sys ?
         '<div class="card"><p class="field-label">Commission de la plateforme (%)</p><div class="cotisation-pay-row"><input id="evtCommission" type="number" min="0" max="100" value="' + r.commission + '"><button class="small" onclick="EVT.commission()">Enregistrer</button></div><p class="item-desc">Prélevée sur chaque vente de billets et de votes payants, pour les nouvelles commandes uniquement.</p></div>' :
         '<div class="card"><p class="item-desc">Commission actuelle : ' + r.commission + " %</p></div>";
-      document.getElementById("evtAdminOrgas").innerHTML = r.organisateurs.length ? r.organisateurs.map(function (o) {
-        return '<div class="item-block"><div class="item-nom">' + esc(o.nom) + '</div><div class="item-desc">' + esc(o.code) + " · " + esc(o.telephone) + " · " + o.evenements + " événement(s)</div>" +
+      document.getElementById("evtAdminOrgas").innerHTML = r.organisateurs.length ? avecRecherche(r.organisateurs.map(function (o) {
+        return '<div class="item-block evt-item"><div class="item-nom">' + esc(o.nom) + '</div><div class="item-desc">' + esc(o.code) + " · " + esc(o.telephone) + " · " + o.evenements + " événement(s)</div>" +
           '<div class="evt-kpi"><div><b>' + fcfa(o.brut) + "</b><span>ventes</span></div><div><b>" + fcfa(o.net) + "</b><span>net</span></div><div><b>" + fcfa(o.verse) + "</b><span>déjà versé</span></div><div><b>" + fcfa(o.solde) + "</b><span>à verser</span></div></div>" +
           '<div class="evt-actions"><button onclick="EVT.versement(\'' + jsq_(o.code) + "','" + jsq_(o.nom) + "'," + o.solde + ')">💸 Enregistrer un versement</button>' +
           '<button class="secondary" onclick="EVT.revenusOrga(\'' + jsq_(o.code) + "','" + jsq_(o.nom) + '\')">Historique</button>' +
           '<button class="danger-outline" onclick="EVT.retirerOrga(\'' + jsq_(o.code) + "','" + jsq_(o.nom) + '\')">Retirer le statut</button></div></div>';
-      }).join("") : '<p class="empty-state">Aucun organisateur.</p>';
+      }).join(""), "Rechercher un organisateur (nom, code, téléphone)…") : '<p class="empty-state">Aucun organisateur.</p>';
     }).catch(function (e) { afficherErreurZone("evtAdminOrgas", e); });
     appelServeur("getEvenementsAModerer", code()).then(function (r) {
-      document.getElementById("evtAdminModeration").innerHTML = r.evenements.length ? r.evenements.map(function (e) {
-        return '<div class="item-block"><div class="item-nom">' + esc(e.titre) + " " + puce(e.categorie, "") + '</div><div class="item-desc">Par ' + esc(e.organisateur) + " · " + quand(e.dateDebut) + " · " + esc(e.lieu) + "</div>" +
+      document.getElementById("evtAdminModeration").innerHTML = r.evenements.length ? avecRecherche(r.evenements.map(function (e) {
+        return '<div class="item-block evt-item"><div class="item-nom">' + esc(e.titre) + " " + puce(e.categorie, "") + '</div><div class="item-desc">Par ' + esc(e.organisateur) + " · " + quand(e.dateDebut) + " · " + esc(e.lieu) + "</div>" +
           '<p class="item-desc" style="white-space:pre-wrap;">' + esc(e.description.slice(0, 400)) + "</p>" +
           '<div class="item-desc">' + e.billets.map(function (b) { return esc(b.nom) + " (" + (b.prix ? fcfa(b.prix) : "gratuit") + ")"; }).join(" · ") + "</div>" +
           '<div class="evt-actions"><button onclick="EVT.moderer(\'' + jsq_(e.id) + '\',\'Publié\')">✅ Publier</button><button class="danger-outline" onclick="EVT.refuser(\'' + jsq_(e.id) + '\')">✖ Refuser</button></div></div>';
-      }).join("") : '<p class="empty-state">Aucun événement en attente.</p>';
+      }).join(""), "Rechercher un événement à valider…") : '<p class="empty-state">Aucun événement en attente.</p>';
     }).catch(function (e) { afficherErreurZone("evtAdminModeration", e); });
   }
   E.commission = function () {
