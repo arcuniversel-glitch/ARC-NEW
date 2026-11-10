@@ -1530,6 +1530,10 @@ video.video-player-frame{object-fit:contain}
 
       <div class="admin-section" id="admin-demandes"></div>
       <div class="admin-section" id="admin-annoncesVideo"></div>
+      <div class="admin-section" id="admin-accueilAffiche"></div>
+      <div class="admin-section" id="admin-verifies"></div>
+      <div class="admin-section" id="admin-pays"></div>
+      <div class="admin-section" id="admin-controle"></div>
       <div class="admin-section" id="admin-codes">
         <div class="card">
           <div class="section-title"><span class="ic">🔐</span> Générer des codes d'inscription</div>
@@ -2889,7 +2893,11 @@ video.video-player-frame{object-fit:contain}
       { id: "messages", label: "Messages", permission: "systeme" },
       { id: "codes", label: "🔐 Codes d'accès", permission: "systeme" },
       { id: "demandes", label: "🛂 Demandes et Leaders", permission: "systeme" },
-      { id: "annoncesVideo", label: "🎬 Annonces vidéo", permission: "contenus" }
+      { id: "annoncesVideo", label: "🎬 Annonces vidéo", permission: "contenus" },
+      { id: "accueilAffiche", label: "🏠 Accueil", permission: "systeme" },
+      { id: "verifies", label: "✔ Vérifiés", permission: "contenus" },
+      { id: "pays", label: "🌍 Pays", permission: "contenus" },
+      { id: "controle", label: "🛡️ Contrôle communauté", permission: "systeme" }
     ];
     const visibles = tousLesSousOnglets.filter(function (s) { return permissions.indexOf(s.permission) !== -1; });
     document.getElementById("adminSubtabs").innerHTML = visibles.map(function (s, i) {
@@ -2930,6 +2938,8 @@ video.video-player-frame{object-fit:contain}
     else if (nom === "tv") rechargerTvAdmin_();
     else if (nom === "soumissions") appelServeur("getSoumissionsAdmin", membreCourant.code).then(afficherSoumissionsAdmin).catch(function (err) { afficherErreurZone("adminListeSoumissions", err); });
     else if (nom === "annoncesVideo") { if (window.ACCJ) window.ACCJ.rendreAdmin(document.getElementById("admin-annoncesVideo")); }
+    else if (nom === "accueilAffiche") { if (window.ACCJ) window.ACCJ.rendreAdminAffiche(document.getElementById("admin-accueilAffiche")); }
+    else if (nom === "verifies" || nom === "pays" || nom === "controle") { if (window.XTR) window.XTR.rendreAdmin(nom, document.getElementById("admin-" + nom)); }
     else if (nom === "demandes") { if (window.LEADER) window.LEADER.rendreAdmin(document.getElementById("admin-demandes")); }
     else if (nom === "codes") appelServeur("getCodesInscriptionAdmin", membreCourant.code).then(afficherCodesInscriptionAdmin).catch(function (err) { afficherErreurZone("adminListeCodesInscription", err); });
   }
@@ -3377,6 +3387,27 @@ video.video-player-frame{object-fit:contain}
     }).join("") + '</div>';
     return { html: html, nb: trio.length };
   }
+  // Sous les favoris : les 20 contenus les plus récents, puis les 10 les plus vus.
+  // `cache` est déjà dans l'ordre « du plus récent au plus ancien » (favoris en tête) ; `nbFav` = nombre de favoris affichés.
+  function sectionsRecentsEtVus_(cache, nbFav, type, icone, clicDe_, redessiner_) {
+    function carteHtml_(x, i) {
+      const cover = x.CoverBase64 ? '<img src="data:image/jpeg;base64,' + x.CoverBase64 + '">' : '<div style="height:90px;background:#eef3f9;display:flex;align-items:center;justify-content:center;">' + icone + '</div>';
+      return '<div class="carte-alaune" onclick="' + clicDe_(i) + '">' + cover + '<div class="carte-alaune-body"><div class="carte-alaune-titre">' + escapeHtml(x.Titre) + '</div></div></div>';
+    }
+    const reste = cache.map(function (x, i) { return { x: x, i: i }; }).slice(nbFav);
+    let html = "";
+    const recents = reste.slice(0, 20);
+    if (recents.length) html += '<p class="field-label">🆕 Les 20 plus récents</p><div class="grille-alaune">' + recents.map(function (o) { return carteHtml_(o.x, o.i); }).join("") + '</div>';
+    if (!statsContenus_.charge && redessiner_) {
+      (statsContenus_.suite = statsContenus_.suite || []).push(redessiner_);
+      chargerStatsContenus_();
+    } else {
+      const vus = reste.map(function (o, k) { const st = statsContenus_.stats[type + ":" + o.x.ID]; return { o: o, k: k, v: st ? (st.v || 0) : 0 }; })
+        .filter(function (a) { return a.v > 0; }).sort(function (a, b) { return b.v - a.v || a.k - b.k; }).slice(0, 10);
+      if (vus.length) html += '<p class="field-label">👁 Les 10 plus vus</p><div class="grille-alaune">' + vus.map(function (a) { return carteHtml_(a.o.x, a.o.i); }).join("") + '</div>';
+    }
+    return html;
+  }
   function caseALaUne_(type, id, coche) {
     const perms = membreCourant ? permissionsDe_(membreCourant) : [];
     if (perms.indexOf("systeme") === -1 && perms.indexOf("contenus") === -1) return "";
@@ -3419,17 +3450,15 @@ video.video-player-frame{object-fit:contain}
     const zone = document.getElementById("audiosAlaUne");
     if (!audiosCache.length) { zone.innerHTML = '<p class="empty-state">Aucun audio disponible pour le moment.</p>'; return; }
     const fav = construireFavoris_(audiosCache, "🎧", function (i) { return "jouerAudioDepuisAccueil_(" + i + ")"; });
-    const restants = audiosCache.slice(fav.nb, fav.nb + 8);
-    let html = fav.html;
-    if (restants.length) {
-      html += '<p class="field-label">Récemment ajoutés</p><div class="grille-alaune">' + restants.map(function (a, i) {
-        const cover = a.CoverBase64 ? '<img src="data:image/jpeg;base64,' + a.CoverBase64 + '">' : '<div style="height:90px;background:#eef3f9;display:flex;align-items:center;justify-content:center;">🎧</div>';
-        return '<div class="carte-alaune" onclick="jouerAudioDepuisAccueil_(' + (i + fav.nb) + ')">' + cover + '<div class="carte-alaune-body"><div class="carte-alaune-titre">' + escapeHtml(a.Titre) + '</div></div></div>';
-      }).join("") + '</div>';
-    }
+    let html = fav.html + sectionsRecentsEtVus_(audiosCache, fav.nb, "audio", "🎧", function (i) { return "jouerAudioDepuisAccueil_(" + i + ")"; }, afficherAccueilAudios);
     zone.innerHTML = html;
   }
 
+  // Prévient (notification) les membres abonnés à l'auteur d'un contenu qui vient d'être publié.
+  function notifierAbonnes_(auteur, type, titre) {
+    if (!auteur || typeof membreCourant === "undefined" || !membreCourant) return;
+    appelServeur("notifierNouveauContenu", membreCourant.code, auteur, type, titre).catch(function () {});
+  }
   function jouerAudioDepuisAccueil_(index) {
     listeAudioActuelle = audiosCache;
     jouerAudio(index);
@@ -3733,6 +3762,7 @@ video.video-player-frame{object-fit:contain}
     Promise.all([appelServeur("getStatsContenus"), appelServeur("getMesNotes", cleNote_())]).then(function (rs) {
       statsContenus_.stats = rs[0].stats || {}; statsContenus_.mes = rs[1].mes || {}; statsContenus_.charge = Date.now();
       statsContenus_.enCours = false; majBlocsNotes_();
+      (statsContenus_.suite || []).splice(0).forEach(function (f) { try { f(); } catch (e) {} });
     }).catch(function () { statsContenus_.enCours = false; statsContenus_.charge = Date.now() - 60000; });   // en cas d'échec : réessai dans ~30 s
   }
   function htmlNotes_(type, id) {
@@ -4188,14 +4218,7 @@ video.video-player-frame{object-fit:contain}
     const zone = document.getElementById("documentsAlaUne");
     if (!documentsCache.length) { zone.innerHTML = '<p class="empty-state">Aucun document pour le moment.</p>'; return; }
     const fav = construireFavoris_(documentsCache, "📄", function () { return "afficherSousDocuments('tous')"; });
-    const restants = documentsCache.slice(fav.nb, fav.nb + 8);
-    let html = fav.html;
-    if (restants.length) {
-      html += '<p class="field-label">Récemment ajoutés</p><div class="grille-alaune">' + restants.map(function (d) {
-        const cover = d.CoverBase64 ? '<img src="data:image/jpeg;base64,' + d.CoverBase64 + '">' : '<div style="height:90px;background:#eef3f9;display:flex;align-items:center;justify-content:center;">📄</div>';
-        return '<div class="carte-alaune" onclick="afficherSousDocuments(\'tous\')">' + cover + '<div class="carte-alaune-body"><div class="carte-alaune-titre">' + escapeHtml(d.Titre) + '</div></div></div>';
-      }).join("") + '</div>';
-    }
+    let html = fav.html + sectionsRecentsEtVus_(documentsCache, fav.nb, "document", "📄", function () { return "afficherSousDocuments('tous')"; }, afficherAccueilDocuments);
     zone.innerHTML = html;
   }
 
@@ -5089,14 +5112,7 @@ video.video-player-frame{object-fit:contain}
       return;
     }
     const fav = construireFavoris_(videosPlateformeCache, "🎬", function (i) { return "jouerVideoDepuisAccueil_(" + i + ")"; });
-    const restants = videosPlateformeCache.slice(fav.nb, fav.nb + 8);
-    let html = fav.html;
-    if (restants.length) {
-      html += '<p class="field-label">Récemment ajoutées</p><div class="grille-alaune">' + restants.map(function (v, i) {
-        const cover = v.CoverBase64 ? '<img src="data:image/jpeg;base64,' + v.CoverBase64 + '">' : '<div style="height:90px;background:#eef3f9;display:flex;align-items:center;justify-content:center;">🎬</div>';
-        return '<div class="carte-alaune" onclick="jouerVideoDepuisAccueil_(' + (i + fav.nb) + ')">' + cover + '<div class="carte-alaune-body"><div class="carte-alaune-titre">' + escapeHtml(v.Titre) + '</div></div></div>';
-      }).join("") + '</div>';
-    }
+    let html = fav.html + sectionsRecentsEtVus_(videosPlateformeCache, fav.nb, "video", "🎬", function (i) { return "jouerVideoDepuisAccueil_(" + i + ")"; }, afficherAccueilVideos);
     zone.innerHTML = html;
   }
 
@@ -6297,6 +6313,7 @@ video.video-player-frame{object-fit:contain}
     const paroles = document.getElementById("recParoles").value.trim();
     lireFichierGenerique_("recParolesFichier", function (parolesBase64, parolesNom, parolesMime) {
       appelServeur("ajouterEnregistrement", membreCourant.code, titre, description, "", visibilite, categorie, type, prix, auteur, emailAuteur, couverturesEnCours.audio || "", paroles, parolesBase64, parolesNom, parolesMime, r2).then(function () {
+        notifierAbonnes_(auteur, "audio", titre);
         document.getElementById("recTitre").value = "";
         document.getElementById("recAuteur").value = "";
         document.getElementById("recEmailAuteur").value = "";
@@ -6360,6 +6377,7 @@ video.video-player-frame{object-fit:contain}
     if (type === "Payant" && (!prix || Number(prix) <= 0)) { err.textContent = "Indiquez un prix pour un document payant."; err.style.display = "block"; return; }
     envoyerFichierPuisContinuer_(fichier, "document", err, function (r2) {
     appelServeur("ajouterDocument", membreCourant.code, titre, description, "", type, prix, auteur, emailAuteur, couverturesEnCours.document || "", r2).then(function () {
+      notifierAbonnes_(auteur, "document", titre);
       document.getElementById("docTitre").value = "";
       document.getElementById("docAuteur").value = "";
       document.getElementById("docEmailAuteur").value = "";
@@ -6488,6 +6506,7 @@ video.video-player-frame{object-fit:contain}
     const paroles = document.getElementById("vidParoles").value.trim();
     lireFichierGenerique_("vidParolesFichier", function (parolesBase64, parolesNom, parolesMime) {
       appelServeur("ajouterVideo", membreCourant.code, titre, description, "", type, prix, auteur, emailAuteur, couverturesEnCours.video || "", categorie, paroles, parolesBase64, parolesNom, parolesMime, r2).then(function () {
+        notifierAbonnes_(auteur, "video", titre);
         document.getElementById("vidTitre").value = "";
         document.getElementById("vidAuteur").value = "";
         document.getElementById("vidEmailAuteur").value = "";
@@ -8977,7 +8996,15 @@ video.video-player-frame{object-fit:contain}
   var X = (window.XTR = {});
   var S = { vue: "aujourdhui", verset: null, espace: null, plan: null, mur: "Demande", pries: {} };
   var VUES = [];
-  X.enregistrer = function (v) { VUES.push(v); };
+  // Ces vues ne sont plus dans la rubrique Communauté : elles se gèrent depuis Admin.
+  var ADMIN_IDS = ["verifies", "pays", "controle"], ZONE_ADMIN = null;
+  X.enregistrer = function (v) { if (ADMIN_IDS.indexOf(v.id) !== -1) v.admin = true; VUES.push(v); };
+  X.rendreAdmin = function (id, z) {
+    var v = VUES.filter(function (x) { return x.id === id; })[0];
+    if (!v) { z.innerHTML = '<div class="card"><p class="error">Section indisponible. Rechargez la page.</p></div>'; return; }
+    ZONE_ADMIN = { id: id, zone: z, vue: v };
+    v.rendre(z);
+  };
 
   function esc(t) { return escapeHtml(t == null ? "" : String(t)); }
   function zone() { return document.getElementById("xtrContenu"); }
@@ -9019,7 +9046,7 @@ video.video-player-frame{object-fit:contain}
 
   // ------------------------------------------------------------------ navigation
   function nav() {
-    var o = VUES.filter(function (v) { return !v.cachee && (!v.visible || v.visible()); });
+    var o = VUES.filter(function (v) { return !v.cachee && !v.admin && (!v.visible || v.visible()); });
     var cur = VUES.filter(function (v) { return v.id === S.vue; })[0];
     if (!cur || (!cur.cachee && cur.visible && !cur.visible())) S.vue = o[0].id;
     document.getElementById("xtrNav").innerHTML = o.map(function (v) {
@@ -9030,6 +9057,7 @@ video.video-player-frame{object-fit:contain}
     nav();
     var v = VUES.filter(function (x) { return x.id === S.vue; })[0];
     if (v) v.rendre(zone());
+    if (ZONE_ADMIN && document.body.contains(ZONE_ADMIN.zone) && ZONE_ADMIN.zone.offsetParent !== null) ZONE_ADMIN.vue.rendre(ZONE_ADMIN.zone);
   };
   X.vue = function (id) { S.vue = id; window.chargerCommunaute(); };
   X.S = S; X.esc = esc; X.zone = zone; X.echec = echec; X.besoinMembre = besoinMembre; X.ilya = ilya; X.lsGet = lsGet; X.lsSet = lsSet; X.code = code;
@@ -9532,9 +9560,10 @@ video.video-player-frame{object-fit:contain}
       appelServeur("getEvenements").then(function (r) { return (r && r.evenements) || []; }, function () { return []; })
     ]).then(function (r) {
       var d = [];
-      (r[0] || []).forEach(function (a) { d.push({ k: "audio", id: a.ID, t: a.Titre, s: a.Auteur, x: a.Description }); });
-      (r[1] || []).forEach(function (a) { d.push({ k: "document", id: a.ID, t: a.Titre, s: a.Auteur, x: a.Description }); });
-      (r[2] || []).forEach(function (a) { d.push({ k: "video", id: a.ID, t: a.Titre, s: a.Auteur, x: a.Description }); });
+      function jour(t) { var m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(String(t || "")); return m ? Date.UTC(+m[3], +m[2] - 1, +m[1]) : 0; }
+      (r[0] || []).forEach(function (a) { d.push({ k: "audio", id: a.ID, t: a.Titre, s: a.Auteur, x: a.Description, c: a.CoverBase64 || "", dt: jour(a.DateAjout) }); });
+      (r[1] || []).forEach(function (a) { d.push({ k: "document", id: a.ID, t: a.Titre, s: a.Auteur, x: a.Description, c: a.CoverBase64 || "", dt: jour(a.DateAjout) }); });
+      (r[2] || []).forEach(function (a) { d.push({ k: "video", id: a.ID, t: a.Titre, s: a.Auteur, x: a.Description, c: a.CoverBase64 || "", dt: jour(a.DateAjout) }); });
       (r[3] || []).forEach(function (a) { d.push({ k: "evenement", id: a.id, t: a.titre, s: a.lieu, x: a.description }); });
       BASE = { t: Date.now(), d: d }; return d;
     });
@@ -9618,12 +9647,44 @@ video.video-player-frame{object-fit:contain}
   function cleAut(n) { return "a:" + String(n || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, " ").trim().slice(0, 80); }
   function chargerVerifies() { return appelServeur("listerVerifies").then(function (r) { VERIF = {}; ((r && r.cles) || []).forEach(function (c) { VERIF[c] = 1; }); }, function () {}); }
   X.badgeVerifie = function (cle) { return VERIF[cle] ? ' <span class="xtr-verif" title="Compte vérifié">✔</span>' : ""; };
+  function majChips() {
+    Array.prototype.forEach.call(document.querySelectorAll(".xtr-abo"), function (b) {
+      var on = (AUT.suivis || []).some(function (a) { return cleAut(a.nom) === b.getAttribute("data-a"); });
+      b.className = "xtr-abo" + (on ? " on" : ""); b.textContent = on ? "✓ Abonné" : "+ S'abonner";
+    });
+  }
   X.lienAuteur = function (nom) {
     if (!nom) return "";
-    return '<a href="#" class="xtr-lien-aut" onclick="event.stopPropagation();XTR.auteur(\'' + jsq_(nom) + '\');return false;">' + esc(nom) + "</a>" + X.badgeVerifie(cleAut(nom));
+    if (membreCourant && AUT.pour !== code() && !AUT.enCours) { AUT.enCours = true; chargerAuteurs().then(function () { AUT.enCours = false; majChips(); }, function () { AUT.enCours = false; }); }
+    return '<a href="#" class="xtr-lien-aut" onclick="event.stopPropagation();XTR.auteur(\'' + jsq_(nom) + '\');return false;">' + esc(nom) + "</a>" + X.badgeVerifie(cleAut(nom)) +
+      ' <button type="button" class="xtr-abo' + (estSuivi(nom) ? " on" : "") + '" data-a="' + esc(cleAut(nom)) + '" onclick="event.stopPropagation();XTR.suivreRapide(\'' + jsq_(nom) + '\');return false;">' + (estSuivi(nom) ? "✓ Abonné" : "+ S'abonner") + "</button>";
+  };
+  // Abonnement en un toucher depuis une liste ou un lecteur (comme sur YouTube)
+  X.suivreRapide = function (nom) {
+    if (!besoinMembre()) return;
+    var oui = !estSuivi(nom);
+    appelServeur(oui ? "suivreAuteur" : "nePlusSuivreAuteur", code(), nom).then(function () {
+      var c = cleAut(nom);
+      if (oui) { AUT.suivis = (AUT.suivis || []).concat([{ nom: nom, cle: c }]); var v = vusAut(); (BASE.d || []).forEach(function (x) { if (cleAut(x.s) === c) v[x.k + ":" + x.id] = 1; }); lsSet("jesus_aut_vus", v); }
+      else AUT.suivis = (AUT.suivis || []).filter(function (a) { return cleAut(a.nom) !== c; });
+      Array.prototype.forEach.call(document.querySelectorAll('.xtr-abo[data-a="' + c.replace(/"/g, "") + '"]'), function (b) { b.className = "xtr-abo" + (oui ? " on" : ""); b.textContent = oui ? "✓ Abonné" : "+ S'abonner"; });
+    }, echec);
+  };
+  // Les nouveautés des auteurs suivis (contenus pas encore vus), les plus récentes d'abord
+  X.flux = function () {
+    if (!membreCourant) return Promise.resolve([]);
+    return Promise.all([chargerAuteurs(), chargerBase()]).then(function (r) {
+      var cles = (AUT.suivis || []).map(function (a) { return cleAut(a.nom); }); if (!cles.length) return [];
+      var vus = vusAut();
+      return (r[1] || []).filter(function (x) { return x.k !== "evenement" && cles.indexOf(cleAut(x.s)) !== -1 && !vus[x.k + ":" + x.id]; })
+        .map(function (x, i) { x.i = i; return x; }).sort(function (a, b) { return (b.dt || 0) - (a.dt || 0) || a.i - b.i; });
+    });
   };
   var css3 = document.createElement("style");
   css3.textContent = ".xtr-verif{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#1d9bf0;color:#fff;font-size:10px;font-weight:900;vertical-align:middle}" +
+    ".xtr-abo{width:auto;display:inline-block;margin:0 0 0 6px;padding:2px 9px;border-radius:999px;border:1px solid #c0392b;background:#c0392b;color:#fff;font-size:11px;font-weight:800;line-height:1.5;box-shadow:none;vertical-align:middle}.xtr-abo.on{background:transparent;color:#5b6b86;border-color:#b8c3d6}" +
+    ".xtr-aut-tete{display:flex;gap:14px;align-items:center}.xtr-aut-tete .xtr-avatar{width:84px;height:84px;font-size:34px}.xtr-aut-stats{display:flex;gap:16px;font-size:12px;color:#5b6b86;margin-top:2px;flex-wrap:wrap}.xtr-aut-stats b{color:#0c2f68}" +
+    ".xtr-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}.xtr-gal .gc{border:0;margin:0;padding:0;background:transparent;box-shadow:none;text-align:left;color:inherit;width:auto;cursor:pointer}.xtr-gal .im{aspect-ratio:16/10;border-radius:12px;background:#eef3f9;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px}.xtr-gal .im img{width:100%;height:100%;object-fit:cover}.xtr-gal .tt{font-size:12.5px;font-weight:700;margin-top:5px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}" +
     ".xtr-lien-aut{color:inherit;text-decoration:underline dotted}.xtr-avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;background:#eef3f9;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}";
   document.head.appendChild(css3);
   setTimeout(chargerVerifies, 2500);
@@ -9634,11 +9695,11 @@ video.video-player-frame{object-fit:contain}
   function chargerAuteurs() {
     return Promise.all([
       AUT.liste ? Promise.resolve(AUT.liste) : appelServeur("getAuteurs").then(function (l) { AUT.liste = l || []; return AUT.liste; }, function () { return []; }),
-      membreCourant ? appelServeur("mesAbonnements", code()).then(function (r) { AUT.suivis = r.auteurs || []; }, function () { AUT.suivis = []; }) : (AUT.suivis = [])
+      membreCourant ? appelServeur("mesAbonnements", code()).then(function (r) { AUT.suivis = r.auteurs || []; AUT.pour = code(); }, function () { AUT.suivis = []; AUT.pour = code(); }) : (AUT.suivis = [], AUT.pour = "")
     ]);
   }
   function estSuivi(nom) { var c = cleAut(nom); return (AUT.suivis || []).some(function (a) { return cleAut(a.nom) === c; }); }
-  X.auteur = function (nom) { S.aut = nom; afficherOnglet("communaute"); X.vue("auteur"); };
+  X.auteur = function (nom) { S.aut = nom; S.autFiltre = "tout"; afficherOnglet("communaute"); X.vue("auteur"); };
   X.suivre = function (nom, oui) {
     if (!besoinMembre()) return;
     appelServeur(oui ? "suivreAuteur" : "nePlusSuivreAuteur", code(), nom).then(function () {
@@ -9648,6 +9709,7 @@ video.video-player-frame{object-fit:contain}
       window.chargerCommunaute();
     }, echec);
   };
+  X.autFiltre = function (f) { S.autFiltre = f; X.vue("auteur"); };
   X.toutVu = function () {
     var v = vusAut(); (BASE.d || []).forEach(function (x) { v[x.k + ":" + x.id] = 1; }); lsSet("jesus_aut_vus", v); window.chargerCommunaute();
   };
@@ -9676,16 +9738,21 @@ video.video-player-frame{object-fit:contain}
       var a = (r[0][0] || []).filter(function (x) { return cleAut(x.Nom) === cleAut(nom); })[0] || { Nom: nom }, info = r[2], c = cleAut(nom);
       var photo = a.PhotoBase64 ? '<img class="xtr-avatar" src="data:image/jpeg;base64,' + a.PhotoBase64 + '" alt="">' : '<div class="xtr-avatar">🧑‍🎤</div>';
       var suivi = membreCourant ? estSuivi(nom) : false;
-      var h = '<button class="small secondary" onclick="XTR.vue(\'auteurs\')">← Auteurs</button><div class="card" style="margin-top:10px;"><div style="display:flex;gap:12px;align-items:center;">' + photo +
-        '<div><div class="evt-titre" style="margin:0;">' + esc(a.Nom) + X.badgeVerifie(c) + '</div><div class="item-desc">' + info.abonnes + " abonné(s)</div></div></div>" +
+      var contenus = r[1].filter(function (x) { return x.k !== "evenement" && cleAut(x.s) === c; }).sort(function (p, q) { return (q.dt || 0) - (p.dt || 0); });
+      var nb = { audio: 0, video: 0, document: 0 }; contenus.forEach(function (x) { nb[x.k]++; });
+      var filtre = S.autFiltre || "tout";
+      var h = '<button class="small secondary" onclick="XTR.vue(\'auteurs\')">← Auteurs</button><div class="card" style="margin-top:10px;"><div class="xtr-aut-tete">' + photo +
+        '<div style="min-width:0;"><div class="evt-titre" style="margin:0;">' + esc(a.Nom) + X.badgeVerifie(c) + '</div><div class="xtr-aut-stats"><span><b>' + info.abonnes + "</b> abonné(s)</span><span><b>" + contenus.length + "</b> publication(s)</span></div></div></div>" +
         (a.Biographie ? '<p class="item-desc" style="white-space:pre-wrap;margin-top:10px;">' + esc(a.Biographie) + "</p>" : "") +
-        '<button class="small ' + (suivi ? "secondary" : "") + '" style="margin-top:10px;" onclick="XTR.suivre(\'' + jsq_(nom) + "'," + (suivi ? "false" : "true") + ')">' + (suivi ? "✓ Suivi — ne plus suivre" : "➕ Suivre") + "</button></div>";
-      ["audio", "video", "document"].forEach(function (k) {
-        var l = r[1].filter(function (x) { return x.k === k && cleAut(x.s) === c; }); if (!l.length) return;
-        h += '<div class="card"><div class="evt-titre">' + NOMS_K[k] + "</div>" + l.map(function (x) {
-          return '<div class="xtr-ligne"><div class="tt"><b>' + esc(x.t) + '</b></div><button class="small" onclick="XTR.ouvrir(\'' + k + "','" + esc(x.id) + "','" + jsq_(x.t) + '\')">Ouvrir</button></div>';
-        }).join("") + "</div>";
-      });
+        '<button class="' + (suivi ? "secondary" : "") + '" style="margin-top:12px;width:100%;" onclick="XTR.suivre(\'' + jsq_(nom) + "'," + (suivi ? "false" : "true") + ')">' + (suivi ? "✓ Abonné — se désabonner" : "🔔 S'abonner pour être prévenu de ses nouveautés") + "</button></div>";
+      h += '<div class="card"><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">' + [["tout", "Tout (" + contenus.length + ")"], ["audio", "🎧 Audios (" + nb.audio + ")"], ["video", "▶️ Vidéos (" + nb.video + ")"], ["document", "📄 Documents (" + nb.document + ")"]].map(function (f) {
+        return '<button class="small ' + (filtre === f[0] ? "" : "secondary") + '" style="width:auto;" onclick="XTR.autFiltre(\'' + f[0] + '\')">' + f[1] + "</button>";
+      }).join("") + "</div>";
+      var vis = contenus.filter(function (x) { return filtre === "tout" || x.k === filtre; });
+      h += vis.length ? '<div class="xtr-gal">' + vis.map(function (x) {
+        return '<button type="button" class="gc" onclick="XTR.ouvrir(\'' + x.k + "','" + esc(x.id) + "','" + jsq_(x.t) + '\')"><div class="im">' + (x.c ? '<img loading="lazy" src="data:image/jpeg;base64,' + x.c + '" alt="">' : (x.k === "video" ? "▶️" : x.k === "document" ? "📄" : "🎧")) + '</div><div class="tt">' + esc(x.t) + "</div></button>";
+      }).join("") + "</div>" : '<p class="item-desc">Aucune publication pour le moment.</p>';
+      h += "</div>";
       z.innerHTML = h;
     });
   } });
@@ -9710,22 +9777,7 @@ video.video-player-frame{object-fit:contain}
   X.enregistrer({ id: "cellules", label: "👥 Cellules", rendre: function (z) {
     z.innerHTML = '<div class="card"><div class="loading">Chargement…</div></div>';
     if (S.cel) {
-      appelServeur("lireCellule", code(), S.cel).then(function (r) {
-        var c = r.cellule, id = c.id;
-        z.innerHTML = '<button class="small secondary" onclick="XTR.fermerCel()">← Cellules</button><div class="card" style="margin-top:10px;"><div class="evt-titre">' + esc(c.nom) + '</div><div class="item-desc">📍 ' + esc(c.ville) + " · " + c.nb + " membre(s) · Responsable : " + esc(c.responsable) + "</div>" +
-          (c.description ? '<p class="item-desc">' + esc(c.description) + "</p>" : "") +
-          '<button class="small secondary" onclick="' + (r.estResponsable ? "XTR.supprimerCel" : "XTR.quitter") + "('" + esc(id) + '\')">' + (r.estResponsable ? "🗑️ Supprimer le groupe" : "Quitter le groupe") + "</button></div>" +
-          '<div class="card"><textarea id="clMsg" rows="2" maxlength="400" placeholder="Écrire au groupe…"></textarea>' +
-          (r.estResponsable ? '<label style="display:flex;gap:8px;align-items:center;font-size:13px;margin:6px 0;"><input type="checkbox" id="clAnn" style="width:auto;"> 📢 Annonce (mise en avant)</label>' : "") +
-          '<button onclick="XTR.postCel(\'' + esc(id) + '\')">Envoyer</button></div>' +
-          '<div class="card">' + (r.messages.length ? r.messages.map(function (m) {
-            return '<div class="xtr-post" style="' + (m.type === "Annonce" ? "background:#fff8e1;border-radius:10px;padding:10px;" : "") + '"><div class="evt-meta"><b>' + esc(m.nom) + "</b>" + (m.type === "Annonce" ? " · 📢 Annonce" : "") + " · " + esc(ilya(m.date)) + '</div><div class="tx">' + esc(m.texte) + "</div>" +
-              ((membreCourant && m.auteur === code()) || r.estResponsable ? '<button class="small secondary" onclick="XTR.supprMsgCel(\'' + esc(m.id) + '\')">🗑️</button>' : "") + "</div>";
-          }).join("") : '<p class="empty-state">Aucun message. Lancez la conversation !</p>') + "</div>" +
-          (r.estResponsable && r.membres.length ? '<div class="card"><div class="evt-titre">Membres</div>' + r.membres.map(function (m) {
-            return '<div class="xtr-ligne"><div class="tt">' + esc(m.nom) + "</div>" + (m.code !== code() ? '<button class="small secondary" onclick="XTR.retirerMembre(\'' + esc(id) + "','" + esc(m.code) + '\')">Retirer</button>' : "") + "</div>";
-          }).join("") + "</div>" : "");
-      }, function (e) { z.innerHTML = '<button class="small secondary" onclick="XTR.fermerCel()">← Cellules</button><div class="card"><p class="error">' + esc(e.message) + '</p><button class="small" onclick="XTR.rejoindre(\'' + esc(S.cel) + '\')">Rejoindre ce groupe</button></div>'; });
+      if (window.CEL) window.CEL.rendre(z, S.cel);
       return;
     }
     Promise.all([appelServeur("listerCellules"), membreCourant ? appelServeur("mesCellules", code()) : Promise.resolve({ cellules: [] })]).then(function (r) {
@@ -10581,7 +10633,7 @@ video.video-player-frame{object-fit:contain}
 /* ===== CENTRE D'AIDE : questions, guide, vidéos pratiques ===== */
 (function () {
   "use strict";
-  var DATA = {"titre": "Guide JESUS — Prendre l'application en main, rubrique par rubrique", "intro": "JESUS est l'application de la communauté : Bible, séances en direct, TV, audios, vidéos, documents, événements, dons, prière et vie de groupe. Ce guide répond, rubrique par rubrique, aux questions que se posent les utilisateurs. Chaque question est aussi disponible dans le Centre d'aide de l'application, avec parfois une courte vidéo pratique.", "chapitres": [{"id": "demarrer", "icone": "🚀", "titre": "Bien démarrer", "resume": "Installer l'application, créer un compte, choisir son pays et sa langue.", "cible": "", "admin": false, "qs": [{"id": "dem-installer", "q": "Comment installer JESUS sur mon téléphone ?", "r": "JESUS s'installe comme une vraie application, sans passer par un magasin d'applications. Elle s'ouvre ensuite en plein écran depuis l'icône de votre écran d'accueil.", "etapes": ["Ouvrez l'adresse de JESUS dans Chrome (Android) ou Safari (iPhone).", "Si le bouton « 📲 Installer » apparaît dans l'en-tête, touchez-le et confirmez.", "Sinon, sur Android : menu ⋮ du navigateur, puis « Installer l'application » ou « Ajouter à l'écran d'accueil ».", "Sur iPhone : bouton Partager, puis « Sur l'écran d'accueil »."], "astuce": "Une fois installée, l'application garde en mémoire certains contenus que vous avez enregistrés pour les retrouver sans connexion."}, {"id": "dem-visiteur", "q": "Que puis-je faire sans créer de compte ?", "r": "Beaucoup de choses : le mode visiteur donne accès à la Bible, aux séances directes, aux événements, aux audios, aux documents, aux vidéos, aux offrandes, aux collectes et à la demande de prière.", "etapes": ["Ouvrez l'application : vous arrivez directement sur la page d'accueil.", "Touchez une rubrique dans la barre du bas, ou une carte de la page d'accueil.", "Quand une fonction demande un compte (par exemple, un groupe ou la messagerie), l'application vous le dit."], "astuce": "Un compte est utile pour retrouver vos favoris, vos billets, vos paiements et participer à la vie de la communauté."}, {"id": "dem-compte", "q": "Comment créer mon compte ?", "r": "La création de compte se fait avec un code d'accès remis par un administrateur de JESUS. Ce code vous est communiqué par l'équipe ou par votre responsable.", "etapes": ["Touchez « Se connecter » dans l'en-tête, puis « Pas encore de compte ? Créer un compte ».", "Saisissez votre code de validation, puis remplissez le formulaire (nom, prénom, pays d'origine, date de naissance, situation, téléphone, mot de passe…).", "Validez : vous êtes connecté et vous voyez votre badge de membre.", "Les fois suivantes, touchez « Se connecter » avec votre numéro de téléphone et votre mot de passe."], "astuce": "Pas de code ? Demandez-en un à un Leader de votre communauté, ou faites la demande vous-même (voir « Comment obtenir un code de validation ? »)."}, {"id": "dem-code", "q": "Comment obtenir un code de validation ?", "r": "Le code de validation est nécessaire pour créer un compte. Il est remis par un Leader (responsable d'une communauté chrétienne reconnu par JESUS), ou envoyé par e-mail après examen de votre demande.", "etapes": ["Demandez un code à un Leader que vous connaissez : il peut en générer pour vous.", "Ou, sur l'écran de connexion ou celui du code, touchez « Je n'ai pas de code : en demander un ».", "Saisissez votre nom complet et votre adresse e-mail, puis joignez une photo de votre pièce d'identité valide et de votre carte de baptême.", "Envoyez : l'équipe examine votre demande. Si elle est acceptée, le code arrive par e-mail. Si elle est refusée, le motif vous est aussi envoyé par e-mail."], "astuce": "Vos pièces ne sont vues que par l'administration et sont effacées dès que la demande est traitée. Pensez à regarder vos courriers indésirables."}, {"id": "dem-mdp", "q": "J'ai oublié mon mot de passe, que faire ?", "r": "Vous pouvez le réinitialiser vous-même, à condition qu'un e-mail soit associé à votre compte.", "etapes": ["Sur l'écran de connexion, touchez « Mot de passe oublié ? ».", "Saisissez votre numéro de téléphone : un code est envoyé par e-mail (valable 30 minutes). Regardez aussi vos courriers indésirables.", "Entrez le code reçu, choisissez un nouveau mot de passe, confirmez-le."], "astuce": "Si vous n'avez pas d'e-mail enregistré, contactez l'équipe via le Centre d'aide."}, {"id": "dem-pays-langue", "q": "Comment choisir mon pays et la langue de l'application ?", "r": "À la première ouverture, l'application se met automatiquement dans la langue du pays d'où vous l'ouvrez. Le bouton globe de l'en-tête vous permet en plus de choisir votre pays : vous ne voyez alors que les contenus destinés à votre pays. Sans pays choisi, vous voyez un mélange des contenus de tous les pays.", "etapes": ["Touchez le bouton globe dans l'en-tête.", "Cherchez votre pays dans la liste (l'Afrique est en premier), puis touchez-le : la page se recharge.", "Pour changer seulement la langue, utilisez le bouton de traduction à côté du globe : votre choix est alors respecté.", "Pour tout revoir, choisissez « Tous les pays »."], "astuce": "Les contenus qui n'ont pas de pays précis restent visibles partout."}, {"id": "dem-naviguer", "q": "Comment me repérer dans l'application ?", "r": "Les rubriques sont dans la barre jaune en bas de l'écran. Faites-la défiler vers la gauche avec le doigt pour voir les suivantes ; la rubrique ouverte est en bleu.", "etapes": ["Touchez une icône pour ouvrir la rubrique (Accueil, Communauté, Bible, Séances directes, TV, Audios…).", "« Accueil » vous ramène à la page d'accueil depuis n'importe où.", "Dans certaines rubriques, des sous-onglets proposent « Accueil », « Playlists », « Actualités »…", "Dans l'en-tête : le globe (pays), la traduction, le Centre d'aide, et « Se connecter » ou « Se déconnecter ».", "Le bouton retour de votre téléphone ramène à l'écran précédent."], "astuce": ""}]}, {"id": "accueil", "icone": "🏠", "titre": "Page d'accueil", "resume": "Votre parcours du jour, les annonces et les contenus à découvrir.", "cible": "accueil", "admin": false, "qs": [{"id": "acc-parcours", "q": "Qu'est-ce que « Votre parcours du jour » ?", "r": "Quatre étapes courtes pour bien commencer la journée. Elles défilent de droite à gauche : balayez avec le doigt, ou utilisez les flèches jaunes sur ordinateur.", "etapes": ["Étape 1 : écoutez une chanson ou une playlist pour adorer et louer Dieu.", "Étape 2 : lisez le verset du jour (environ 35 secondes), puis touchez « Amen ».", "Étape 3 : écoutez une parole (audio).", "Étape 4 : rejoignez une séance de prière en direct.", "Le compteur « 0 sur 4 » avance à chaque étape faite ; il repart de zéro chaque jour."], "astuce": "Rien n'est obligatoire : faites les étapes dans l'ordre que vous voulez."}, {"id": "acc-annonces", "q": "Comment voir les annonces vidéo ?", "r": "La rubrique « Annonces » présente de courtes vidéos d'annonces qui défilent. Chaque vidéo se lance quand vous touchez le bouton Play.", "etapes": ["Sur la page d'accueil, repérez « Annonces ».", "Balayez pour passer d'une annonce à l'autre.", "Touchez le bouton Play : la vidéo démarre sur place."], "astuce": ""}, {"id": "acc-decouvrir", "q": "Que trouve-t-on sous « Communauté » sur la page d'accueil ?", "r": "Des rangées à faire défiler, chacune avec un lien « Tout voir » qui ouvre la rubrique complète : Prochains événements, À écouter, À regarder, À lire, Programmes chauds à la télé et Opportunités de semence (les collectes).", "etapes": ["Faites défiler une rangée de droite à gauche pour voir d'autres contenus.", "Touchez une carte, ou « Tout voir », pour ouvrir la rubrique correspondante.", "L'affiche « Communauté » mène à la rubrique Communauté."], "astuce": "Selon votre pays choisi, la page d'accueil ne montre que les contenus de ce pays."}]}, {"id": "compte", "icone": "👤", "titre": "Mon compte", "resume": "Badge de membre, informations personnelles, sécurité.", "cible": "badge", "admin": false, "qs": [{"id": "cpt-badge", "q": "Où trouver mon badge de membre et comment l'imprimer ?", "r": "Votre badge reprend votre identité de membre et votre code. Il se trouve dans « Mon compte ».", "etapes": ["Touchez l'icône de compte dans l'en-tête (visible une fois connecté).", "Votre badge s'affiche avec votre nom, votre statut et vos coordonnées.", "Touchez « 🖨️ Imprimer / Enregistrer en PDF » pour l'imprimer ou en faire un fichier."], "astuce": ""}, {"id": "cpt-infos", "q": "Comment modifier mes informations, mon numéro ou mon mot de passe ?", "r": "Tout se fait depuis « Mon compte », sous le badge.", "etapes": ["« Mes informations » : modifiez votre e-mail, votre adresse, votre profession, votre église, puis « Enregistrer ».", "« Changer mon numéro de téléphone » : votre numéro sert à vous connecter ; votre mot de passe actuel est demandé pour confirmer.", "« Changer mon mot de passe » : saisissez l'ancien puis le nouveau.", "« Se déconnecter » ferme votre session sur cet appareil."], "astuce": "Ajoutez un e-mail : il vous permettra de récupérer votre mot de passe en cas d'oubli."}]}, {"id": "communaute", "icone": "✨", "titre": "Communauté", "resume": "Verset du jour, plans de lecture, mur de prière, favoris, groupes, églises, parrainage…", "cible": "communaute", "admin": false, "qs": [{"id": "com-aujourdhui", "q": "Que trouve-t-on dans « Aujourd'hui » ?", "r": "C'est votre rendez-vous quotidien : le verset du jour et votre suivi spirituel.", "etapes": ["Ouvrez Communauté, puis l'onglet « ✨ Aujourd'hui ».", "Lisez le verset du jour et cochez vos activités du jour (lecture, prière…).", "Votre régularité s'affiche : revenez chaque jour pour la faire grandir."], "astuce": ""}, {"id": "com-plans", "q": "Comment suivre un plan de lecture de la Bible ?", "r": "Un plan de lecture vous propose un passage par jour pour parcourir la Bible progressivement.", "etapes": ["Communauté, puis « 📖 Plans de lecture ».", "Choisissez un plan et démarrez-le.", "Chaque jour, lisez le passage proposé puis validez le jour.", "Vous pouvez réinitialiser un plan pour recommencer."], "astuce": ""}, {"id": "com-mur", "q": "Comment utiliser le mur de prière ?", "r": "Le mur de prière permet de partager une demande de prière ou un témoignage, et de prier pour les autres.", "etapes": ["Communauté, puis « 🙏 Mur de prière ».", "Pour publier : choisissez « Demande » ou « Témoignage », une catégorie, écrivez votre message (vous pouvez rester anonyme) et publiez.", "Pour prier pour quelqu'un, touchez le bouton de prière sur son message : le compteur augmente.", "Quand votre demande est exaucée, vous pouvez la transformer en témoignage depuis vos propres messages.", "Un message inapproprié peut être signalé ; les modérateurs peuvent le masquer ou le supprimer."], "astuce": "Le nombre de publications par jour est limité pour garder un mur de qualité."}, {"id": "com-favoris", "q": "Comment enregistrer mes favoris et créer des playlists ?", "r": "Les favoris vous permettent de retrouver vite vos audios, vidéos et documents préférés.", "etapes": ["Sur un contenu, touchez le cœur ♥ pour l'ajouter à vos favoris.", "Ouvrez Communauté, puis « ♥ Favoris & playlists » pour les retrouver.", "Regroupez vos contenus en playlists personnelles pour les écouter à la suite."], "astuce": ""}, {"id": "com-horsligne", "q": "Comment utiliser JESUS sans connexion Internet ?", "r": "Certains contenus peuvent être enregistrés sur votre appareil pour être consultés hors ligne.", "etapes": ["Communauté, puis « 📥 Hors-ligne ».", "Enregistrez les contenus proposés tant que vous êtes connecté.", "Sans Internet, retrouvez-les dans la même rubrique."], "astuce": "Pensez à enregistrer vos contenus avant un voyage ou une zone sans réseau."}, {"id": "com-recherche", "q": "Comment rechercher un contenu dans toute l'application ?", "r": "La recherche globale fouille plusieurs rubriques en une seule fois.", "etapes": ["Communauté, puis « 🔎 Recherche ».", "Tapez un mot (titre, auteur, thème).", "Touchez un résultat pour l'ouvrir."], "astuce": ""}, {"id": "com-notifs", "q": "Comment activer les notifications ?", "r": "Les notifications vous préviennent des nouveautés, même quand l'application est fermée.", "etapes": ["Communauté, puis « 🔔 Notifications ».", "Activez-les et acceptez l'autorisation demandée par votre téléphone.", "Pour les désactiver, revenez à la même rubrique."], "astuce": "Sur iPhone, installez d'abord l'application sur l'écran d'accueil pour recevoir les notifications."}, {"id": "com-auteurs", "q": "Comment suivre un auteur ?", "r": "Suivre un auteur permet d'être prévenu de ses nouveaux contenus. Un badge ✔ indique un compte vérifié.", "etapes": ["Communauté, puis « 🧑‍🎤 Auteurs ».", "Ouvrez la fiche d'un auteur et touchez « Suivre ».", "Retrouvez vos abonnements dans la même rubrique."], "astuce": ""}, {"id": "com-cellules", "q": "Comment rejoindre ou créer un groupe (cellule) ?", "r": "Les cellules sont des groupes de partage avec un fil de messages et des annonces du responsable.", "etapes": ["Communauté, puis « 👥 Cellules ».", "Pour rejoindre : ouvrez un groupe et touchez « Rejoindre », puis écrivez dans le fil.", "Pour créer : remplissez le nom, la ville, le pays et la description, puis « Créer ». Vous en devenez le responsable.", "Le responsable peut publier des annonces et retirer un membre."], "astuce": "Il faut un compte pour rejoindre ou créer une cellule."}, {"id": "com-eglises", "q": "Comment trouver une église ou ajouter la mienne ?", "r": "L'annuaire des églises liste les églises par ville et par pays, avec itinéraire, téléphone et horaires.", "etapes": ["Communauté, puis « ⛪ Églises » : recherchez par nom, ville ou pays.", "Touchez « 🧭 Itinéraire » pour être guidé jusqu'à l'église, ou « 📞 Appeler ».", "Pour ajouter une église : « Proposer une église ». La localisation (lien Google Maps ou autre) et le logo sont obligatoires.", "Une église proposée est publiée après vérification par l'équipe."], "astuce": ""}, {"id": "com-parrainage", "q": "Comment parrainer des amis ?", "r": "Chaque membre dispose d'un lien de parrainage à partager pour inviter des proches.", "etapes": ["Communauté, puis « 🎁 Parrainage ».", "Copiez ou partagez votre lien avec vos amis : c'est le lien de l'application, www.jesusonly.site.", "Suivez le nombre de personnes parrainées."], "astuce": "Quand vous partagez un verset du jour (en image ou en texte), il est accompagné d'une courte phrase d'invitation et du même lien."}, {"id": "com-dons", "q": "Comment faire un don mensuel et retrouver mes reçus ?", "r": "Vous pouvez vous engager sur un don régulier et retrouver vos reçus de paiement.", "etapes": ["Communauté, puis « 💝 Dons mensuels » : définissez un montant et activez l'engagement. Un rappel vous est envoyé chaque mois ; le paiement reste à confirmer par vous.", "« 🧾 Mes reçus » : retrouvez vos paiements et téléchargez un reçu en PDF.", "Vous pouvez arrêter un engagement à tout moment."], "astuce": ""}]}, {"id": "bible", "icone": "📖", "titre": "Bible", "resume": "Lire, chercher, surligner, copier et écouter la Bible en français ou en anglais.", "cible": "bible", "admin": false, "qs": [{"id": "bib-lire", "q": "Comment lire et rechercher dans la Bible ?", "r": "La Bible est disponible en français et en anglais, livre par livre.", "etapes": ["Ouvrez l'onglet Bible et choisissez un livre, puis un chapitre.", "Changez de langue avec les boutons 🇫🇷 Français / 🇬🇧 English.", "Passez au chapitre précédent ou suivant avec ◀ et ▶.", "Touchez « 🔍 Rechercher », saisissez un mot ou une expression, puis touchez un résultat pour y aller."], "astuce": ""}, {"id": "bib-outils", "q": "Comment surligner, copier ou écouter un passage ?", "r": "Sélectionnez des versets pour faire apparaître la barre d'outils.", "etapes": ["Touchez un verset pour le sélectionner (« ↔ Passage » pour tout un passage, « ☑ Tout » pour tout le chapitre).", "Choisissez une couleur pour surligner ; 🧽 retire le surlignage.", "« 📋 Copier » copie le texte sélectionné.", "« 🔊 Écouter » lit le chapitre à voix haute ; touchez-le de nouveau pour arrêter."], "astuce": ""}]}, {"id": "seances", "icone": "🙏", "titre": "Séances directes", "resume": "Suivre les séances de prière et d'enseignement en direct ou en replay.", "cible": "prieres", "admin": false, "qs": [{"id": "sea-suivre", "q": "Comment suivre une séance en direct ?", "r": "L'onglet Séances directes présente les séances à venir et en cours.", "etapes": ["Ouvrez Séances directes : « Accueil » met en avant les prochaines séances, « Toutes les séances » les liste toutes (avec recherche).", "Touchez une séance pour voir son horaire et son contenu.", "À l'heure prévue, touchez le bouton pour la rejoindre."], "astuce": ""}, {"id": "sea-acces", "q": "Comment accéder à une séance protégée ou payante ?", "r": "Certaines séances sont libres, d'autres demandent un code d'accès ou un paiement.", "etapes": ["Ouvrez la séance concernée.", "Saisissez le code d'accès fourni par l'organisateur, ou payez si un montant est demandé.", "Une fois validé, le lien de la séance s'ouvre."], "astuce": "Pas de code ? Demandez-le à l'organisateur ou au Centre d'aide."}]}, {"id": "tv", "icone": "📺", "titre": "TV", "resume": "Regarder les chaînes, garder ses favoris, diffuser sa propre chaîne.", "cible": "tv", "admin": false, "qs": [{"id": "tv-regarder", "q": "Comment regarder la TV et garder mes chaînes préférées ?", "r": "La TV propose des chaînes avec une programmation et des directs.", "etapes": ["Ouvrez l'onglet TV : « Chaînes » liste toutes les chaînes.", "Touchez une chaîne pour lancer la lecture dans le lecteur flottant, qui continue pendant que vous naviguez.", "Touchez ⛶ pour passer en plein écran.", "Ajoutez une chaîne en favori : elle apparaît dans « ⭐ Mes chaînes »."], "astuce": ""}, {"id": "tv-studio", "q": "Comment diffuser ma propre chaîne (Mon studio) ?", "r": "Les membres autorisés disposent d'un studio pour gérer leur chaîne.", "etapes": ["Ouvrez TV, puis « 🎛️ Mon studio » (visible si votre compte y est autorisé).", "Renseignez le nom, la description et le logo de votre chaîne.", "Pour un direct : « 🔴 Préparer mon live », puis copiez l'adresse du serveur et la clé de diffusion dans OBS ou Larix Broadcaster. Ne partagez jamais la clé.", "Ajoutez des vidéos ou des playlists YouTube à votre bibliothèque et placez-les dans la grille horaire."], "astuce": ""}]}, {"id": "audios", "icone": "🎧", "titre": "Audios", "resume": "Écouter, enregistrer et acheter des audios.", "cible": "audios", "admin": false, "qs": [{"id": "aud-ecouter", "q": "Comment écouter un audio et utiliser les playlists ?", "r": "L'onglet Audios réunit prédications, chants et enseignements.", "etapes": ["« Accueil » : les 3 favoris de l'équipe en carrés, puis les ajouts récents.", "« Playlists » : parcourez par catégorie et recherchez un titre.", "Touchez un audio pour le lancer : le lecteur reste en bas de l'écran pendant que vous naviguez. Fermez-le avec ✕.", "« Actualités » : les dernières nouvelles liées aux audios."], "astuce": "Notez un contenu et ajoutez-le à vos favoris ♥ pour le retrouver."}, {"id": "aud-payant", "q": "Comment obtenir un audio payant ?", "r": "Les contenus marqués « Payant » s'acquièrent une fois ; vous pouvez ensuite les réécouter.", "etapes": ["Ouvrez l'audio et touchez le bouton d'achat.", "Réglez avec le moyen de paiement proposé.", "Après confirmation, l'écoute et le téléchargement sont débloqués ; l'achat est conservé pour ce compte."], "astuce": ""}]}, {"id": "videos", "icone": "▶️", "titre": "Vidéos", "resume": "Regarder les vidéos et les playlists.", "cible": "videos", "admin": false, "qs": [{"id": "vid-voir", "q": "Comment regarder une vidéo ou une playlist ?", "r": "L'onglet Vidéos propose des vidéos mises en avant et des playlists.", "etapes": ["« Accueil » : les 3 favoris en carrés puis les vidéos récentes.", "« Playlists » : touchez une playlist pour voir ses vidéos.", "Touchez une vidéo pour la lire ; le lecteur vidéo reste visible quand vous changez de page.", "« Actualités » : les nouveautés vidéo."], "astuce": ""}, {"id": "vid-payant", "q": "Comment obtenir une vidéo payante ?", "r": "Comme pour les audios, une vidéo payante se débloque après paiement.", "etapes": ["Ouvrez la vidéo et touchez le bouton d'achat.", "Payez, puis profitez de la lecture et du téléchargement."], "astuce": ""}]}, {"id": "documents", "icone": "📄", "titre": "Documents", "resume": "Livres, études et supports à lire ou télécharger.", "cible": "documents", "admin": false, "qs": [{"id": "doc-trouver", "q": "Comment trouver et lire un document ?", "r": "Les documents sont des livres, des études ou des supports de formation.", "etapes": ["« Accueil » : les 3 favoris puis les ajouts récents.", "« Tous les documents » : la liste complète, avec recherche.", "Touchez un document pour voir sa fiche, le lire ou le télécharger."], "astuce": ""}, {"id": "doc-payant", "q": "Comment acheter un document payant ?", "r": "Un document payant se débloque après paiement et reste accessible ensuite.", "etapes": ["Ouvrez la fiche du document, touchez « Acheter ».", "Payez, puis téléchargez le fichier.", "Si vous avez déjà acheté un document, il se rouvre sans nouveau paiement."], "astuce": ""}]}, {"id": "evenements", "icone": "🎫", "titre": "Événements et votes", "resume": "Réserver des billets, voter, organiser un événement.", "cible": "evenements", "admin": false, "qs": [{"id": "evt-reserver", "q": "Comment réserver un billet pour un événement ?", "r": "L'onglet Événements présente les événements à venir, avec leur lieu, leur date et leurs billets.", "etapes": ["Ouvrez Événements, onglet « 🎫 Découvrir » ; filtrez par catégorie ou recherchez.", "Touchez un événement pour voir sa description, ses billets et son lieu.", "Choisissez le type et le nombre de billets, remplissez les informations demandées puis ajoutez au panier.", "Payez : vos billets sont émis."], "astuce": ""}, {"id": "evt-panier", "q": "Comment utiliser le panier et un code promo ?", "r": "Le panier réunit vos achats ; un code promo peut réduire le prix.", "etapes": ["Touchez le bouton panier en bas à droite pour voir vos articles.", "Saisissez votre code promo : la réduction s'applique si le code est valable pour cet événement.", "Validez et payez."], "astuce": ""}, {"id": "evt-billet", "q": "Où retrouver mon billet et comment le présenter ?", "r": "Vos billets sont gardés dans l'application avec un QR code.", "etapes": ["Ouvrez Événements puis la rubrique de vos billets (« Mes billets »).", "Le jour J, présentez le QR code à l'entrée : il sera scanné par un contrôleur.", "Chaque billet ne peut être utilisé qu'une fois."], "astuce": ""}, {"id": "evt-voter", "q": "Comment voter dans un concours ou une élection ?", "r": "Les votes se trouvent dans l'onglet « 🗳️ Votes » des Événements. Les candidats sont classés du plus de votes au moins de votes.", "etapes": ["Ouvrez Événements, onglet « 🗳️ Votes », puis le vote de votre choix.", "Touchez « ▶️ Vidéo » sur un candidat pour le découvrir en moins de 5 minutes.", "Touchez « Voter » : le vote est définitif. Un vote peut être gratuit (sans compte) ou payant.", "Le nombre de votes qu'il vous reste est indiqué. Les résultats sont visibles en direct ou après la clôture, selon l'organisateur."], "astuce": "Quand l'organisateur exige un compte pour voter, connectez-vous d'abord."}, {"id": "evt-organiser", "q": "Comment organiser et publier un événement ?", "r": "Les membres ayant le statut Organisateur peuvent créer des événements et des votes.", "etapes": ["Dans Événements, ouvrez l'espace organisateur et touchez « Nouvel événement ».", "Renseignez titre, description, lieu, dates, pays concerné, image et types de billets (prix et nombre de places).", "Enregistrez puis soumettez : l'événement est publié après validation.", "Pour un vote : créez un concours, ajoutez au moins 2 candidats (photo, description, vidéo facultative), choisissez le prix du vote et l'affichage des résultats."], "astuce": ""}, {"id": "evt-gerer", "q": "Comment gérer mon événement (participants, scan, revenus) ?", "r": "L'espace organisateur suit votre événement de A à Z.", "etapes": ["Consultez les participants et les statistiques de ventes.", "Désignez des contrôleurs qui scannent les billets à l'entrée.", "Partagez le lien de l'événement (WhatsApp, Facebook, SMS) et suivez ses visites.", "Envoyez un rappel aux participants et consultez vos revenus et reversements."], "astuce": ""}]}, {"id": "dons", "icone": "🙌", "titre": "Offrandes et collectes", "resume": "Donner librement ou participer à une collecte.", "cible": "offrandes", "admin": false, "qs": [{"id": "don-offrande", "q": "Comment faire une offrande ?", "r": "Une offrande est un don libre, sans compte obligatoire.", "etapes": ["Ouvrez Offrandes.", "Saisissez le montant en FCFA et, si vous le souhaitez, un motif.", "Touchez « Faire une offrande » et payez.", "Retrouvez vos dons dans « Historique de mes dons »."], "astuce": ""}, {"id": "don-collecte", "q": "Comment participer à une collecte ?", "r": "Une collecte réunit des contributions pour un projet, avec un objectif et une progression.", "etapes": ["Ouvrez Collectes et choisissez celle qui vous concerne.", "Saisissez votre contribution et payez.", "Votre participation apparaît dans « Historique de mes contributions », avec le total payé."], "astuce": "Les reçus sont téléchargeables dans Communauté, « Mes reçus »."}]}, {"id": "priere", "icone": "✉️", "titre": "Demande de prière", "resume": "Confier une requête à l'équipe de prière.", "cible": "demandePriere", "admin": false, "qs": [{"id": "pri-demande", "q": "Comment envoyer une demande de prière ?", "r": "Votre demande est transmise à l'équipe de prière, qui vous accompagne.", "etapes": ["Ouvrez « Demande de prière ».", "Renseignez votre nom, prénom, situation, profession, âge et votre requête.", "Envoyez : l'équipe la reçoit et peut vous répondre."], "astuce": "Pour une demande publique et anonyme, utilisez plutôt le mur de prière de la Communauté."}]}, {"id": "messages", "icone": "💬", "titre": "Messages et groupes", "resume": "Écrire à l'administration et rejoindre les groupes WhatsApp.", "cible": "messages", "admin": false, "qs": [{"id": "msg-admin", "q": "Comment écrire à l'administration ?", "r": "La messagerie est réservée aux membres connectés.", "etapes": ["Ouvrez Messages.", "Écrivez un texte, ou enregistrez un message vocal avec 🎙️.", "Retrouvez vos échanges et les annonces de l'équipe dans la même page."], "astuce": ""}, {"id": "msg-groupes", "q": "Comment rejoindre un groupe WhatsApp ?", "r": "L'onglet Groupes liste les groupes WhatsApp de la communauté.", "etapes": ["Ouvrez Groupes.", "Touchez le groupe voulu. Certains demandent un code d'accès donné par un responsable.", "WhatsApp s'ouvre pour rejoindre le groupe."], "astuce": ""}]}, {"id": "auteur", "icone": "✍️", "titre": "Soumissions (auteurs)", "resume": "Proposer ses propres contenus.", "cible": "soumissions", "admin": false, "qs": [{"id": "aut-soumettre", "q": "Comment soumettre un document, un audio ou une vidéo ?", "r": "Les membres ayant le statut Auteur peuvent proposer un contenu dont ils sont l'auteur.", "etapes": ["Ouvrez « ✍️ Soumissions » (visible si vous avez le statut Auteur).", "Choisissez le type, ajoutez le fichier, un titre et une description.", "Envoyez : l'équipe vérifie puis publie. Vous suivez l'état de vos soumissions."], "astuce": ""}]}, {"id": "leader", "icone": "🛡️", "titre": "Leaders et codes de validation", "resume": "Devenir Leader, inviter de nouvelles personnes, sécurité.", "cible": "badge", "admin": false, "qs": [{"id": "led-statut", "q": "Comment devenir Leader ?", "r": "Un Leader est un responsable de communauté chrétienne reconnu par JESUS. Il peut générer des codes de validation pour inviter de nouvelles personnes. Le statut s'obtient sur demande, avec des pièces justificatives.", "etapes": ["Connectez-vous, puis ouvrez « Mon compte ».", "Dans la carte « Devenir Leader », touchez « Faire une demande ».", "Indiquez le nom de votre communauté et votre fonction, puis joignez une photo de votre pièce d'identité valide et une preuve de votre responsabilité (attestation, lettre de l'église, carte de ministère…).", "Envoyez : vous êtes prévenu de la décision (e-mail si vous en avez un, et dans « Mon compte »). En cas de refus, le motif est indiqué et vous pouvez refaire une demande."], "astuce": "Vos pièces ne sont vues que par l'administration et sont effacées dès la décision."}, {"id": "led-codes", "q": "Comment générer et donner des codes de validation ?", "r": "Dans « Mon compte », la carte Leader ouvre « Mes codes de validation ». Chaque code ne sert qu'une seule fois, pour créer un seul compte.", "etapes": ["Ouvrez « Mon compte », puis « Mes codes de validation ».", "Touchez « Générer un code » (vous pouvez garder jusqu'à 10 codes non utilisés).", "Touchez « Partager » à côté d'un code pour l'envoyer à la personne invitée avec les explications.", "Suivez l'état de chaque code : disponible ou utilisé."], "astuce": ""}, {"id": "led-telephone", "q": "J'ai perdu mon téléphone : que dois-je faire ?", "r": "Si vous êtes Leader et que vous perdez votre téléphone, signalez-le-nous immédiatement : vos codes et votre compte pourraient être utilisés par une autre personne.", "etapes": ["Ouvrez le Centre d'aide depuis un autre appareil, ou appelez le numéro affiché dans son en-tête.", "Indiquez votre nom et votre numéro de téléphone.", "L'équipe sécurise votre compte et vos codes."], "astuce": "Changez aussi votre mot de passe dès que vous le pouvez."}]}, {"id": "aide", "icone": "🆘", "titre": "Centre d'aide", "resume": "Retrouver ce guide et joindre l'équipe.", "cible": "", "admin": false, "qs": [{"id": "aid-contact", "q": "Comment joindre l'équipe JESUS ?", "r": "Le Centre d'aide affiche le numéro de téléphone et l'e-mail de l'équipe dans son en-tête.", "etapes": ["Touchez « 🆘 Centre d'aide » dans l'en-tête.", "Appelez, écrivez sur WhatsApp ou envoyez un e-mail depuis l'en-tête.", "Ou remplissez le formulaire « Écrire à l'équipe » en bas de page."], "astuce": ""}, {"id": "aid-video", "q": "Où voir une vidéo pratique pour une question ?", "r": "Certaines questions s'accompagnent d'une courte vidéo qui montre les gestes pas à pas.", "etapes": ["Ouvrez le Centre d'aide et touchez une question.", "Si une vidéo existe, elle s'affiche sous la réponse : touchez ▶️ pour la lancer.", "Une question sans vidéo n'en a pas encore : la réponse écrite suffit."], "astuce": ""}]}, {"id": "admin", "icone": "⚙", "titre": "Guide administrateur", "resume": "Pour les comptes qui gèrent l'application.", "cible": "admin", "admin": true, "qs": [{"id": "adm-accueil", "q": "Comment gérer la page d'accueil de l'application ?", "r": "La page d'accueil se remplit seule avec les contenus publiés. Deux éléments se gèrent à la main : l'affiche « Communauté » (Super Admin) et les annonces vidéo.", "etapes": ["Affiche « Communauté » : en tant que Super Admin, sur la page d'accueil, touchez « Changer l'affiche » sur l'affiche, choisissez une image (elle est recadrée automatiquement). « Rétablir l'illustration » remet l'image d'origine.", "Annonces vidéo : Admin, onglet « Annonces vidéo ». Saisissez un titre (facultatif) et un lien YouTube, Facebook ou Vimeo, puis « Ajouter l'annonce ». 12 annonces au maximum ; « Supprimer » en retire une.", "Les rangées « Prochains événements », « À écouter », « À regarder », « À lire », « Programmes chauds à la télé » et « Opportunités de semence » se remplissent automatiquement à partir des rubriques."], "astuce": ""}, {"id": "adm-demandes", "q": "Comment traiter les demandes de Leader et de code de validation ?", "r": "Le Super Admin examine deux sortes de demandes : celles des membres qui veulent devenir Leader, et celles des visiteurs qui veulent un code de validation.", "etapes": ["Admin, onglet « Demandes et Leaders ».", "Touchez « Voir les pièces » pour consulter les photos fournies.", "« Accepter » : un Leader reçoit son statut ; un visiteur reçoit son code par e-mail.", "« Refuser » : saisissez le motif, il est envoyé au demandeur par e-mail. Les pièces sont effacées dès la décision.", "Vous pouvez aussi rendre un membre Leader (ou lui retirer le statut) depuis l'onglet Membres."], "astuce": "Vérifiez que la pièce d'identité est lisible et que le nom correspond à la demande."}, {"id": "adm-collecte-email", "q": "Comment prévenir le responsable d'une collecte à chaque don ?", "r": "Le Super Admin peut enregistrer l'e-mail du responsable de chaque collecte : il reçoit un message à chaque don confirmé.", "etapes": ["Admin, onglet « Collectes ».", "Sous la collecte, saisissez l'e-mail du responsable puis « Enregistrer ».", "Laissez le champ vide pour ne plus envoyer de message."], "astuce": ""}, {"id": "adm-aide", "q": "Comment ajouter une vidéo YouTube à une question du Centre d'aide ?", "r": "Chaque question peut recevoir un lien YouTube pour une vidéo pratique.", "etapes": ["Connecté avec un compte qui gère les contenus, ouvrez le Centre d'aide puis une question.", "Touchez « 🎬 Associer une vidéo », collez le lien YouTube et enregistrez.", "Pour retirer la vidéo, enregistrez un lien vide."], "astuce": "Préférez des vidéos courtes, qui montrent un seul geste à la fois."}, {"id": "adm-pays", "q": "Comment destiner un contenu à un pays ?", "r": "Les événements, votes, groupes et églises ont un champ « Pays concerné ». Pour les audios, vidéos, documents et autres, utilisez l'onglet Pays de la Communauté.", "etapes": ["Communauté, onglet « 🌍 Pays » : choisissez le type de contenu.", "Sélectionnez le pays à côté de chaque contenu (« Tous les pays » = visible partout).", "Un contenu sans pays reste visible dans tous les pays."], "astuce": ""}, {"id": "adm-favoris", "q": "Comment choisir les 3 favoris d'un onglet ?", "r": "Dans Audios, Vidéos et Documents, trois favoris s'affichent côte à côte en carrés en haut de l'accueil de la rubrique. Les favoris sont propres à chaque pays.", "etapes": ["Choisissez d'abord le pays concerné avec le bouton globe de l'en-tête (ou aucun pays pour « tous pays »).", "Dans l'espace d'administration de la rubrique, cochez « Favori » sur les contenus voulus : la case rappelle le pays concerné.", "Au-delà de 3 pour ce pays, décochez d'abord un autre contenu."], "astuce": "Changez de pays pour définir les favoris d'un autre pays."}, {"id": "adm-controle", "q": "Comment contrôler la rubrique Communauté (Super Admin) ?", "r": "L'onglet « 🛡️ Contrôle » donne un contrôle total au Super Admin.", "etapes": ["Communauté, onglet « 🛡️ Contrôle ».", "Aperçu : les compteurs. Groupes : modifier, changer le responsable, supprimer.", "Églises : tout modifier (logo, localisation, statut) ou supprimer.", "Mur de prière : modifier, supprimer ou rétablir un message masqué."], "astuce": ""}, {"id": "adm-contact", "q": "Comment changer l'e-mail et le téléphone du Centre d'aide ?", "r": "Le Super Admin modifie ces coordonnées, affichées dans l'en-tête du Centre d'aide.", "etapes": ["Admin, onglet Apparence.", "Cartes « E-mail de la page Contact » et « Numéro de téléphone de la page Contact » : saisissez puis enregistrez."], "astuce": ""}]}]};
+  var DATA = {"titre": "Guide JESUS — Prendre l'application en main, rubrique par rubrique", "intro": "JESUS est l'application de la communauté : Bible, séances en direct, TV, audios, vidéos, documents, événements, dons, prière et vie de groupe. Ce guide répond, rubrique par rubrique, aux questions que se posent les utilisateurs. Chaque question est aussi disponible dans le Centre d'aide de l'application, avec parfois une courte vidéo pratique.", "chapitres": [{"id": "demarrer", "icone": "🚀", "titre": "Bien démarrer", "resume": "Installer l'application, créer un compte, choisir son pays et sa langue.", "cible": "", "admin": false, "qs": [{"id": "dem-installer", "q": "Comment installer JESUS sur mon téléphone ?", "r": "JESUS s'installe comme une vraie application, sans passer par un magasin d'applications. Elle s'ouvre ensuite en plein écran depuis l'icône de votre écran d'accueil.", "etapes": ["Ouvrez l'adresse de JESUS dans Chrome (Android) ou Safari (iPhone).", "Si le bouton « 📲 Installer » apparaît dans l'en-tête, touchez-le et confirmez.", "Sinon, sur Android : menu ⋮ du navigateur, puis « Installer l'application » ou « Ajouter à l'écran d'accueil ».", "Sur iPhone : bouton Partager, puis « Sur l'écran d'accueil »."], "astuce": "Une fois installée, l'application garde en mémoire certains contenus que vous avez enregistrés pour les retrouver sans connexion."}, {"id": "dem-visiteur", "q": "Que puis-je faire sans créer de compte ?", "r": "Beaucoup de choses : le mode visiteur donne accès à la Bible, aux séances directes, aux événements, aux audios, aux documents, aux vidéos, aux offrandes, aux collectes et à la demande de prière.", "etapes": ["Ouvrez l'application : vous arrivez directement sur la page d'accueil.", "Touchez une rubrique dans la barre du bas, ou une carte de la page d'accueil.", "Quand une fonction demande un compte (par exemple, un groupe ou la messagerie), l'application vous le dit."], "astuce": "Un compte est utile pour retrouver vos favoris, vos billets, vos paiements et participer à la vie de la communauté."}, {"id": "dem-compte", "q": "Comment créer mon compte ?", "r": "La création de compte se fait avec un code d'accès remis par un administrateur de JESUS. Ce code vous est communiqué par l'équipe ou par votre responsable.", "etapes": ["Touchez « Se connecter » dans l'en-tête, puis « Pas encore de compte ? Créer un compte ».", "Saisissez votre code de validation, puis remplissez le formulaire (nom, prénom, pays d'origine, date de naissance, situation, téléphone, mot de passe…).", "Validez : vous êtes connecté et vous voyez votre badge de membre.", "Les fois suivantes, touchez « Se connecter » avec votre numéro de téléphone et votre mot de passe."], "astuce": "Pas de code ? Demandez-en un à un Leader de votre communauté, ou faites la demande vous-même (voir « Comment obtenir un code de validation ? »)."}, {"id": "dem-code", "q": "Comment obtenir un code de validation ?", "r": "Le code de validation est nécessaire pour créer un compte. Il est remis par un Leader (responsable d'une communauté chrétienne reconnu par JESUS), ou envoyé par e-mail après examen de votre demande.", "etapes": ["Demandez un code à un Leader que vous connaissez : il peut en générer pour vous.", "Ou, sur l'écran de connexion ou celui du code, touchez « Je n'ai pas de code : en demander un ».", "Saisissez votre nom complet et votre adresse e-mail, puis joignez une photo de votre pièce d'identité valide et de votre carte de baptême.", "Envoyez : l'équipe examine votre demande. Si elle est acceptée, le code arrive par e-mail. Si elle est refusée, le motif vous est aussi envoyé par e-mail."], "astuce": "Vos pièces ne sont vues que par l'administration et sont effacées dès que la demande est traitée. Pensez à regarder vos courriers indésirables."}, {"id": "dem-mdp", "q": "J'ai oublié mon mot de passe, que faire ?", "r": "Vous pouvez le réinitialiser vous-même, à condition qu'un e-mail soit associé à votre compte.", "etapes": ["Sur l'écran de connexion, touchez « Mot de passe oublié ? ».", "Saisissez votre numéro de téléphone : un code est envoyé par e-mail (valable 30 minutes). Regardez aussi vos courriers indésirables.", "Entrez le code reçu, choisissez un nouveau mot de passe, confirmez-le."], "astuce": "Si vous n'avez pas d'e-mail enregistré, contactez l'équipe via le Centre d'aide."}, {"id": "dem-pays-langue", "q": "Comment choisir mon pays et la langue de l'application ?", "r": "À la première ouverture, l'application se met automatiquement dans la langue du pays d'où vous l'ouvrez. Le bouton globe de l'en-tête vous permet en plus de choisir votre pays : vous ne voyez alors que les contenus destinés à votre pays. Sans pays choisi, vous voyez un mélange des contenus de tous les pays.", "etapes": ["Touchez le bouton globe dans l'en-tête.", "Cherchez votre pays dans la liste (l'Afrique est en premier), puis touchez-le : la page se recharge.", "Pour changer seulement la langue, utilisez le bouton de traduction à côté du globe : votre choix est alors respecté.", "Pour tout revoir, choisissez « Tous les pays »."], "astuce": "Les contenus qui n'ont pas de pays précis restent visibles partout."}, {"id": "dem-naviguer", "q": "Comment me repérer dans l'application ?", "r": "Les rubriques sont dans la barre jaune en bas de l'écran. Faites-la défiler vers la gauche avec le doigt pour voir les suivantes ; la rubrique ouverte est en bleu.", "etapes": ["Touchez une icône pour ouvrir la rubrique (Accueil, Communauté, Bible, Séances directes, TV, Audios…).", "« Accueil » vous ramène à la page d'accueil depuis n'importe où.", "Dans certaines rubriques, des sous-onglets proposent « Accueil », « Playlists », « Actualités »…", "Dans l'en-tête : le globe (pays), la traduction, le Centre d'aide, et « Se connecter » ou « Se déconnecter ».", "Le bouton retour de votre téléphone ramène à l'écran précédent."], "astuce": ""}]}, {"id": "accueil", "icone": "🏠", "titre": "Page d'accueil", "resume": "Votre parcours du jour, les annonces et les contenus à découvrir.", "cible": "accueil", "admin": false, "qs": [{"id": "acc-parcours", "q": "Qu'est-ce que « Votre parcours du jour » ?", "r": "Quatre étapes courtes pour bien commencer la journée. Elles défilent de droite à gauche : balayez avec le doigt, ou utilisez les flèches jaunes sur ordinateur.", "etapes": ["Étape 1 : écoutez une chanson ou une playlist pour adorer et louer Dieu.", "Étape 2 : lisez le verset du jour (environ 35 secondes), puis touchez « Amen ».", "Étape 3 : écoutez une parole (audio).", "Étape 4 : rejoignez une séance de prière en direct.", "Le compteur « 0 sur 4 » avance à chaque étape faite ; il repart de zéro chaque jour."], "astuce": "Rien n'est obligatoire : faites les étapes dans l'ordre que vous voulez."}, {"id": "acc-annonces", "q": "Comment voir les annonces vidéo ?", "r": "La rubrique « Annonces » présente de courtes vidéos d'annonces (des fichiers vidéo envoyés par l'équipe) qui défilent. Chaque vidéo se lance quand vous touchez le bouton Play.", "etapes": ["Sur la page d'accueil, repérez « Annonces ».", "Balayez pour passer d'une annonce à l'autre.", "Touchez le bouton Play : la vidéo démarre sur place."], "astuce": ""}, {"id": "acc-decouvrir", "q": "Que trouve-t-on sous « Communauté » sur la page d'accueil ?", "r": "Des rangées à faire défiler, chacune avec un lien « Tout voir » qui ouvre la rubrique complète : Prochains événements, À écouter, À regarder, À lire, La télé partout (les logos des chaînes) et Opportunités de semence (les collectes). Dans chaque rangée, vos favoris et les contenus les plus suivis passent en premier. Si vous suivez des auteurs, une rangée « Nouveautés de vos auteurs » apparaît aussi.", "etapes": ["Faites défiler une rangée de droite à gauche pour voir d'autres contenus.", "Touchez une carte, ou « Tout voir », pour ouvrir la rubrique correspondante.", "L'affiche « Communauté » mène à la rubrique Communauté."], "astuce": "Selon votre pays choisi, la page d'accueil ne montre que les contenus de ce pays."}]}, {"id": "compte", "icone": "👤", "titre": "Mon compte", "resume": "Badge de membre, informations personnelles, sécurité.", "cible": "badge", "admin": false, "qs": [{"id": "cpt-badge", "q": "Où trouver mon badge de membre et comment l'imprimer ?", "r": "Votre badge reprend votre identité de membre et votre code. Il se trouve dans « Mon compte ».", "etapes": ["Touchez l'icône de compte dans l'en-tête (visible une fois connecté).", "Votre badge s'affiche avec votre nom, votre statut et vos coordonnées.", "Touchez « 🖨️ Imprimer / Enregistrer en PDF » pour l'imprimer ou en faire un fichier."], "astuce": ""}, {"id": "cpt-infos", "q": "Comment modifier mes informations, mon numéro ou mon mot de passe ?", "r": "Tout se fait depuis « Mon compte », sous le badge.", "etapes": ["« Mes informations » : modifiez votre e-mail, votre adresse, votre profession, votre église, puis « Enregistrer ».", "« Changer mon numéro de téléphone » : votre numéro sert à vous connecter ; votre mot de passe actuel est demandé pour confirmer.", "« Changer mon mot de passe » : saisissez l'ancien puis le nouveau.", "« Se déconnecter » ferme votre session sur cet appareil."], "astuce": "Ajoutez un e-mail : il vous permettra de récupérer votre mot de passe en cas d'oubli."}]}, {"id": "communaute", "icone": "✨", "titre": "Communauté", "resume": "Verset du jour, plans de lecture, mur de prière, favoris, groupes, églises, parrainage…", "cible": "communaute", "admin": false, "qs": [{"id": "com-aujourdhui", "q": "Que trouve-t-on dans « Aujourd'hui » ?", "r": "C'est votre rendez-vous quotidien : le verset du jour et votre suivi spirituel.", "etapes": ["Ouvrez Communauté, puis l'onglet « ✨ Aujourd'hui ».", "Lisez le verset du jour et cochez vos activités du jour (lecture, prière…).", "Votre régularité s'affiche : revenez chaque jour pour la faire grandir."], "astuce": ""}, {"id": "com-plans", "q": "Comment suivre un plan de lecture de la Bible ?", "r": "Un plan de lecture vous propose un passage par jour pour parcourir la Bible progressivement.", "etapes": ["Communauté, puis « 📖 Plans de lecture ».", "Choisissez un plan et démarrez-le.", "Chaque jour, lisez le passage proposé puis validez le jour.", "Vous pouvez réinitialiser un plan pour recommencer."], "astuce": ""}, {"id": "com-mur", "q": "Comment utiliser le mur de prière ?", "r": "Le mur de prière permet de partager une demande de prière ou un témoignage, et de prier pour les autres.", "etapes": ["Communauté, puis « 🙏 Mur de prière ».", "Pour publier : choisissez « Demande » ou « Témoignage », une catégorie, écrivez votre message (vous pouvez rester anonyme) et publiez.", "Pour prier pour quelqu'un, touchez le bouton de prière sur son message : le compteur augmente.", "Quand votre demande est exaucée, vous pouvez la transformer en témoignage depuis vos propres messages.", "Un message inapproprié peut être signalé ; les modérateurs peuvent le masquer ou le supprimer."], "astuce": "Le nombre de publications par jour est limité pour garder un mur de qualité."}, {"id": "com-favoris", "q": "Comment enregistrer mes favoris et créer des playlists ?", "r": "Les favoris vous permettent de retrouver vite vos audios, vidéos et documents préférés.", "etapes": ["Sur un contenu, touchez le cœur ♥ pour l'ajouter à vos favoris.", "Ouvrez Communauté, puis « ♥ Favoris & playlists » pour les retrouver.", "Regroupez vos contenus en playlists personnelles pour les écouter à la suite."], "astuce": ""}, {"id": "com-horsligne", "q": "Comment utiliser JESUS sans connexion Internet ?", "r": "Certains contenus peuvent être enregistrés sur votre appareil pour être consultés hors ligne.", "etapes": ["Communauté, puis « 📥 Hors-ligne ».", "Enregistrez les contenus proposés tant que vous êtes connecté.", "Sans Internet, retrouvez-les dans la même rubrique."], "astuce": "Pensez à enregistrer vos contenus avant un voyage ou une zone sans réseau."}, {"id": "com-recherche", "q": "Comment rechercher un contenu dans toute l'application ?", "r": "La recherche globale fouille plusieurs rubriques en une seule fois.", "etapes": ["Communauté, puis « 🔎 Recherche ».", "Tapez un mot (titre, auteur, thème).", "Touchez un résultat pour l'ouvrir."], "astuce": ""}, {"id": "com-notifs", "q": "Comment activer les notifications ?", "r": "Les notifications vous préviennent des nouveautés, même quand l'application est fermée.", "etapes": ["Communauté, puis « 🔔 Notifications ».", "Activez-les et acceptez l'autorisation demandée par votre téléphone.", "Pour les désactiver, revenez à la même rubrique."], "astuce": "Sur iPhone, installez d'abord l'application sur l'écran d'accueil pour recevoir les notifications."}, {"id": "com-auteurs", "q": "Comment suivre un auteur ?", "r": "S'abonner à un auteur, c'est comme s'abonner à une chaîne : vous êtes prévenu par notification quand il publie, et ses nouveautés apparaissent sur votre page d'accueil. Un badge ✔ indique un compte vérifié. Il faut être connecté.", "etapes": ["Partout où un nom d'auteur apparaît (« Par … »), touchez le petit bouton « + S'abonner » à côté de son nom : il devient « ✓ Abonné ».", "Touchez le nom de l'auteur pour ouvrir sa page : photo, nombre d'abonnés, publications triées par type (Audios, Vidéos, Documents) avec leurs couvertures.", "Sur sa page, « 🔔 S'abonner » ou « ✓ Abonné — se désabonner ».", "Vos nouveautés : rangée « Nouveautés de vos auteurs » sur l'accueil, ou Communauté → Auteurs.", "Pour recevoir les notifications, activez-les dans Communauté → Notifications."], "astuce": ""}, {"id": "com-cellules", "q": "Comment rejoindre ou créer un groupe (cellule) ?", "r": "Les cellules sont des groupes de discussion qui fonctionnent comme une messagerie : emojis, messages vocaux, fichiers, réponses et réactions.", "etapes": ["Communauté, puis « 👥 Cellules ». Pour rejoindre : ouvrez un groupe et touchez « Rejoindre ».", "Pour créer : remplissez le nom, la ville, le pays et la description, puis « Créer ». Vous en devenez le responsable.", "Écrire : tapez votre texte puis ➤. Le bouton 😊 ouvre les emojis, 📎 envoie un fichier (25 Mo maximum : photo, audio, vidéo, document).", "Message vocal : touchez le micro 🎤, parlez, puis touchez ➤ pour envoyer (🗑️ pour annuler).", "Touchez ⋮ sur un message : réagir avec un emoji, répondre, copier le texte, transférer vers une autre de vos cellules, ou supprimer. Vous pouvez modifier votre message pendant 2 minutes.", "🙏 Sujet de prière : cochez cette case avant d'envoyer. Les membres touchent « J'ai prié » et l'auteur peut marquer « ✅ Exaucé » pour partager le témoignage."], "astuce": ""}, {"id": "com-cellules-resp", "q": "Comment gérer ma cellule (responsable et co-responsables) ?", "r": "Le responsable, et les co-responsables qu'il nomme (5 au maximum), gèrent la cellule depuis « ⓘ Gérer ».", "etapes": ["Fermer ou ouvrir la cellule : bouton « Fermée » / « Ouverte ». Quand elle est fermée, seuls les responsables écrivent.", "Programmer : choisissez l'heure de fermeture et de réouverture (par exemple 22:00 à 06:00), puis « Activer la programmation ». La fermeture se répète chaque jour.", "Suspendre : un membre suspendu peut lire mais plus écrire ; « Rétablir » annule la suspension. « Retirer » l'exclut du groupe.", "Co-responsable : seul le responsable peut nommer ou retirer un co-responsable (« ⭐ Co-resp. »).", "Annonce : cochez « 📢 Annonce » avant d'envoyer pour mettre un message en avant."], "astuce": ""}, {"id": "com-eglises", "q": "Comment trouver une église ou ajouter la mienne ?", "r": "L'annuaire des églises liste les églises par ville et par pays, avec itinéraire, téléphone et horaires.", "etapes": ["Communauté, puis « ⛪ Églises » : recherchez par nom, ville ou pays.", "Touchez « 🧭 Itinéraire » pour être guidé jusqu'à l'église, ou « 📞 Appeler ».", "Pour ajouter une église : « Proposer une église ». La localisation (lien Google Maps ou autre) et le logo sont obligatoires.", "Une église proposée est publiée après vérification par l'équipe."], "astuce": ""}, {"id": "com-parrainage", "q": "Comment parrainer des amis ?", "r": "Chaque membre dispose d'un lien de parrainage à partager pour inviter des proches.", "etapes": ["Communauté, puis « 🎁 Parrainage ».", "Copiez ou partagez votre lien avec vos amis : c'est le lien de l'application, www.jesusonly.site.", "Suivez le nombre de personnes parrainées."], "astuce": "Quand vous partagez un verset du jour (en image ou en texte), il est accompagné d'une courte phrase d'invitation et du même lien."}, {"id": "com-dons", "q": "Comment faire un don mensuel et retrouver mes reçus ?", "r": "Vous pouvez vous engager sur un don régulier et retrouver vos reçus de paiement.", "etapes": ["Communauté, puis « 💝 Dons mensuels » : définissez un montant et activez l'engagement. Un rappel vous est envoyé chaque mois ; le paiement reste à confirmer par vous.", "« 🧾 Mes reçus » : retrouvez vos paiements et téléchargez un reçu en PDF.", "Vous pouvez arrêter un engagement à tout moment."], "astuce": ""}]}, {"id": "bible", "icone": "📖", "titre": "Bible", "resume": "Lire, chercher, surligner, copier et écouter la Bible en français ou en anglais.", "cible": "bible", "admin": false, "qs": [{"id": "bib-lire", "q": "Comment lire et rechercher dans la Bible ?", "r": "La Bible est disponible en français et en anglais, livre par livre.", "etapes": ["Ouvrez l'onglet Bible et choisissez un livre, puis un chapitre.", "Changez de langue avec les boutons 🇫🇷 Français / 🇬🇧 English.", "Passez au chapitre précédent ou suivant avec ◀ et ▶.", "Touchez « 🔍 Rechercher », saisissez un mot ou une expression, puis touchez un résultat pour y aller."], "astuce": ""}, {"id": "bib-outils", "q": "Comment surligner, copier ou écouter un passage ?", "r": "Sélectionnez des versets pour faire apparaître la barre d'outils.", "etapes": ["Touchez un verset pour le sélectionner (« ↔ Passage » pour tout un passage, « ☑ Tout » pour tout le chapitre).", "Choisissez une couleur pour surligner ; 🧽 retire le surlignage.", "« 📋 Copier » copie le texte sélectionné.", "« 🔊 Écouter » lit le chapitre à voix haute ; touchez-le de nouveau pour arrêter."], "astuce": ""}]}, {"id": "seances", "icone": "🙏", "titre": "Séances directes", "resume": "Suivre les séances de prière et d'enseignement en direct ou en replay.", "cible": "prieres", "admin": false, "qs": [{"id": "sea-suivre", "q": "Comment suivre une séance en direct ?", "r": "L'onglet Séances directes présente les séances à venir et en cours.", "etapes": ["Ouvrez Séances directes : « Accueil » met en avant les prochaines séances, « Toutes les séances » les liste toutes (avec recherche).", "Touchez une séance pour voir son horaire et son contenu.", "À l'heure prévue, touchez le bouton pour la rejoindre."], "astuce": ""}, {"id": "sea-acces", "q": "Comment accéder à une séance protégée ou payante ?", "r": "Certaines séances sont libres, d'autres demandent un code d'accès ou un paiement.", "etapes": ["Ouvrez la séance concernée.", "Saisissez le code d'accès fourni par l'organisateur, ou payez si un montant est demandé.", "Une fois validé, le lien de la séance s'ouvre."], "astuce": "Pas de code ? Demandez-le à l'organisateur ou au Centre d'aide."}]}, {"id": "tv", "icone": "📺", "titre": "TV", "resume": "Regarder les chaînes, garder ses favoris, diffuser sa propre chaîne.", "cible": "tv", "admin": false, "qs": [{"id": "tv-regarder", "q": "Comment regarder la TV et garder mes chaînes préférées ?", "r": "La TV propose des chaînes avec une programmation et des directs.", "etapes": ["Ouvrez l'onglet TV : « Chaînes » liste toutes les chaînes.", "Touchez une chaîne pour lancer la lecture dans le lecteur flottant, qui continue pendant que vous naviguez.", "Touchez ⛶ pour passer en plein écran.", "Ajoutez une chaîne en favori : elle apparaît dans « ⭐ Mes chaînes »."], "astuce": ""}, {"id": "tv-studio", "q": "Comment diffuser ma propre chaîne (Mon studio) ?", "r": "Les membres autorisés disposent d'un studio pour gérer leur chaîne.", "etapes": ["Ouvrez TV, puis « 🎛️ Mon studio » (visible si votre compte y est autorisé).", "Renseignez le nom, la description et le logo de votre chaîne.", "Pour un direct : « 🔴 Préparer mon live », puis copiez l'adresse du serveur et la clé de diffusion dans OBS ou Larix Broadcaster. Ne partagez jamais la clé.", "Ajoutez des vidéos ou des playlists YouTube à votre bibliothèque et placez-les dans la grille horaire."], "astuce": ""}]}, {"id": "audios", "icone": "🎧", "titre": "Audios", "resume": "Écouter, enregistrer et acheter des audios.", "cible": "audios", "admin": false, "qs": [{"id": "aud-ecouter", "q": "Comment écouter un audio et utiliser les playlists ?", "r": "L'onglet Audios réunit prédications, chants et enseignements.", "etapes": ["« Accueil » : les 3 favoris de l'équipe en carrés, puis les 20 contenus les plus récents, puis les 10 les plus vus.", "« Playlists » : parcourez par catégorie et recherchez un titre.", "Touchez un audio pour le lancer : le lecteur reste en bas de l'écran pendant que vous naviguez. Fermez-le avec ✕.", "« Actualités » : les dernières nouvelles liées aux audios."], "astuce": "Notez un contenu et ajoutez-le à vos favoris ♥ pour le retrouver."}, {"id": "aud-payant", "q": "Comment obtenir un audio payant ?", "r": "Les contenus marqués « Payant » s'acquièrent une fois ; vous pouvez ensuite les réécouter.", "etapes": ["Ouvrez l'audio et touchez le bouton d'achat.", "Réglez avec le moyen de paiement proposé.", "Après confirmation, l'écoute et le téléchargement sont débloqués ; l'achat est conservé pour ce compte."], "astuce": ""}]}, {"id": "videos", "icone": "▶️", "titre": "Vidéos", "resume": "Regarder les vidéos et les playlists.", "cible": "videos", "admin": false, "qs": [{"id": "vid-voir", "q": "Comment regarder une vidéo ou une playlist ?", "r": "L'onglet Vidéos propose des vidéos mises en avant et des playlists.", "etapes": ["« Accueil » : les 3 favoris en carrés puis les vidéos récentes.", "« Playlists » : touchez une playlist pour voir ses vidéos.", "Touchez une vidéo pour la lire ; le lecteur vidéo reste visible quand vous changez de page.", "« Actualités » : les nouveautés vidéo."], "astuce": ""}, {"id": "vid-payant", "q": "Comment obtenir une vidéo payante ?", "r": "Comme pour les audios, une vidéo payante se débloque après paiement.", "etapes": ["Ouvrez la vidéo et touchez le bouton d'achat.", "Payez, puis profitez de la lecture et du téléchargement."], "astuce": ""}]}, {"id": "documents", "icone": "📄", "titre": "Documents", "resume": "Livres, études et supports à lire ou télécharger.", "cible": "documents", "admin": false, "qs": [{"id": "doc-trouver", "q": "Comment trouver et lire un document ?", "r": "Les documents sont des livres, des études ou des supports de formation.", "etapes": ["« Accueil » : les 3 favoris puis les ajouts récents.", "« Tous les documents » : la liste complète, avec recherche.", "Touchez un document pour voir sa fiche, le lire ou le télécharger."], "astuce": ""}, {"id": "doc-payant", "q": "Comment acheter un document payant ?", "r": "Un document payant se débloque après paiement et reste accessible ensuite.", "etapes": ["Ouvrez la fiche du document, touchez « Acheter ».", "Payez, puis téléchargez le fichier.", "Si vous avez déjà acheté un document, il se rouvre sans nouveau paiement."], "astuce": ""}]}, {"id": "evenements", "icone": "🎫", "titre": "Événements et votes", "resume": "Réserver des billets, voter, organiser un événement.", "cible": "evenements", "admin": false, "qs": [{"id": "evt-reserver", "q": "Comment réserver un billet pour un événement ?", "r": "L'onglet Événements présente les événements à venir, avec leur lieu, leur date et leurs billets.", "etapes": ["Ouvrez Événements, onglet « 🎫 Découvrir » ; filtrez par catégorie ou recherchez.", "Touchez un événement pour voir sa description, ses billets et son lieu.", "Choisissez le type et le nombre de billets, remplissez les informations demandées puis ajoutez au panier.", "Payez : vos billets sont émis."], "astuce": ""}, {"id": "evt-panier", "q": "Comment utiliser le panier et un code promo ?", "r": "Le panier réunit vos achats ; un code promo peut réduire le prix.", "etapes": ["Touchez le bouton panier en bas à droite pour voir vos articles.", "Saisissez votre code promo : la réduction s'applique si le code est valable pour cet événement.", "Validez et payez."], "astuce": ""}, {"id": "evt-billet", "q": "Où retrouver mon billet et comment le présenter ?", "r": "Vos billets sont gardés dans l'application avec un QR code.", "etapes": ["Ouvrez Événements puis la rubrique de vos billets (« Mes billets »).", "Le jour J, présentez le QR code à l'entrée : il sera scanné par un contrôleur.", "Chaque billet ne peut être utilisé qu'une fois."], "astuce": ""}, {"id": "evt-voter", "q": "Comment voter dans un concours ou une élection ?", "r": "Les votes se trouvent dans l'onglet « 🗳️ Votes » des Événements. Les candidats sont classés du plus de votes au moins de votes.", "etapes": ["Ouvrez Événements, onglet « 🗳️ Votes », puis le vote de votre choix.", "Touchez « ▶️ Vidéo » sur un candidat pour le découvrir en moins de 5 minutes.", "Touchez « Voter » : le vote est définitif. Un vote peut être gratuit (sans compte) ou payant.", "Le nombre de votes qu'il vous reste est indiqué. Les résultats sont visibles en direct ou après la clôture, selon l'organisateur."], "astuce": "Quand l'organisateur exige un compte pour voter, connectez-vous d'abord."}, {"id": "evt-organiser", "q": "Comment organiser et publier un événement ?", "r": "Les membres ayant le statut Organisateur peuvent créer des événements et des votes.", "etapes": ["Dans Événements, ouvrez l'espace organisateur et touchez « Nouvel événement ».", "Renseignez titre, description, lieu, dates, pays concerné, image et types de billets (prix et nombre de places).", "Enregistrez puis soumettez : l'événement est publié après validation.", "Pour un vote : créez un concours, ajoutez au moins 2 candidats (photo, description, vidéo facultative), choisissez le prix du vote et l'affichage des résultats."], "astuce": ""}, {"id": "evt-gerer", "q": "Comment gérer mon événement (participants, scan, revenus) ?", "r": "L'espace organisateur suit votre événement de A à Z.", "etapes": ["Consultez les participants et les statistiques de ventes.", "Désignez des contrôleurs qui scannent les billets à l'entrée.", "Partagez le lien de l'événement (WhatsApp, Facebook, SMS) et suivez ses visites.", "Envoyez un rappel aux participants et consultez vos revenus et reversements."], "astuce": ""}]}, {"id": "dons", "icone": "🙌", "titre": "Offrandes et collectes", "resume": "Donner librement ou participer à une collecte.", "cible": "offrandes", "admin": false, "qs": [{"id": "don-offrande", "q": "Comment faire une offrande ?", "r": "Une offrande est un don libre, sans compte obligatoire.", "etapes": ["Ouvrez Offrandes.", "Saisissez le montant en FCFA et, si vous le souhaitez, un motif.", "Touchez « Faire une offrande » et payez.", "Retrouvez vos dons dans « Historique de mes dons »."], "astuce": ""}, {"id": "don-collecte", "q": "Comment participer à une collecte ?", "r": "Une collecte réunit des contributions pour un projet, avec un objectif et une progression.", "etapes": ["Ouvrez Collectes et choisissez celle qui vous concerne.", "Saisissez votre contribution et payez.", "Votre participation apparaît dans « Historique de mes contributions », avec le total payé."], "astuce": "Les reçus sont téléchargeables dans Communauté, « Mes reçus »."}]}, {"id": "priere", "icone": "✉️", "titre": "Demande de prière", "resume": "Confier une requête à l'équipe de prière.", "cible": "demandePriere", "admin": false, "qs": [{"id": "pri-demande", "q": "Comment envoyer une demande de prière ?", "r": "Votre demande est transmise à l'équipe de prière, qui vous accompagne.", "etapes": ["Ouvrez « Demande de prière ».", "Renseignez votre nom, prénom, situation, profession, âge et votre requête.", "Envoyez : l'équipe la reçoit et peut vous répondre."], "astuce": "Pour une demande publique et anonyme, utilisez plutôt le mur de prière de la Communauté."}]}, {"id": "messages", "icone": "💬", "titre": "Messages et groupes", "resume": "Écrire à l'administration et rejoindre les groupes WhatsApp.", "cible": "messages", "admin": false, "qs": [{"id": "msg-admin", "q": "Comment écrire à l'administration ?", "r": "La messagerie est réservée aux membres connectés.", "etapes": ["Ouvrez Messages.", "Écrivez un texte, ou enregistrez un message vocal avec 🎙️.", "Retrouvez vos échanges et les annonces de l'équipe dans la même page."], "astuce": ""}, {"id": "msg-groupes", "q": "Comment rejoindre un groupe WhatsApp ?", "r": "L'onglet Groupes liste les groupes WhatsApp de la communauté.", "etapes": ["Ouvrez Groupes.", "Touchez le groupe voulu. Certains demandent un code d'accès donné par un responsable.", "WhatsApp s'ouvre pour rejoindre le groupe."], "astuce": ""}]}, {"id": "auteur", "icone": "✍️", "titre": "Soumissions (auteurs)", "resume": "Proposer ses propres contenus.", "cible": "soumissions", "admin": false, "qs": [{"id": "aut-soumettre", "q": "Comment soumettre un document, un audio ou une vidéo ?", "r": "Les membres ayant le statut Auteur peuvent proposer un contenu dont ils sont l'auteur.", "etapes": ["Ouvrez « ✍️ Soumissions » (visible si vous avez le statut Auteur).", "Choisissez le type, ajoutez le fichier, un titre et une description.", "Envoyez : l'équipe vérifie puis publie. Vous suivez l'état de vos soumissions."], "astuce": ""}]}, {"id": "leader", "icone": "🛡️", "titre": "Leaders et codes de validation", "resume": "Devenir Leader, inviter de nouvelles personnes, sécurité.", "cible": "badge", "admin": false, "qs": [{"id": "led-statut", "q": "Comment devenir Leader ?", "r": "Un Leader est un responsable de communauté chrétienne reconnu par JESUS. Il peut générer des codes de validation pour inviter de nouvelles personnes. Le statut s'obtient sur demande, avec des pièces justificatives.", "etapes": ["Connectez-vous, puis ouvrez « Mon compte ».", "Dans la carte « Devenir Leader », touchez « Faire une demande ».", "Indiquez le nom de votre communauté et votre fonction, puis joignez une photo de votre pièce d'identité valide et une preuve de votre responsabilité (attestation, lettre de l'église, carte de ministère…).", "Envoyez : vous êtes prévenu de la décision (e-mail si vous en avez un, et dans « Mon compte »). En cas de refus, le motif est indiqué et vous pouvez refaire une demande."], "astuce": "Vos pièces ne sont vues que par l'administration et sont effacées dès la décision."}, {"id": "led-codes", "q": "Comment générer et donner des codes de validation ?", "r": "Dans « Mon compte », la carte Leader ouvre « Mes codes de validation ». Chaque code ne sert qu'une seule fois, pour créer un seul compte.", "etapes": ["Ouvrez « Mon compte », puis « Mes codes de validation ».", "Touchez « Générer un code » (vous pouvez garder jusqu'à 10 codes non utilisés).", "Touchez « Partager » à côté d'un code pour l'envoyer à la personne invitée avec les explications.", "Suivez l'état de chaque code : disponible ou utilisé."], "astuce": ""}, {"id": "led-telephone", "q": "J'ai perdu mon téléphone : que dois-je faire ?", "r": "Si vous êtes Leader et que vous perdez votre téléphone, signalez-le-nous immédiatement : vos codes et votre compte pourraient être utilisés par une autre personne.", "etapes": ["Ouvrez le Centre d'aide depuis un autre appareil, ou appelez le numéro affiché dans son en-tête.", "Indiquez votre nom et votre numéro de téléphone.", "L'équipe sécurise votre compte et vos codes."], "astuce": "Changez aussi votre mot de passe dès que vous le pouvez."}]}, {"id": "aide", "icone": "🆘", "titre": "Centre d'aide", "resume": "Retrouver ce guide et joindre l'équipe.", "cible": "", "admin": false, "qs": [{"id": "aid-contact", "q": "Comment joindre l'équipe JESUS ?", "r": "Le Centre d'aide affiche le numéro de téléphone et l'e-mail de l'équipe dans son en-tête.", "etapes": ["Touchez « 🆘 Centre d'aide » dans l'en-tête.", "Appelez, écrivez sur WhatsApp ou envoyez un e-mail depuis l'en-tête.", "Ou remplissez le formulaire « Écrire à l'équipe » en bas de page."], "astuce": ""}, {"id": "aid-video", "q": "Où voir une vidéo pratique pour une question ?", "r": "Certaines questions s'accompagnent d'une courte vidéo qui montre les gestes pas à pas.", "etapes": ["Ouvrez le Centre d'aide et touchez une question.", "Si une vidéo existe, elle s'affiche sous la réponse : touchez ▶️ pour la lancer.", "Une question sans vidéo n'en a pas encore : la réponse écrite suffit."], "astuce": ""}]}, {"id": "admin", "icone": "⚙", "titre": "Guide administrateur", "resume": "Pour les comptes qui gèrent l'application.", "cible": "admin", "admin": true, "qs": [{"id": "adm-accueil", "q": "Comment gérer la page d'accueil de l'application ?", "r": "La page d'accueil se remplit seule avec les contenus publiés. Deux éléments se gèrent à la main : l'affiche « Communauté » (Super Admin) et les annonces vidéo.", "etapes": ["Affiche « Communauté » : en tant que Super Admin, Admin, onglet « 🏠 Accueil » : choisissez une image (elle est recadrée automatiquement), puis « Enregistrer cette affiche ». « Rétablir l'illustration » remet l'image d'origine.", "Annonces vidéo : Admin, onglet « Annonces vidéo ». Saisissez un titre (facultatif), choisissez un fichier vidéo sur votre appareil (95 Mo maximum), puis « Envoyer et ajouter l'annonce ». 12 annonces au maximum. « Supprimer » efface l'annonce ET son fichier définitivement. Les anciennes annonces à lien YouTube ne s'affichent plus : supprimez-les.", "Les rangées « Prochains événements », « À écouter », « À regarder », « À lire », « La télé partout » et « Opportunités de semence » se remplissent automatiquement à partir des rubriques."], "astuce": ""}, {"id": "adm-demandes", "q": "Comment traiter les demandes de Leader et de code de validation ?", "r": "Le Super Admin examine deux sortes de demandes : celles des membres qui veulent devenir Leader, et celles des visiteurs qui veulent un code de validation.", "etapes": ["Admin, onglet « Demandes et Leaders ».", "Touchez « Voir les pièces » pour consulter les photos fournies.", "« Accepter » : un Leader reçoit son statut ; un visiteur reçoit son code par e-mail.", "« Refuser » : saisissez le motif, il est envoyé au demandeur par e-mail. Les pièces sont effacées dès la décision.", "Vous pouvez aussi rendre un membre Leader (ou lui retirer le statut) depuis l'onglet Membres."], "astuce": "Vérifiez que la pièce d'identité est lisible et que le nom correspond à la demande."}, {"id": "adm-collecte-email", "q": "Comment prévenir le responsable d'une collecte à chaque don ?", "r": "Le Super Admin peut enregistrer l'e-mail du responsable de chaque collecte : il reçoit un message à chaque don confirmé.", "etapes": ["Admin, onglet « Collectes ».", "Sous la collecte, saisissez l'e-mail du responsable puis « Enregistrer ».", "Laissez le champ vide pour ne plus envoyer de message."], "astuce": ""}, {"id": "adm-aide", "q": "Comment ajouter une vidéo YouTube à une question du Centre d'aide ?", "r": "Chaque question peut recevoir un lien YouTube pour une vidéo pratique.", "etapes": ["Connecté avec un compte qui gère les contenus, ouvrez le Centre d'aide puis une question.", "Touchez « 🎬 Associer une vidéo », collez le lien YouTube et enregistrez.", "Pour retirer la vidéo, enregistrez un lien vide."], "astuce": "Préférez des vidéos courtes, qui montrent un seul geste à la fois."}, {"id": "adm-pays", "q": "Comment destiner un contenu à un pays ?", "r": "Les événements, votes, groupes et églises ont un champ « Pays concerné ». Pour les audios, vidéos, documents et autres, utilisez l'onglet Pays de l'administration.", "etapes": ["Admin, onglet « 🌍 Pays » : choisissez le type de contenu.", "Sélectionnez le pays à côté de chaque contenu (« Tous les pays » = visible partout).", "Un contenu sans pays reste visible dans tous les pays."], "astuce": ""}, {"id": "adm-favoris", "q": "Comment choisir les 3 favoris d'un onglet ?", "r": "Dans Audios, Vidéos et Documents, trois favoris s'affichent côte à côte en carrés en haut de l'accueil de la rubrique. Les favoris sont propres à chaque pays.", "etapes": ["Choisissez d'abord le pays concerné avec le bouton globe de l'en-tête (ou aucun pays pour « tous pays »).", "Dans l'espace d'administration de la rubrique, cochez « Favori » sur les contenus voulus : la case rappelle le pays concerné.", "Au-delà de 3 pour ce pays, décochez d'abord un autre contenu."], "astuce": "Changez de pays pour définir les favoris d'un autre pays."}, {"id": "adm-controle", "q": "Comment contrôler la rubrique Communauté (Super Admin) ?", "r": "L'onglet « 🛡️ Contrôle communauté » de l'administration donne un contrôle total au Super Admin.", "etapes": ["Admin, onglet « 🛡️ Contrôle communauté ».", "Aperçu : les compteurs. Groupes : modifier, changer le responsable, supprimer.", "Églises : tout modifier (logo, localisation, statut) ou supprimer.", "Mur de prière : modifier, supprimer ou rétablir un message masqué."], "astuce": ""}, {"id": "adm-contact", "q": "Comment changer l'e-mail et le téléphone du Centre d'aide ?", "r": "Le Super Admin modifie ces coordonnées, affichées dans l'en-tête du Centre d'aide.", "etapes": ["Admin, onglet Apparence.", "Cartes « E-mail de la page Contact » et « Numéro de téléphone de la page Contact » : saisissez puis enregistrez."], "astuce": ""}]}]};
   var videos = {}, videosCharge = false;
   var etat = { vue: "liste", id: null, recherche: "" };
 
@@ -11464,6 +11516,19 @@ body.acc-actif #sliderAfficheZone{display:none!important}
     new MutationObserver(function () { if (d.style.display === "none") document.body.classList.remove("acc-actif"); }).observe(d, { attributes: true, attributeFilter: ["style"] });
   })();
   var A = window.ACCJ = {};
+  (function () {
+    var st = document.createElement("style");
+    st.textContent = ".acj-h,.acj-prog b{color:#ffbf1f!important}" +
+      ".acj-profil.photo,#btnCompte.photo{padding:0!important;overflow:hidden}.acj-profil img.ph,#btnCompte img.ph{width:100%;height:100%;border-radius:inherit;object-fit:cover;display:block}" +
+      ".acj-vid{cursor:pointer}.acj-vid video.m{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}.acj-vid video.lec{position:absolute;inset:0;width:100%;height:100%;z-index:3;background:#000;object-fit:contain}" +
+      ".acj-tvl{flex:0 0 auto;width:96px;height:96px;border-radius:22px;background:#fff;border:0;margin:0;padding:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,0,0,.28);scroll-snap-align:start}" +
+      ".acj-tvl img{max-width:100%;max-height:100%;object-fit:contain}.acj-tvl svg{width:38px;height:38px;color:#0c2f68}" +
+      ".acj-comm .tx.seul{padding-top:40px}.acj-comm .tx.seul b{font-size:15px!important;line-height:1.3;color:#fff;font-weight:800}";
+    document.head.appendChild(st);
+  })();
+  function connecteMembre() { return typeof membreCourant !== "undefined" && !!membreCourant; }
+  A.ab = function (i) { var x = A.flux && A.flux[i]; if (x && window.XTR && XTR.ouvrir) XTR.ouvrir(x.k, x.id, x.t); };
+  A.abTout = function () { A.go("communaute"); setTimeout(function () { if (window.XTR && XTR.vue) XTR.vue("auteurs"); }, 60); };
   A.profil = function () {
     var b = document.getElementById("btnCompte");
     if (b && b.style.display !== "none") b.click();
@@ -11476,13 +11541,26 @@ body.acc-actif #sliderAfficheZone{display:none!important}
     marquer(i);
     alle(i === 2 ? "audios" : "prieres");
   };
+  // Annonce = fichier vidéo hébergé par l'application (plus de lien YouTube)
   A.jouer = function (btn) {
-    var url = btn.getAttribute("data-u"), emb = window.XTR && XTR.integrer ? XTR.integrer(url) : "";
-    if (!emb) { window.open(url, "_blank"); return; }
-    var sep = emb.indexOf("?") === -1 ? "?" : "&";
-    btn.innerHTML = '<iframe src="' + esc(emb + sep + "autoplay=1&rel=0") + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
-    btn.onclick = null;
+    var url = btn.getAttribute("data-u"); if (!url) return;
+    Array.prototype.forEach.call(document.querySelectorAll(".acj-vid video.lec"), function (v) { try { v.pause(); } catch (e) {} });
+    btn.removeAttribute("onclick"); btn.removeAttribute("role"); btn.onclick = null;
+    btn.insertAdjacentHTML("beforeend", '<video class="lec" src="' + esc(url) + '" controls autoplay playsinline></video>');
+    var v = btn.querySelector("video.lec"); if (v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
   };
+  // ---- Photo du membre (celle de son badge) à la place de l'icône du compte
+  function photoCompte() {
+    var m = typeof membreCourant !== "undefined" ? membreCourant : null, p = m && m.photoBase64 ? String(m.photoBase64) : "", sig = p ? p.length + ":" + p.slice(0, 30) : "";
+    Array.prototype.forEach.call(document.querySelectorAll("#btnCompte,.acj-profil"), function (b) {
+      if ((b.getAttribute("data-sigph") || "") === sig) return;
+      if (b.getAttribute("data-orig") === null) b.setAttribute("data-orig", b.innerHTML);
+      b.setAttribute("data-sigph", sig);
+      if (sig) { b.innerHTML = '<img class="ph" alt="" src="data:image/jpeg;base64,' + p + '">'; b.classList.add("photo"); }
+      else { b.innerHTML = b.getAttribute("data-orig"); b.classList.remove("photo"); }
+    });
+  }
+  setInterval(photoCompte, 1200);
 
   // Illustration : une communauté chrétienne qui se retrouve en ligne
   var ILLUSTRATION = '<svg class="il" viewBox="0 0 400 210" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
@@ -11522,41 +11600,63 @@ body.acc-actif #sliderAfficheZone{display:none!important}
       var l = (r && r.annonces) || [], z = document.getElementById("acjAnn"); if (!z) return;
       if (!l.length) { z.innerHTML = '<div class="acj-vide" style="flex:1">Les annonces vidéo apparaîtront ici.</div>'; return; }
       z.innerHTML = l.map(function (a) {
-        var m = String(a.lien).match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|live\/|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,20})/);
-        return '<button type="button" class="acj-vid" data-u="' + esc(a.lien) + '" onclick="ACCJ.jouer(this)" aria-label="Lire l\'annonce">' + (m ? '<img class="m" src="https://i.ytimg.com/vi/' + m[1] + '/hqdefault.jpg" alt="">' : "") + '<span class="acj-play">' + ic("play") + "</span>" + (a.titre ? '<span class="tt">' + esc(a.titre) + "</span>" : "") + "</button>";
+        return '<div class="acj-vid" role="button" tabindex="0" data-u="' + esc(a.lien) + '" onclick="ACCJ.jouer(this)" aria-label="Lire l\'annonce"><video class="m" src="' + esc(a.lien) + '#t=0.6" preload="metadata" muted playsinline></video><span class="acj-play">' + ic("play") + "</span>" + (a.titre ? '<span class="tt">' + esc(a.titre) + "</span>" : "") + "</div>";
       }).join("");
     }, function () { var z = document.getElementById("acjAnn"); if (z) z.innerHTML = '<div class="acj-vide" style="flex:1">Les annonces vidéo apparaîtront ici.</div>'; });
-    appelServeur("getEvenements").then(function (res) {
-      var l = Array.isArray(res) ? res : (res && res.evenements) || [];
+    var stats = appelServeur("getStatsContenus").then(function (r) { return (r && r.stats) || {}; }, function () { return {}; });
+    // Priorité : d'abord les favoris, puis les plus suivis (les plus vus), puis l'ordre normal
+    function prio(l, st, type, idDe) {
+      var fav = typeof estFavori_ === "function" ? estFavori_ : function () { return false; };
+      return l.map(function (x, i) { var s2 = st[type + ":" + idDe(x)]; return { x: x, i: i, f: fav(x) ? 1 : 0, v: s2 ? (s2.v || 0) : 0 }; })
+        .sort(function (p, q) { return q.f - p.f || q.v - p.v || p.i - q.i; }).map(function (o) { return o.x; });
+    }
+    Promise.all([appelServeur("getEvenements"), stats]).then(function (rs) {
+      var res = rs[0], l = Array.isArray(res) ? res : (res && res.evenements) || [];
+      l = prio(l, rs[1], "evenement", function (e) { return e.id; });
       remplir("acjEv", l.slice(0, 8).map(function (e) { return carte({ img: e.image, t: e.titre, s: [dateCourte(e.dateDebut), e.lieu].filter(Boolean).join(" · ") }, "evenements", "ticket"); }).join(""));
     }, function () { remplir("acjEv", ""); });
-    appelServeur("getEnregistrementsPublic").then(function (l) {
-      l = Array.isArray(l) ? l : [];
+    Promise.all([appelServeur("getEnregistrementsPublic"), stats]).then(function (rs) {
+      var l = prio(Array.isArray(rs[0]) ? rs[0] : [], rs[1], "audio", function (x) { return x.ID; });
       remplir("acjAu", l.slice(0, 8).map(function (a) { return carte({ img: couv(a.CoverBase64), t: a.Titre, s: a.Auteur }, "audios", "headphones"); }).join(""));
     }, function () { remplir("acjAu", ""); });
-    appelServeur("getVideos").then(function (l) {
-      l = Array.isArray(l) ? l : [];
+    Promise.all([appelServeur("getVideos"), stats]).then(function (rs) {
+      var l = prio(Array.isArray(rs[0]) ? rs[0] : [], rs[1], "video", function (x) { return x.ID; });
       remplir("acjVi", l.slice(0, 8).map(function (v) { return carte({ img: couv(v.CoverBase64), t: v.Titre, s: v.Auteur }, "videos", "clapper"); }).join(""));
     }, function () { remplir("acjVi", ""); });
-    appelServeur("getDocuments").then(function (l) {
-      l = Array.isArray(l) ? l : [];
+    Promise.all([appelServeur("getDocuments"), stats]).then(function (rs) {
+      var l = prio(Array.isArray(rs[0]) ? rs[0] : [], rs[1], "document", function (x) { return x.ID; });
       remplir("acjDo", l.slice(0, 8).map(function (d) { return carte({ img: couv(d.CoverBase64), t: d.Titre, s: d.Auteur }, "documents", "file"); }).join(""));
     }, function () { remplir("acjDo", ""); });
+    // La télé partout : uniquement les logos, les chaînes suivies d'abord
     appelServeur("getTvChaines").then(function (chs) {
-      chs = (Array.isArray(chs) ? chs : []).slice(0, 8);
-      return Promise.all(chs.map(function (c) {
-        return appelServeur("getTvEnCours", c.ID).then(function (r) { return { c: c, r: r }; }, function () { return { c: c, r: null }; });
-      }));
-    }).then(function (l) {
-      var chauds = l.filter(function (x) { return x.r && x.r.succes && (x.r.mode === "live" || x.r.titre); });
-      chauds.sort(function (a, b) { return (b.r.mode === "live") - (a.r.mode === "live"); });
-      remplir("acjTv", chauds.slice(0, 8).map(function (x) {
-        var live = x.r.mode === "live";
-        return carte({ img: x.c.LogoBase64 ? couv(x.c.LogoBase64) : "", t: x.r.titre || x.c.Nom, s: x.c.Nom }, "tv", "tv", live ? '<span class="acj-live">EN DIRECT</span>' : "");
+      chs = Array.isArray(chs) ? chs : [];
+      var suivies = typeof tvFavoris_ === "function" ? tvFavoris_() : [];
+      chs = chs.map(function (c, i) { return { c: c, i: i, f: suivies.indexOf(c.ID) !== -1 ? 1 : 0, l: c.LogoBase64 ? 1 : 0 }; })
+        .sort(function (p, q) { return q.f - p.f || q.l - p.l || p.i - q.i; }).map(function (o) { return o.c; });
+      remplir("acjTv", chs.slice(0, 16).map(function (c) {
+        return '<button type="button" class="acj-tvl" onclick="ACCJ.go(\'tv\')" aria-label="' + esc(c.Nom) + '">' + (c.LogoBase64 ? '<img src="' + couv(c.LogoBase64) + '" alt="">' : ic("tv")) + "</button>";
       }).join(""));
-    }).catch(function () { remplir("acjTv", ""); });
+    }, function () { remplir("acjTv", ""); });
+    // Nouveautés des auteurs suivis (comme les abonnements d'une chaîne)
+    A.flux = [];
+    var zab = document.getElementById("acjAb");
+    if (zab) {
+      if (connecteMembre() && window.XTR && XTR.flux) XTR.flux().then(function (l) {
+        A.flux = l.slice(0, 12);
+        if (!A.flux.length) { zab.style.display = "none"; return; }
+        zab.style.display = "";
+        var z2 = document.getElementById("acjAbL");
+        z2.innerHTML = A.flux.map(function (x, i) {
+          return '<button type="button" class="acj-lc" onclick="ACCJ.ab(' + i + ')"><span class="im">' + (x.c ? '<img src="data:image/jpeg;base64,' + x.c + '" alt="" loading="lazy">' : ic(x.k === "video" ? "clapper" : x.k === "document" ? "file" : "headphones")) +
+            '</span><span class="tt">' + esc(x.t) + '</span><span class="ss">' + esc(x.s) + "</span></button>";
+        }).join("");
+      }, function () { zab.style.display = "none"; });
+      else zab.style.display = "none";
+    }
     appelServeur("getTypesCotisation").then(function (l) {
-      l = (Array.isArray(l) ? l : []).filter(function (t) { return (t.Statut || "Active") === "Active"; }).slice(0, 8);
+      l = (Array.isArray(l) ? l : []).filter(function (t) { return (t.Statut || "Active") === "Active"; });
+      l = l.map(function (t, i) { return { t: t, i: i, f: (typeof estFavori_ === "function" && estFavori_(t)) ? 1 : 0, p: Number(t.Pourcentage) || 0 }; })
+        .sort(function (a, b) { return b.f - a.f || b.p - a.p || a.i - b.i; }).map(function (o) { return o.t; }).slice(0, 8);
       var z = document.getElementById("acjSemL"); if (!z) return;
       if (!l.length) { z.innerHTML = '<div class="acj-vide">Rien à afficher pour le moment.</div>'; return; }
       z.innerHTML = l.map(function (t) {
@@ -11584,12 +11684,13 @@ body.acc-actif #sliderAfficheZone{display:none!important}
           etape(3, "c2", "radio", "Étape 4 · Prière", "Séance de prière en direct", '<p class="acj-ctexte">Rejoignez les frères et sœurs pour un temps de prière et d\'intercession.</p>', "Rejoindre") +
         "</div>" +
         '<section id="acjAnnS"><div class="acj-h2"><div class="acj-h">Annonces</div></div><div class="acj-ann" id="acjAnn"></div></section>' +
-        '<div class="acj-comm" id="acjComm" role="button" tabindex="0" onclick="ACCJ.go(\'communaute\')"><span id="acjCommImg" style="display:block;height:100%">' + ILLUSTRATION + '</span><span class="tx"><b>Communauté</b><span class="s">Priez, partagez et grandissez avec des frères et sœurs du monde entier</span></span><span class="acj-chg" id="acjChg"></span></div>' +
+        '<div class="acj-comm" id="acjComm" role="button" tabindex="0" onclick="ACCJ.go(\'communaute\')"><span id="acjCommImg" style="display:block;height:100%">' + ILLUSTRATION + '</span><span class="tx seul"><b>Clique ici pour rejoindre la communauté des frères et soeurs du monde entier</b></span><span class="acj-chg" id="acjChg"></span></div>' +
+        '<section id="acjAb" style="display:none"><div class="acj-h2"><div class="acj-h">Nouveautés de vos auteurs</div><button type="button" class="acj-voir" onclick="ACCJ.abTout()">Tout voir ' + ic("arrow") + '</button></div><div class="acj-lr" id="acjAbL"></div></section>' +
         rangee("acjEv", "Prochains événements", "evenements") +
         rangee("acjAu", "À écouter", "audios") +
         rangee("acjVi", "À regarder", "videos") +
         rangee("acjDo", "À lire", "documents") +
-        rangee("acjTv", "Programmes chauds à la télé", "tv") +
+        rangee("acjTv", "La télé partout", "tv") +
         '<section id="acjSem"><div class="acj-h2"><div class="acj-h">Opportunités de semence</div><button type="button" class="acj-voir" onclick="ACCJ.go(\'cotisation\')">Tout voir ' + ic("arrow") + '</button></div><div class="acj-lr" id="acjSemL"></div></section>' +
       "</div>";
     majProgres();
@@ -11599,6 +11700,7 @@ body.acc-actif #sliderAfficheZone{display:none!important}
     });
     charger();
     afficheCommunaute();
+    photoCompte();
     Array.prototype.forEach.call(z.querySelectorAll(".acj-rail,.acj-ann,.acj-lr"), fleches);
     if (connecte && membreCourant.estLeader && window.LEADER) window.LEADER.rappel();
   };
@@ -11627,7 +11729,7 @@ body.acc-actif #sliderAfficheZone{display:none!important}
       cadre.innerHTML = img ? '<img class="il" src="' + esc(img) + '" alt="">' : ILLUSTRATION.replace('xMidYMid slice', window.innerWidth < 700 ? "xMidYMid slice" : "xMidYMid meet");
       if (!barre) return;
       barre.innerHTML = "";
-      if (!estSuper()) return;
+      return;   // le changement d'affiche se fait maintenant dans Admin → Accueil
       barre.onclick = function (e) { e.stopPropagation(); };
       var l = document.createElement("label"); l.innerHTML = ic("camera") + " Changer l'affiche";
       var f = document.createElement("input"); f.type = "file"; f.accept = "image/*"; f.style.display = "none"; l.appendChild(f); barre.appendChild(l);
@@ -11659,28 +11761,53 @@ body.acc-actif #sliderAfficheZone{display:none!important}
     });
   }
 
+  // ---- Admin → Accueil : changer l'affiche « Communauté »
+  A.rendreAdminAffiche = function (zone) {
+    if (!zone) return;
+    zone.innerHTML = '<div class="card"><div class="evt-titre">Affiche « Communauté » de la page d\'accueil</div><p class="item-desc">Cette image s\'affiche derrière le texte blanc « Clique ici pour rejoindre la communauté… ». Elle est recadrée automatiquement.</p>' +
+      '<div id="afAperçu" style="border-radius:14px;overflow:hidden;height:124px;background:#143c86;margin-bottom:10px;"></div>' +
+      '<input id="afFichier" type="file" accept="image/*"><div id="afErr" class="error" style="display:none;"></div>' +
+      '<button id="afEnv">Enregistrer cette affiche</button> <button id="afRaz" class="secondary">Rétablir l\'illustration</button></div>';
+    var ap = document.getElementById("afAperçu"), err = document.getElementById("afErr");
+    function montrer(img) { ap.innerHTML = img ? '<img src="' + esc(img) + '" alt="" style="width:100%;height:100%;object-fit:cover;">' : '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#cfdaf1;font-size:13px;">Illustration d\'origine</div>'; }
+    function ko(e) { err.textContent = e.message || "Erreur."; err.style.display = "block"; }
+    montrer("");
+    appelServeur("getAfficheCommunaute").then(function (r) { montrer((r && r.image) || ""); }, function () {});
+    document.getElementById("afEnv").onclick = function () {
+      var f = document.getElementById("afFichier").files[0]; err.style.display = "none";
+      if (!f) { ko(new Error("Choisissez une image.")); return; }
+      redimensionner(f).then(function (d) { return appelServeur("definirAfficheCommunaute", membreCourant.code, d).then(function () { montrer(d); document.getElementById("afFichier").value = ""; }); }).catch(ko);
+    };
+    document.getElementById("afRaz").onclick = function () { err.style.display = "none"; appelServeur("definirAfficheCommunaute", membreCourant.code, "").then(function () { montrer(""); }, ko); };
+  };
   // ---- console d'administration : annonces vidéo
   A.rendreAdmin = function (zone) {
     if (!zone) return;
     var code = membreCourant.code;
-    zone.innerHTML = '<div class="card"><div class="evt-titre">Annonces vidéo de la page d\'accueil</div><p class="item-desc">Courtes vidéos d\'annonces (liens YouTube, Facebook ou Vimeo). Elles défilent sur la page d\'accueil et se lancent quand on appuie sur Play. 12 au maximum.</p>' +
+    zone.innerHTML = '<div class="card"><div class="evt-titre">Annonces vidéo de la page d\'accueil</div><p class="item-desc">Courtes vidéos d\'annonces, envoyées directement depuis votre appareil (MP4, MOV, WEBM… 95 Mo maximum). Elles défilent sur la page d\'accueil et se lancent quand on appuie sur Play. 12 au maximum. Supprimer une annonce supprime aussi son fichier définitivement.</p>' +
       '<label class="field-label">Titre (facultatif)</label><input id="avTitre" maxlength="80" placeholder="Ex : Grande conférence ce samedi">' +
-      '<label class="field-label">Lien de la vidéo</label><input id="avLien" maxlength="300" placeholder="https://www.youtube.com/watch?v=…">' +
-      '<div id="avErr" class="error" style="display:none;"></div><button id="avAjout">Ajouter l\'annonce</button></div><div class="card" id="avListe"><div class="loading">Chargement…</div></div>';
+      '<label class="field-label">Fichier vidéo</label><input id="avFichier" type="file" accept="video/*">' +
+      '<div id="avProg" class="item-desc" style="display:none;"></div><div id="avErr" class="error" style="display:none;"></div><button id="avAjout">Envoyer et ajouter l\'annonce</button></div><div class="card" id="avListe"><div class="loading">Chargement…</div></div>';
     function lister() {
-      appelServeur("getAnnoncesVideo").then(function (r) {
+      appelServeur("adminAnnoncesVideo", code).then(function (r) {
         var l = (r && r.annonces) || [], z2 = document.getElementById("avListe"); if (!z2) return;
         z2.innerHTML = l.length ? l.map(function (a) {
-          return '<div class="item-block"><div class="item-row" style="border:none;padding:0;"><div style="min-width:0;"><div class="item-nom">' + esc(a.titre || "Sans titre") + '</div><div class="item-desc" style="word-break:break-all;">' + esc(a.lien) + '</div></div><button class="danger-outline small" data-d="' + esc(a.id) + '">Supprimer</button></div></div>';
+          return '<div class="item-block"><div class="item-row" style="border:none;padding:0;"><div style="min-width:0;"><div class="item-nom">' + esc(a.titre || "Sans titre") + '</div><div class="item-desc">' + (a.ancienne ? "Ancienne annonce (lien) — n'est plus affichée, supprimez-la" : "Fichier vidéo") + '</div></div><button class="danger-outline small" data-d="' + esc(a.id) + '">Supprimer</button></div></div>';
         }).join("") : '<p class="empty-state">Aucune annonce vidéo.</p>';
-        Array.prototype.forEach.call(z2.querySelectorAll("[data-d]"), function (b) { b.onclick = function () { if (!confirm("Supprimer cette annonce ?")) return; appelServeur("supprimerAnnonceVideo", code, b.getAttribute("data-d")).then(lister, function (e) { alert(e.message); }); }; });
-      });
+        Array.prototype.forEach.call(z2.querySelectorAll("[data-d]"), function (b) { b.onclick = function () { if (!confirm("Supprimer cette annonce ? Le fichier vidéo sera définitivement effacé.")) return; appelServeur("supprimerAnnonceVideo", code, b.getAttribute("data-d")).then(lister, function (e) { alert(e.message); }); }; });
+      }, function (e) { var z2 = document.getElementById("avListe"); if (z2) z2.innerHTML = '<p class="empty-state">' + esc(e.message) + "</p>"; });
     }
     document.getElementById("avAjout").onclick = function () {
-      var e = document.getElementById("avErr"); e.style.display = "none";
-      appelServeur("ajouterAnnonceVideo", code, document.getElementById("avTitre").value, document.getElementById("avLien").value.trim()).then(function () {
-        document.getElementById("avTitre").value = ""; document.getElementById("avLien").value = ""; lister();
-      }, function (er) { e.textContent = er.message; e.style.display = "block"; });
+      var e = document.getElementById("avErr"), f = document.getElementById("avFichier").files[0], btn = this;
+      e.style.display = "none";
+      if (!f) { e.textContent = "Choisissez un fichier vidéo."; e.style.display = "block"; return; }
+      btn.disabled = true;
+      var prog = document.getElementById("avProg"); prog.style.display = "block"; prog.textContent = "Envoi du fichier… 0 %";
+      televerserVersR2_(f, "annonce", function (pc) { prog.textContent = "Envoi du fichier… " + pc + " %"; })
+        .then(function (r2) { return appelServeur("ajouterAnnonceVideo", code, document.getElementById("avTitre").value, { cle: r2.cle, taille: r2.taille, recu: r2.recu }); })
+        .then(function () { document.getElementById("avTitre").value = ""; document.getElementById("avFichier").value = ""; lister(); })
+        .catch(function (er) { e.textContent = er.message; e.style.display = "block"; })
+        .then(function () { btn.disabled = false; prog.style.display = "none"; });
     };
     lister();
   };
@@ -11882,5 +12009,295 @@ body.acc-actif #sliderAfficheZone{display:none!important}
 })();
 </script>
 
+<script>
+/* ===== CELLULES : messagerie façon WhatsApp ===== */
+(function () {
+  "use strict";
+  function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function code() { return typeof membreCourant !== "undefined" && membreCourant ? membreCourant.code : ""; }
+  var C = window.CEL = {};
+  var EMO = "😀😃😄😁😆😅😂🤣😊😇🙂😉😍🥰😘😋😎🤗🤔😐😴😢😭😮😱😡🥳🤩🙏🙌👏👍👎👌✌️🤝💪❤️🧡💛💚💙💜🖤💔🔥✨⭐🌟🕊️✝️📖🎶🎵🎤🙇‍♂️🙇‍♀️🌍🌹🌿🍞🕯️🎁🎉☀️🌙⛪".match(/\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic}|️)*/gu) || [];
+  var REACT = ["👍", "❤️", "🙏", "🙌", "😂", "😮", "😢"];
+  var E = { id: null, zone: null, rep: null, edit: null, rec: null, timer: null, poll: null, donnees: null, dernierId: "" };
+
+  (function () {
+    var st = document.createElement("style");
+    st.textContent = ".cel-boite{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:1px solid #d9e1ee;background:#fff}" +
+      ".cel-tete{background:#0c2f68;color:#fff;padding:10px 12px;display:flex;align-items:center;gap:10px}.cel-tete b{font-size:15px}.cel-tete small{display:block;color:#b9c8e6;font-size:11.5px}.cel-tete button{width:auto;margin:0;padding:6px 10px;background:rgba(255,255,255,.15);color:#fff;border:0;box-shadow:none;font-size:13px}" +
+      ".cel-msgs{height:56vh;min-height:300px;overflow-y:auto;padding:10px;background:#ece5dd;display:flex;flex-direction:column;gap:6px}" +
+      ".cel-b{max-width:84%;padding:7px 10px 5px;border-radius:12px;background:#fff;color:#111;align-self:flex-start;box-shadow:0 1px 1px rgba(0,0,0,.12);position:relative;word-wrap:break-word}.cel-b.moi{background:#dcf8c6;align-self:flex-end}" +
+      ".cel-b .n{font-size:12px;font-weight:800;color:#0b6b46;margin-bottom:2px}.cel-b .tx{white-space:pre-wrap;font-size:14.5px;line-height:1.35}.cel-b .h{font-size:10.5px;color:#7a8794;text-align:right;margin-top:2px}" +
+      ".cel-b.ann{background:#fff4cc;border:1px solid #f0cf6b}.cel-b.pri{background:#eef3ff;border:1px solid #b9c8f0}.cel-b.pri.ok{background:#e4f7e8;border-color:#8fd19e}" +
+      ".cel-tag{font-size:11px;font-weight:800;color:#6a4c00;margin-bottom:3px}.cel-b.pri .cel-tag{color:#2a4a9c}.cel-b.pri.ok .cel-tag{color:#1e7a35}" +
+      ".cel-cite{border-left:3px solid #1d9bf0;background:rgba(0,0,0,.06);border-radius:6px;padding:3px 7px;margin-bottom:4px;font-size:12px;color:#445}.cel-cite b{display:block;color:#0b6b46;font-size:11.5px}" +
+      ".cel-tr{font-size:11px;color:#6b7785;font-style:italic;margin-bottom:2px}.cel-b audio{width:230px;max-width:100%;height:38px}.cel-b img.med{max-width:100%;max-height:260px;border-radius:8px;display:block}.cel-b video.med{max-width:100%;max-height:260px;border-radius:8px}" +
+      ".cel-fic{display:flex;gap:8px;align-items:center;background:rgba(0,0,0,.06);border-radius:8px;padding:8px;font-size:13px;text-decoration:none;color:inherit}" +
+      ".cel-rx{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}.cel-rx span{background:#fff;border:1px solid #d5dbe5;border-radius:999px;padding:0 7px;font-size:12px;cursor:pointer}.cel-rx span.moi{background:#dbeafe;border-color:#93b8f5}" +
+      ".cel-pri{margin-top:5px;display:flex;gap:6px;flex-wrap:wrap}.cel-pri button{width:auto;margin:0;padding:4px 10px;font-size:12px}" +
+      ".cel-opts{position:absolute;top:2px;right:4px;border:0;background:transparent;box-shadow:none;width:auto;margin:0;padding:0 4px;color:#7a8794;font-size:15px;line-height:1}" +
+      ".cel-bas{background:#f0f2f5;padding:8px;border-top:1px solid #d9e1ee}.cel-bar{display:flex;gap:6px;align-items:flex-end}.cel-bar textarea{flex:1;margin:0;min-height:40px;max-height:110px;border-radius:20px;padding:9px 14px;resize:none}" +
+      ".cel-bar button,.cel-bar label.cel-ic{width:42px;height:42px;flex:0 0 42px;border-radius:50%;margin:0;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:19px;box-shadow:none;border:0;cursor:pointer}" +
+      ".cel-bar .ic{background:transparent;color:#54656f}.cel-bar .env{background:#0b8a5a;color:#fff}.cel-bar .rec{background:#c0392b;color:#fff}" +
+      ".cel-emo{display:none;flex-wrap:wrap;gap:2px;max-height:150px;overflow:auto;background:#fff;border-radius:12px;padding:6px;margin-bottom:6px;border:1px solid #d9e1ee}.cel-emo button{width:34px;height:34px;padding:0;margin:0;background:transparent;border:0;box-shadow:none;font-size:21px}" +
+      ".cel-ctx{background:#fff;border-left:4px solid #0b8a5a;border-radius:8px;padding:6px 10px;margin-bottom:6px;font-size:12.5px;display:flex;justify-content:space-between;gap:8px}.cel-ctx button{width:auto;margin:0;padding:0 6px;background:transparent;color:#555;border:0;box-shadow:none}" +
+      ".cel-ferme{background:#fdecea;color:#8a1c12;padding:8px 12px;font-size:13px;font-weight:700}.cel-menu{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:flex-end;justify-content:center}.cel-menu>div{background:#fff;width:100%;max-width:460px;border-radius:18px 18px 0 0;padding:12px;max-height:80vh;overflow:auto}" +
+      ".cel-menu button{display:block;width:100%;text-align:left;margin:0 0 4px;background:#f3f6fb;color:#0c2f68;border:0;box-shadow:none;padding:11px 12px;font-size:14px}.cel-menu .rxl{display:flex;gap:6px;justify-content:center;margin-bottom:8px}.cel-menu .rxl button{width:auto;font-size:22px;padding:6px 10px;text-align:center}" +
+      ".cel-gest .l{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #eef1f6;font-size:13.5px}.cel-gest .l button{width:auto;margin:0 0 0 4px;padding:4px 8px;font-size:12px}";
+    document.head.appendChild(st);
+  })();
+
+  function heure(d) { var x = new Date(d); return isNaN(x) ? "" : ("0" + x.getHours()).slice(-2) + ":" + ("0" + x.getMinutes()).slice(-2); }
+  function taille(o) { return o > 1048576 ? (o / 1048576).toFixed(1) + " Mo" : Math.max(1, Math.round(o / 1024)) + " Ko"; }
+  function fini() { if (E.poll) { clearInterval(E.poll); E.poll = null; } if (E.rec) annulerVocal(); }
+
+  C.rendre = function (z, id) {
+    fini();
+    E.id = id; E.zone = z; E.rep = null; E.edit = null;
+    z.innerHTML = '<div class="card"><div class="loading">Chargement…</div></div>';
+    appelServeur("lireCellule", code(), id).then(function (r) {
+      E.donnees = r;
+      z.innerHTML = '<button class="small secondary" onclick="XTR.fermerCel()">← Cellules</button><div class="cel-boite" data-noico="1" style="margin-top:8px;">' +
+        '<div class="cel-tete"><div style="flex:1;min-width:0;"><b id="celNom"></b><small id="celSous"></small></div><button type="button" onclick="CEL.infos()">ⓘ Gérer</button></div>' +
+        '<div id="celEtat"></div><div class="cel-msgs" id="celMsgs"></div>' +
+        '<div class="cel-bas"><div id="celCtx"></div><div class="cel-emo" id="celEmo"></div>' +
+        '<div class="cel-bar" id="celBar"><button type="button" class="ic" onclick="CEL.emojis()" aria-label="Emojis">😊</button>' +
+        '<label class="cel-ic ic" aria-label="Envoyer un fichier">📎<input type="file" id="celFic" style="display:none" onchange="CEL.fichier(this)"></label>' +
+        '<textarea id="celTxt" rows="1" maxlength="1000" placeholder="Écrire un message" oninput="CEL.saisie()"></textarea>' +
+        '<button type="button" class="env" id="celBtn" onclick="CEL.action()" aria-label="Envoyer">🎤</button></div>' +
+        '<div id="celOpt" style="margin-top:6px;font-size:12.5px;display:flex;gap:14px;flex-wrap:wrap;"></div><div id="celErr" class="error" style="display:none;"></div></div></div>';
+      EMO.forEach(function (e) { var b = document.createElement("button"); b.type = "button"; b.textContent = e; b.onclick = function () { inserer(e); }; document.getElementById("celEmo").appendChild(b); });
+      majEntete(); majOptions(); majMessages(true); C.saisie();
+      E.poll = setInterval(function () { if (!document.getElementById("celMsgs")) { fini(); return; } if (document.querySelector(".cel-menu")) return; actualiser(); }, 6000);
+    }, function (e) { z.innerHTML = '<button class="small secondary" onclick="XTR.fermerCel()">← Cellules</button><div class="card"><p class="error">' + esc(e.message) + '</p><button class="small" onclick="XTR.rejoindre(\'' + esc(id) + '\')">Rejoindre ce groupe</button></div>'; });
+  };
+  function actualiser() {
+    appelServeur("lireCellule", code(), E.id).then(function (r) { E.donnees = r; majEntete(); majOptions(); majMessages(false); }, function () {});
+  }
+  function majEntete() {
+    var r = E.donnees, c = r.cellule;
+    document.getElementById("celNom").textContent = c.nom;
+    document.getElementById("celSous").textContent = "📍 " + c.ville + " · " + c.nb + " membre(s) · Responsable : " + c.responsable;
+    var et = document.getElementById("celEtat"), bas = document.getElementById("celBar");
+    var bloque = r.suspendu || (c.fermee && !r.estResponsable);
+    et.innerHTML = r.suspendu ? '<div class="cel-ferme">⛔ Vous êtes suspendu de ce groupe : vous pouvez lire mais plus écrire.</div>' :
+      (c.fermee ? '<div class="cel-ferme">🔒 Cellule fermée' + (c.mode === "programmee" ? " (programmation : fermée de " + esc(c.de) + " à " + esc(c.a) + ")" : "") + (r.estResponsable ? " — vous pouvez encore écrire en tant que responsable." : " pour le moment.") + "</div>" : "");
+    bas.style.display = bloque ? "none" : "";
+  }
+  function majOptions() {
+    var o = document.getElementById("celOpt"), r = E.donnees; if (!o) return;
+    var cur = o.getAttribute("data-s"), nouv = r.estResponsable ? "g" : "m"; if (cur === nouv) return;
+    o.setAttribute("data-s", nouv);
+    o.innerHTML = '<label><input type="checkbox" id="celPri" style="width:auto;"> 🙏 Sujet de prière</label>' + (r.estResponsable ? '<label><input type="checkbox" id="celAnn" style="width:auto;"> 📢 Annonce</label>' : "");
+  }
+  function inserer(e) {
+    var t = document.getElementById("celTxt"), a = t.selectionStart || t.value.length, b = t.selectionEnd || t.value.length;
+    t.value = t.value.slice(0, a) + e + t.value.slice(b); t.focus(); t.selectionStart = t.selectionEnd = a + e.length; C.saisie();
+  }
+  C.emojis = function () { var e = document.getElementById("celEmo"); e.style.display = e.style.display === "flex" ? "none" : "flex"; };
+  C.saisie = function () {
+    var t = document.getElementById("celTxt"), b = document.getElementById("celBtn"); if (!t || !b || E.rec) return;
+    t.style.height = "auto"; t.style.height = Math.min(110, t.scrollHeight) + "px";
+    b.textContent = t.value.trim() ? "➤" : "🎤"; b.className = "env";
+  };
+  function erreur(msg) { var e = document.getElementById("celErr"); if (!e) { alert(msg); return; } e.textContent = msg || ""; e.style.display = msg ? "block" : "none"; }
+  function message(corps) {
+    return appelServeur("envoyerMsgCellule", code(), E.id, corps).then(function () { erreur(""); actualiser(); setTimeout(descendre, 400); }, function (e) { erreur(e.message); throw e; });
+  }
+  function descendre() { var m = document.getElementById("celMsgs"); if (m) m.scrollTop = m.scrollHeight; }
+
+  // ---- bouton principal : envoyer le texte, ou démarrer / terminer un vocal
+  C.action = function () {
+    if (E.rec) { terminerVocal(true); return; }
+    var t = document.getElementById("celTxt"), v = t.value.trim();
+    if (!v) { demarrerVocal(); return; }
+    if (E.edit) {
+      var id = E.edit; E.edit = null; majContexte();
+      appelServeur("modifierMsgCellule", code(), id, v).then(function () { t.value = ""; C.saisie(); erreur(""); actualiser(); }, function (e) { erreur(e.message); });
+      return;
+    }
+    var corps = { genre: "texte", texte: v, rep: E.rep && E.rep.id };
+    var pri = document.getElementById("celPri"), ann = document.getElementById("celAnn");
+    if (ann && ann.checked) corps.type = "Annonce"; else if (pri && pri.checked) corps.type = "Priere";
+    message(corps).then(function () { t.value = ""; E.rep = null; majContexte(); if (pri) pri.checked = false; if (ann) ann.checked = false; C.saisie(); });
+  };
+  function majContexte() {
+    var z = document.getElementById("celCtx"); if (!z) return;
+    if (E.edit) z.innerHTML = '<div class="cel-ctx"><span>✏️ Modification du message (2 min max)</span><button type="button" onclick="CEL.annulerCtx()">✕</button></div>';
+    else if (E.rep) z.innerHTML = '<div class="cel-ctx"><span><b>' + esc(E.rep.nom) + "</b><br>" + esc(E.rep.texte) + '</span><button type="button" onclick="CEL.annulerCtx()">✕</button></div>';
+    else z.innerHTML = "";
+  }
+  C.annulerCtx = function () { E.rep = null; if (E.edit) { E.edit = null; document.getElementById("celTxt").value = ""; C.saisie(); } majContexte(); };
+
+  // ---- fichiers
+  C.fichier = function (inp) {
+    var f = inp.files[0]; inp.value = ""; if (!f) return;
+    envoyerMedia(f, "fichier", (document.getElementById("celTxt").value || "").trim());
+  };
+  function envoyerMedia(f, genre, legende) {
+    var b = document.getElementById("celBtn"); b.disabled = true; erreur("Envoi du fichier… 0 %");
+    var e = document.getElementById("celErr"); e.style.color = "#0c2f68";
+    televerserVersR2_(f, "cellule", function (p) { erreur("Envoi du fichier… " + p + " %"); })
+      .then(function (r2) { return message({ genre: genre, texte: legende, rep: E.rep && E.rep.id, media: { cle: r2.cle, taille: r2.taille, recu: r2.recu, nom: f.name } }); })
+      .then(function () { document.getElementById("celTxt").value = ""; E.rep = null; majContexte(); C.saisie(); erreur(""); })
+      .catch(function (er) { erreur(er.message); })
+      .then(function () { b.disabled = false; var e2 = document.getElementById("celErr"); if (e2) e2.style.color = ""; });
+  }
+
+  // ---- message vocal : un toucher sur le micro pour démarrer, un toucher sur ➤ pour envoyer, ✕ pour annuler
+  function demarrerVocal() {
+    if (!navigator.mediaDevices || !window.MediaRecorder) { erreur("Ce navigateur ne permet pas d'enregistrer un vocal."); return; }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (flux) {
+      var types = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"], mt = "";
+      types.some(function (t) { if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) { mt = t; return true; } return false; });
+      var rec = mt ? new MediaRecorder(flux, { mimeType: mt }) : new MediaRecorder(flux), morceaux = [];
+      rec.ondataavailable = function (ev) { if (ev.data && ev.data.size) morceaux.push(ev.data); };
+      E.rec = { rec: rec, flux: flux, morceaux: morceaux, t0: Date.now(), envoyer: false };
+      rec.onstop = function () {
+        flux.getTracks().forEach(function (t) { t.stop(); });
+        var st = E.rec; E.rec = null; clearInterval(E.timer); restaurerBarre();
+        if (!st || !st.envoyer || !morceaux.length) return;
+        var type = rec.mimeType || mt || "audio/webm", ext = /mp4/.test(type) ? "m4a" : /ogg/.test(type) ? "ogg" : "webm";
+        envoyerMedia(new File([new Blob(morceaux, { type: type })], "vocal-" + Date.now() + "." + ext, { type: type }), "audio", "");
+      };
+      rec.start();
+      var bar = document.getElementById("celBar");
+      bar.innerHTML = '<button type="button" class="ic" onclick="CEL.annulerVocal()" aria-label="Annuler">🗑️</button><div style="flex:1;display:flex;align-items:center;gap:8px;color:#c0392b;font-weight:800;"><span>⏺</span><span id="celChrono">0:00</span><span style="color:#667;font-weight:400;font-size:12px;">Enregistrement… touchez ➤ pour envoyer</span></div><button type="button" class="env" onclick="CEL.action()" aria-label="Envoyer le vocal">➤</button>';
+      E.timer = setInterval(function () { var s = Math.floor((Date.now() - E.rec.t0) / 1000), c = document.getElementById("celChrono"); if (c) c.textContent = Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); if (s >= 300) terminerVocal(true); }, 500);
+    }, function () { erreur("Micro refusé : autorisez l'accès au micro pour envoyer un vocal."); });
+  }
+  function terminerVocal(envoyer) { if (!E.rec) return; E.rec.envoyer = envoyer; try { E.rec.rec.stop(); } catch (e) { E.rec = null; restaurerBarre(); } }
+  function annulerVocal() { terminerVocal(false); }
+  C.annulerVocal = annulerVocal;
+  function restaurerBarre() {
+    var bar = document.getElementById("celBar"); if (!bar) return;
+    bar.innerHTML = '<button type="button" class="ic" onclick="CEL.emojis()" aria-label="Emojis">😊</button><label class="cel-ic ic" aria-label="Envoyer un fichier">📎<input type="file" id="celFic" style="display:none" onchange="CEL.fichier(this)"></label>' +
+      '<textarea id="celTxt" rows="1" maxlength="1000" placeholder="Écrire un message" oninput="CEL.saisie()"></textarea><button type="button" class="env" id="celBtn" onclick="CEL.action()" aria-label="Envoyer">🎤</button>';
+  }
+
+  // ---- affichage des messages
+  function bulle(m, r) {
+    var moi = m.auteur === code(), cls = "cel-b" + (moi ? " moi" : "") + (m.type === "Annonce" ? " ann" : "") + (m.type === "Priere" ? " pri" + (m.exauce ? " ok" : "") : "");
+    var h = '<div class="' + cls + '" data-id="' + esc(m.id) + '">' + '<button type="button" class="cel-opts" data-act="menu" data-id="' + esc(m.id) + '" aria-label="Options">⋮</button>';
+    if (!moi) h += '<div class="n">' + esc(m.nom) + "</div>";
+    if (m.type === "Annonce") h += '<div class="cel-tag">📢 Annonce</div>';
+    if (m.type === "Priere") h += '<div class="cel-tag">' + (m.exauce ? "✅ Prière exaucée — gloire à Dieu !" : "🙏 Sujet de prière") + "</div>";
+    if (m.transfere) h += '<div class="cel-tr">↪ ' + esc(m.transfere) + "</div>";
+    if (m.rep) h += '<div class="cel-cite"><b>' + esc(m.rep.nom) + "</b>" + esc(m.rep.texte) + "</div>";
+    if (m.fichier) {
+      if (m.genre === "audio") h += '<audio controls preload="none" src="' + esc(m.fichier.lien) + '"></audio>';
+      else if (/^image\//.test(m.fichier.mime)) h += '<a href="' + esc(m.fichier.lien) + '" target="_blank" rel="noopener"><img class="med" loading="lazy" src="' + esc(m.fichier.lien) + '" alt=""></a>';
+      else if (/^video\//.test(m.fichier.mime)) h += '<video class="med" controls preload="metadata" src="' + esc(m.fichier.lien) + '"></video>';
+      else h += '<a class="cel-fic" href="' + esc(m.fichier.telechargement) + '" target="_blank" rel="noopener">📎 <span><b>' + esc(m.fichier.nom) + "</b><br>" + taille(m.fichier.taille) + "</span></a>";
+    }
+    if (m.texte) h += '<div class="tx">' + esc(m.texte) + "</div>";
+    if (m.reacts && m.reacts.length) h += '<div class="cel-rx">' + m.reacts.map(function (x) { return '<span class="' + (x.moi ? "moi" : "") + '" data-act="rx" data-id="' + esc(m.id) + '" data-e="' + esc(x.e) + '">' + x.e + " " + x.n + "</span>"; }).join("") + "</div>";
+    if (m.type === "Priere") {
+      var pri = (m.reacts || []).filter(function (x) { return x.e === "🙏"; })[0];
+      h += '<div class="cel-pri"><button type="button" class="small ' + (pri && pri.moi ? "secondary" : "") + '" data-act="rx" data-id="' + esc(m.id) + '" data-e="🙏">🙏 J\'ai prié' + (pri ? " (" + pri.n + ")" : "") + "</button>" +
+        ((moi || r.estResponsable) ? '<button type="button" class="small secondary" data-act="exauce" data-id="' + esc(m.id) + '">' + (m.exauce ? "↩ Pas encore exaucé" : "✅ Exaucé") + "</button>" : "") + "</div>";
+    }
+    return h + '<div class="h">' + (m.edite ? "modifié · " : "") + heure(m.date) + "</div></div>";
+  }
+  function majMessages(force) {
+    var z = document.getElementById("celMsgs"), r = E.donnees; if (!z) return;
+    var sig = r.messages.map(function (m) { return m.id + ":" + (m.edite || "") + ":" + m.exauce + ":" + m.reacts.map(function (x) { return x.e + x.n + x.moi; }).join(""); }).join("|");
+    if (!force && sig === E.sig) return;
+    var enBas = force || z.scrollHeight - z.scrollTop - z.clientHeight < 80, ancienTop = z.scrollTop;
+    // ne pas interrompre un vocal ou une vidéo en cours de lecture
+    var lit = Array.prototype.some.call(z.querySelectorAll("audio,video"), function (a) { return !a.paused; });
+    if (lit && !force) return;
+    E.sig = sig;
+    z.innerHTML = r.messages.length ? r.messages.map(function (m) { return bulle(m, r); }).join("") : '<p class="empty-state" style="margin:auto;color:#667;">Aucun message. Lancez la conversation !</p>';
+    z.scrollTop = enBas ? z.scrollHeight : ancienTop;
+    if (!z.getAttribute("data-liee")) {
+      z.setAttribute("data-liee", "1");
+      z.addEventListener("click", function (ev) {
+        var t = ev.target.closest("[data-act]"); if (!t) return;
+        var a = t.getAttribute("data-act"), id = t.getAttribute("data-id");
+        if (a === "menu") menu(id);
+        else if (a === "rx") appelServeur("reagirMsgCellule", code(), id, t.getAttribute("data-e")).then(actualiser, function (e) { erreur(e.message); });
+        else if (a === "exauce") appelServeur("exaucerMsgCellule", code(), id).then(actualiser, function (e) { erreur(e.message); });
+      });
+    }
+  }
+  function trouver(id) { return E.donnees.messages.filter(function (m) { return m.id === id; })[0]; }
+  function fenetre(html) {
+    var f = document.createElement("div"); f.className = "cel-menu"; f.setAttribute("data-noico", "1"); f.innerHTML = "<div>" + html + "</div>";
+    f.addEventListener("click", function (e) { if (e.target === f) f.remove(); });
+    document.body.appendChild(f); return f;
+  }
+  function menu(id) {
+    var m = trouver(id); if (!m) return;
+    var moi = m.auteur === code(), r = E.donnees, recent = Date.now() - new Date(m.date).getTime() < 120000;
+    var h = '<div class="rxl">' + REACT.map(function (e) { return '<button type="button" data-e="' + e + '">' + e + "</button>"; }).join("") + "</div>" +
+      '<button type="button" data-a="rep">↩ Répondre</button>' + (m.texte ? '<button type="button" data-a="copier">📋 Copier le texte</button>' : "") + '<button type="button" data-a="transf">↪ Transférer vers une autre cellule</button>' +
+      (m.fichier ? '<a class="cel-fic" style="margin-bottom:4px;" href="' + esc(m.fichier.telechargement) + '" target="_blank" rel="noopener">⬇ Télécharger le fichier</a>' : "") +
+      (moi && m.genre === "texte" && recent ? '<button type="button" data-a="modif">✏️ Modifier (2 min)</button>' : "") +
+      (moi || r.estResponsable ? '<button type="button" data-a="suppr" style="color:#c0392b;">🗑️ Supprimer</button>' : "");
+    var f = fenetre(h);
+    f.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button"); if (!b) return;
+      var e = b.getAttribute("data-e"), a = b.getAttribute("data-a");
+      if (e) { f.remove(); appelServeur("reagirMsgCellule", code(), id, e).then(actualiser, function (er) { erreur(er.message); }); }
+      else if (a === "rep") { f.remove(); E.edit = null; E.rep = { id: id, nom: m.nom, texte: m.texte || (m.genre === "audio" ? "🎤 Message vocal" : "📎 " + (m.fichier ? m.fichier.nom : "")) }; majContexte(); document.getElementById("celTxt").focus(); }
+      else if (a === "copier") { f.remove(); copier(m.texte); }
+      else if (a === "transf") { f.remove(); choisirCellule(id); }
+      else if (a === "modif") { f.remove(); E.rep = null; E.edit = id; var t = document.getElementById("celTxt"); t.value = m.texte; majContexte(); C.saisie(); t.focus(); }
+      else if (a === "suppr") { f.remove(); if (confirm("Supprimer ce message" + (m.fichier ? " et son fichier" : "") + " pour tout le monde ?")) appelServeur("supprimerMsgCellule", code(), id).then(actualiser, function (er) { erreur(er.message); }); }
+    });
+  }
+  function copier(t) {
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function () { erreur(""); }, function () { prompt("Copiez le texte :", t); });
+    else prompt("Copiez le texte :", t);
+  }
+  function choisirCellule(id) {
+    appelServeur("mesCellules", code()).then(function (r) {
+      var l = (r.cellules || []).filter(function (c) { return c.id !== E.id; });
+      var f = fenetre('<div class="evt-titre">Transférer vers…</div>' + (l.length ? l.map(function (c) { return '<button type="button" data-c="' + esc(c.id) + '">👥 ' + esc(c.nom) + " · " + esc(c.ville) + "</button>"; }).join("") : '<p class="item-desc">Vous n\'êtes membre d\'aucune autre cellule. Rejoignez-en une pour transférer du contenu.</p>'));
+      f.addEventListener("click", function (ev) {
+        var b = ev.target.closest("[data-c]"); if (!b) return;
+        b.disabled = true; b.textContent = "Transfert…";
+        appelServeur("transfererMsgCellule", code(), id, b.getAttribute("data-c")).then(function () { f.remove(); erreur(""); alert("Message transféré ✔"); }, function (e) { f.remove(); erreur(e.message); });
+      });
+    }, function (e) { erreur(e.message); });
+  }
+
+  // ---- gestion de la cellule (responsable / co-responsables)
+  C.infos = function () {
+    var r = E.donnees, c = r.cellule, h = '<div class="evt-titre">' + esc(c.nom) + '</div><p class="item-desc">' + esc(c.description || "") + "</p>";
+    if (r.estResponsable) {
+      var tz = -new Date().getTimezoneOffset();
+      h += '<div class="cel-gest"><div class="evt-titre" style="font-size:14px;">🔒 Ouverture de la cellule</div>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><button type="button" class="small ' + (c.mode === "ouverte" ? "" : "secondary") + '" style="width:auto;" data-m="ouverte">🔓 Ouverte</button><button type="button" class="small ' + (c.mode === "fermee" ? "" : "secondary") + '" style="width:auto;" data-m="fermee">🔒 Fermée</button></div>' +
+        '<div class="item-desc">Ou programmer une fermeture chaque jour (heure de votre appareil) :</div><div style="display:flex;gap:6px;align-items:center;margin:6px 0;">Fermer à <input type="time" id="celDe" value="' + esc(c.de || "22:00") + '" style="width:auto;margin:0;"> rouvrir à <input type="time" id="celA" value="' + esc(c.a || "06:00") + '" style="width:auto;margin:0;"></div>' +
+        '<button type="button" class="small ' + (c.mode === "programmee" ? "" : "secondary") + '" style="width:auto;" data-m="programmee">⏰ Activer la programmation</button>' +
+        '<div class="evt-titre" style="font-size:14px;margin-top:14px;">👥 Membres</div>' +
+        r.membres.map(function (m) {
+          var moiM = m.code === code();
+          return '<div class="l"><span>' + esc(m.nom) + (m.resp ? " 👑" : m.co ? " ⭐ co-responsable" : "") + (m.suspendu ? " ⛔" : "") + "</span><span>" +
+            (moiM || m.resp ? "" : '<button type="button" class="secondary" data-s="' + esc(m.code) + '" data-v="' + (m.suspendu ? 0 : 1) + '">' + (m.suspendu ? "Rétablir" : "Suspendre") + '</button>' +
+              (r.estChef ? '<button type="button" class="secondary" data-co="' + esc(m.code) + '" data-v="' + (m.co ? 0 : 1) + '">' + (m.co ? "Retirer ⭐" : "⭐ Co-resp.") + "</button>" : "") +
+              '<button type="button" class="secondary" data-r="' + esc(m.code) + '">Retirer</button>') + "</span></div>";
+        }).join("") + "</div>";
+      h += '<button type="button" class="secondary" style="margin-top:10px;" data-a="suppr">🗑️ Supprimer la cellule</button>';
+    } else h += '<button type="button" class="secondary" data-a="quit">Quitter le groupe</button>';
+    h += '<button type="button" class="secondary" style="margin-top:8px;" data-a="muet">' + (r.muet ? "🔕 Notifications coupées — les réactiver" : "🔔 Notifications actives — les couper") + "</button>";
+    var f = fenetre(h + '<button type="button" style="margin-top:8px;text-align:center;" data-a="x">Fermer</button>');
+    f.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button"); if (!b) return;
+      var m = b.getAttribute("data-m"), s = b.getAttribute("data-s"), co = b.getAttribute("data-co"), rr = b.getAttribute("data-r"), a = b.getAttribute("data-a");
+      var fin = function () { f.remove(); actualiser(); }, ko = function (e) { alert(e.message); };
+      if (m) appelServeur("reglerCellule", code(), E.id, { mode: m, de: (document.getElementById("celDe") || {}).value, a: (document.getElementById("celA") || {}).value, tz: -new Date().getTimezoneOffset() }).then(fin, ko);
+      else if (s) appelServeur("suspendreMembreCellule", code(), E.id, s, b.getAttribute("data-v") === "1").then(function () { f.remove(); actualiser(); setTimeout(C.infos, 600); }, ko);
+      else if (co) appelServeur("nommerCoResp", code(), E.id, co, b.getAttribute("data-v") === "1").then(function () { f.remove(); actualiser(); setTimeout(C.infos, 600); }, ko);
+      else if (rr) { if (confirm("Retirer ce membre du groupe ?")) appelServeur("retirerMembreCellule", code(), E.id, rr).then(function () { f.remove(); actualiser(); setTimeout(C.infos, 600); }, ko); }
+      else if (a === "suppr") { f.remove(); XTR.supprimerCel(E.id); }
+      else if (a === "quit") { f.remove(); XTR.quitter(E.id); }
+      else if (a === "muet") appelServeur("couperNotifCellule", code(), E.id, !r.muet).then(function () { f.remove(); actualiser(); }, ko);
+      else if (a === "x") f.remove();
+    });
+  };
+})();
+</script>
 </body>
 </html>
