@@ -311,7 +311,7 @@ video.video-player-frame{object-fit:contain}
   </div>
 
   <div class="topbar" id="topbar">
-    <div class="logo-circle" id="topbarLogo">🙏</div>
+    <div class="logo-circle" id="topbarLogo"><img src="icon-192.png" alt="JESUS" onerror="this.onerror=null;this.src=window.LOGO_SECOURS"></div>
     <div class="topbar-nom-wrap">
       <div class="topbar-nom" id="topbarNom">JESUS</div>
       <div class="topbar-sub" id="topbarSub">Espace membres</div>
@@ -330,7 +330,7 @@ video.video-player-frame{object-fit:contain}
     <div class="wrap">
       <div class="card">
         <div class="brand-center">
-          <div class="logo-circle-lg" id="accueilLogo">🙏</div>
+          <div class="logo-circle-lg" id="accueilLogo"><img src="icon-192.png" alt="JESUS" onerror="this.onerror=null;this.src=window.LOGO_SECOURS"></div>
           <div class="brand-nom" id="accueilNomAssoc">JESUS</div>
         </div>
         <h1 class="titre">Bienvenue 🙏</h1>
@@ -387,6 +387,7 @@ video.video-player-frame{object-fit:contain}
         <button onclick="seConnecter()">Se connecter</button>
         <button class="ghost-link" onclick="afficherEcranMotDePasseOublie()">Mot de passe oublié ?</button>
         <button class="ghost-link" onclick="demarrerInscription()">Pas encore de compte ? Créer un compte</button>
+        <button class="ghost-link" onclick="LEADER.demanderCode()">Je n'ai pas de code : en demander un</button>
         <button class="ghost-link" onclick="retourVersVisiteur_()">← Retour</button>
       </div>
     </div>
@@ -463,6 +464,7 @@ video.video-player-frame{object-fit:contain}
         <input id="codeInscription" type="text" autocomplete="off" placeholder="Ex : JES-AB12CD34" style="text-transform:uppercase;letter-spacing:1.5px;font-weight:800;text-align:center;">
         <div id="erreurCodeInscription" class="error" style="display:none;"></div>
         <button onclick="validerCodeInscription()">Vérifier le code</button>
+        <button class="secondary" onclick="LEADER.demanderCode()">Je n'ai pas de code : en demander un</button>
         <button class="ghost-link" onclick="retourVersVisiteur_()">← Retour</button>
       </div>
     </div>
@@ -1526,6 +1528,8 @@ video.video-player-frame{object-fit:contain}
         <div class="card" id="adminListeTv"><div class="loading">Chargement…</div></div>
       </div>
 
+      <div class="admin-section" id="admin-demandes"></div>
+      <div class="admin-section" id="admin-annoncesVideo"></div>
       <div class="admin-section" id="admin-codes">
         <div class="card">
           <div class="section-title"><span class="ic">🔐</span> Générer des codes d'inscription</div>
@@ -2008,7 +2012,7 @@ video.video-player-frame{object-fit:contain}
     document.getElementById("accueilNomAssoc").textContent = nom;
     document.title = nom + " — Espace membres";
     const initiale = nom.charAt(0).toUpperCase();
-    const logoHtml = '<img src="icon-192.png" alt="JESUS">'; // logo JESUS fixe
+    const logoHtml = '<img src="icon-192.png" alt="JESUS" onerror="this.onerror=null;this.src=window.LOGO_SECOURS">'; // logo JESUS fixe
     document.getElementById("topbarLogo").innerHTML = logoHtml;
     document.getElementById("accueilLogo").innerHTML = logoHtml;
     appliquerBadgeConfig_();
@@ -2025,7 +2029,7 @@ video.video-player-frame{object-fit:contain}
     const elLogo = document.getElementById("badgeMiniLogo");
     if (elLogo) {
       const perso = /^data:image\/(png|jpeg);base64,[A-Za-z0-9+\/=]+$/.test(c.BadgeLogo || "");
-      elLogo.innerHTML = perso ? '<img src="' + c.BadgeLogo + '" alt="">' : '<img src="icon-192.png" alt="JESUS">';
+      elLogo.innerHTML = perso ? '<img src="' + c.BadgeLogo + '" alt="">' : '<img src="icon-192.png" alt="JESUS" onerror="this.onerror=null;this.src=window.LOGO_SECOURS">';
     }
   }
 
@@ -2781,6 +2785,7 @@ video.video-player-frame{object-fit:contain}
       const domaines = { finances: "Finances et collectes", demandesPriere: "Demandes de prière", contenus: "Contenus et TV", evenements: "Événements et organisateurs", systeme: "Membres, annonces et réglages" };
       cartes.push('<div class="card" style="margin-top:12px;"><p class="field-label">⚙ ' + escapeHtml(LIBELLES_ROLES[m.role] || "Administrateur") + '</p><p class="item-desc">Vous gérez : ' + perms.map(function (p) { return domaines[p]; }).join(", ") + '.</p><button class="secondary" onclick="afficherOnglet(\'admin\')">Ouvrir l\'administration</button></div>');
     }
+    if (window.LEADER) cartes.push(window.LEADER.carteCompte());
     document.getElementById("compteRoles").innerHTML = cartes.join("");
   }
 
@@ -2882,7 +2887,9 @@ video.video-player-frame{object-fit:contain}
       { id: "soumissions", label: "✍️ Soumissions", permission: "contenus" },
       { id: "tv", label: "📺 TV", permission: "contenus" },
       { id: "messages", label: "Messages", permission: "systeme" },
-      { id: "codes", label: "🔐 Codes d'accès", permission: "systeme" }
+      { id: "codes", label: "🔐 Codes d'accès", permission: "systeme" },
+      { id: "demandes", label: "🛂 Demandes et Leaders", permission: "systeme" },
+      { id: "annoncesVideo", label: "🎬 Annonces vidéo", permission: "contenus" }
     ];
     const visibles = tousLesSousOnglets.filter(function (s) { return permissions.indexOf(s.permission) !== -1; });
     document.getElementById("adminSubtabs").innerHTML = visibles.map(function (s, i) {
@@ -2922,6 +2929,8 @@ video.video-player-frame{object-fit:contain}
     else if (nom === "demandesPriere") appelServeur("getDemandesPriereAdmin", membreCourant.code).then(afficherDemandesPriereAdmin).catch(function (err) { afficherErreurZone("adminListeDemandesPriere", err); });
     else if (nom === "tv") rechargerTvAdmin_();
     else if (nom === "soumissions") appelServeur("getSoumissionsAdmin", membreCourant.code).then(afficherSoumissionsAdmin).catch(function (err) { afficherErreurZone("adminListeSoumissions", err); });
+    else if (nom === "annoncesVideo") { if (window.ACCJ) window.ACCJ.rendreAdmin(document.getElementById("admin-annoncesVideo")); }
+    else if (nom === "demandes") { if (window.LEADER) window.LEADER.rendreAdmin(document.getElementById("admin-demandes")); }
     else if (nom === "codes") appelServeur("getCodesInscriptionAdmin", membreCourant.code).then(afficherCodesInscriptionAdmin).catch(function (err) { afficherErreurZone("adminListeCodesInscription", err); });
   }
 
@@ -5664,6 +5673,9 @@ video.video-player-frame{object-fit:contain}
       const boutonAuteur = m.estAuteur
         ? '<button class="danger-outline small" onclick="toggleAuteurClick(\'' + codeEchappe + '\', false)">Retirer Auteur</button>'
         : '<button class="secondary small" onclick="toggleAuteurClick(\'' + codeEchappe + '\', true)">✍️ Rendre Auteur</button>';
+      const boutonLeader = m.estLeader
+        ? '<button class="danger-outline small" onclick="toggleLeaderClick(\'' + codeEchappe + '\', false)">Retirer Leader</button>'
+        : '<button class="secondary small" onclick="toggleLeaderClick(\'' + codeEchappe + '\', true)">🛡️ Rendre Leader</button>';
       const boutonExoneration = m.estAuteur
         ? (m.exonerePublication
           ? '<button class="danger-outline small" onclick="toggleExonerationClick(\'' + codeEchappe + '\')">Retirer l\'exonération</button>'
@@ -5675,14 +5687,14 @@ video.video-player-frame{object-fit:contain}
       return '<div class="item-block">' +
         '<div class="item-row" style="border:none;padding-bottom:8px;">' +
         '<input type="checkbox" class="case-select case-select-membres" data-id="' + codeEchappe + '" onchange="toggleCaseSelection_(\'membres\',\'' + codeEchappe + '\')">' +
-        '<div><div class="item-nom">' + escapeHtml(nomAff) + (m.estAuteur ? ' <span class="vis-pill">Auteur</span>' : '') + (m.estTvOwner ? ' <span class="vis-pill">TV</span>' : '') + (m.exonerePublication ? ' <span class="vis-pill" style="background:#e6f7ee;color:#168653;">Exonéré</span>' : '') + '</div>' +
+        '<div><div class="item-nom">' + escapeHtml(nomAff) + (m.estAuteur ? ' <span class="vis-pill">Auteur</span>' : '') + (m.estTvOwner ? ' <span class="vis-pill">TV</span>' : '') + (m.estLeader ? ' <span class="vis-pill">Leader</span>' : '') + (m.exonerePublication ? ' <span class="vis-pill" style="background:#e6f7ee;color:#168653;">Exonéré</span>' : '') + '</div>' +
         '<div class="item-desc">' + escapeHtml(m.telephone || "") + " · " + escapeHtml(statutAffiche) + '</div></div>' +
         '<div style="display:flex; align-items:center; gap:8px;">' +
         '<span class="role-pill ' + pillClass + '">' + escapeHtml(LIBELLES_ROLES[m.role] || m.role) + "</span>" +
         '<select style="width:auto;margin:0;padding:6px 8px;font-size:11px;" onchange="changerRole(\'' + codeEchappe + '\', this.value)">' + options + '</select>' +
         '</div></div>' +
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
-        actionsCompte + boutonAuteur + boutonExoneration + boutonTv +
+        actionsCompte + boutonAuteur + boutonLeader + boutonExoneration + boutonTv +
         (m.role !== "Admin_Super" ? '<button class="secondary small" onclick="ouvrirDroitsAdmin_(\'' + codeEchappe + '\')">🔐 Droits d\'admin</button>' : '') +
         '<button class="secondary small" onclick="ouvrirEditionBadge_(\'' + codeEchappe + '\',\'' + jsq_(nomAff) + '\')">🪪 Badge</button>' +
         '<button class="danger-outline small" onclick="supprimerMembreClick(\'' + codeEchappe + '\',\'' + jsq_(nomAff) + '\')">Retirer</button>' +
@@ -5834,6 +5846,12 @@ video.video-player-frame{object-fit:contain}
       appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
     }).catch(function (err) { alert("Erreur : " + err.message); });
     });
+  }
+
+  function toggleLeaderClick(code, estLeader) {
+    appelServeur("definirStatutLeader", membreCourant.code, code, estLeader).then(function () {
+      appelServeur("getMembresAdmin", membreCourant.code).then(afficherMembresAdmin);
+    }).catch(function (err) { alert("Erreur : " + err.message); });
   }
 
   function toggleAuteurClick(code, estAuteur) {
@@ -6076,9 +6094,29 @@ video.video-player-frame{object-fit:contain}
         '<div><div class="item-nom">' + escapeHtml(t.Nom) + '</div>' +
         '<div class="item-desc">Suggéré : ' + Number(t.Montant).toLocaleString("fr-FR") + " FCFA · " + escapeHtml(t.Periodicite) + '</div>' + dates + '</div>' +
         '<button class="danger-outline small" onclick="supprimerTypeCotisationAdmin(\'' + t.ID + '\')">Supprimer</button>' +
-        '</div>' + barre +
+        '</div>' + barre + blocEmailCollecte_(t.ID) +
         '</div>';
     }).join("");
+    if (estSuperAdminApp_()) {
+      appelServeur("getEmailsCollectes", membreCourant.code).then(function (r) {
+        const e = (r && r.emails) || {};
+        Object.keys(e).forEach(function (id) { const c = document.getElementById("ecol-" + id); if (c) c.value = e[id]; });
+      }).catch(function () { /* ignoré */ });
+    }
+  }
+  function estSuperAdminApp_() { return !!(membreCourant && permissionsDe_(membreCourant).indexOf("systeme") !== -1); }
+  function blocEmailCollecte_(id) {
+    if (!estSuperAdminApp_()) return "";
+    return '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);">' +
+      '<label class="field-label" style="margin-bottom:4px;">E-mail du responsable de la collecte (reçoit un message à chaque don)</label>' +
+      '<div style="display:flex;gap:8px;"><input type="email" id="ecol-' + id + '" placeholder="responsable@exemple.com" style="margin:0;flex:1;">' +
+      '<button class="small" style="width:auto;margin:0;" onclick="enregistrerEmailCollecte(\'' + id + '\')">Enregistrer</button></div></div>';
+  }
+  function enregistrerEmailCollecte(id) {
+    const c = document.getElementById("ecol-" + id);
+    appelServeur("definirEmailCollecte", membreCourant.code, id, c.value.trim()).then(function () {
+      c.style.outline = "2px solid #2e9d5b"; setTimeout(function () { c.style.outline = ""; }, 1200);
+    }).catch(function (e) { alert(e.message); });
   }
 
   function creerTypeCotisation() {
@@ -9063,20 +9101,21 @@ video.video-player-frame{object-fit:contain}
       var h = lignes.length * (taille + 22), y = 540 - h / 2 + taille / 2;
       lignes.forEach(function (l, i) { g.fillText(l, 540, y + i * (taille + 22)); });
       g.font = "800 44px Arial"; g.fillStyle = "#f4c400"; g.fillText(v.reference, 540, 900);
-      g.font = "600 28px Arial"; g.fillStyle = "rgba(255,255,255,.9)"; g.fillText("JESUS — Réveil Chrétien", 540, 1000);
+      g.font = "600 27px Arial"; g.fillStyle = "rgba(255,255,255,.92)"; g.fillText("Reçois chaque jour la Parole de Dieu sur l'application JESUS", 540, 975);
+      g.font = "800 34px Arial"; g.fillStyle = "#f4c400"; g.fillText("www.jesusonly.site", 540, 1030);
       c.toBlob(ok, "image/png");
     });
   }
   X.partagerVerset = function () {
     X.versetDuJour().then(imageVerset).then(function (blob) {
       var f = new File([blob], "verset-du-jour.png", { type: "image/png" });
-      if (navigator.canShare && navigator.canShare({ files: [f] })) return navigator.share({ files: [f], text: "JESUS — Réveil Chrétien" }).catch(function () {});
+      if (navigator.canShare && navigator.canShare({ files: [f] })) return navigator.share({ files: [f], text: PHRASE_APP + " " + LIEN_APP }).catch(function () {});
       var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "verset-du-jour.png"; document.body.appendChild(a); a.click(); a.remove();
     });
   };
   X.whatsappVerset = function () {
     X.versetDuJour().then(function (v) {
-      window.open("https://wa.me/?text=" + encodeURIComponent("« " + v.texte + " »\n— " + v.reference + "\n\nJESUS — Réveil Chrétien"), "_blank");
+      window.open("https://wa.me/?text=" + encodeURIComponent("« " + v.texte + " »\n— " + v.reference + "\n\n" + PHRASE_APP + "\n" + LIEN_APP), "_blank");
     });
   };
   X.mediter = function () {
@@ -9517,7 +9556,7 @@ video.video-player-frame{object-fit:contain}
   } });
 
   // ---- Notifications push
-  function b64Vers(s) { var p = "=".repeat((4 - s.length % 4) % 4), b = atob((s + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(b, function (c) { return c.charCodeAt(0); }); }
+  function b64Vers(s) { s = String(s || "").replace(/^.*=(?=[A-Za-z0-9_-]{60,})/, "").replace(/[^A-Za-z0-9_\-+\/]/g, "").replace(/-/g, "+").replace(/_/g, "/"); var p = "=".repeat((4 - s.length % 4) % 4), b = atob(s + p); return Uint8Array.from(b, function (c) { return c.charCodeAt(0); }); }
   function pushPossible() { return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window; }
   function abonnementActuel() {
     if (!pushPossible()) return Promise.resolve(null);
@@ -9785,7 +9824,8 @@ video.video-player-frame{object-fit:contain}
 
   // ======================================================================= LOT 4
   // Liens partagés (événement + parrainage), promos, parrainage, dons mensuels, reçus
-  function urlPage() { return location.origin + location.pathname; }
+  var LIEN_APP = "https://www.jesusonly.site/", PHRASE_APP = "Reçois chaque jour la Parole de Dieu sur l'application JESUS. Rejoins-nous :";
+  function urlPage() { return LIEN_APP; }
   // 1) Arrivée par un lien : ?e=<événement>&c=<canal> et/ou ?ref=<code parrain>
   (function lireLien() {
     try {
@@ -9900,7 +9940,7 @@ video.video-player-frame{object-fit:contain}
     else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { alert("Lien copié !"); }, function () { prompt("Copiez ce lien :", url); });
     else prompt("Copiez ce lien :", url);
   };
-  X.whatsappParrain = function () { window.open("https://wa.me/?text=" + encodeURIComponent("Rejoins-moi sur l'application JESUS — Réveil Chrétien : " + urlPage() + "?ref=" + encodeURIComponent(code())), "_blank"); };
+  X.whatsappParrain = function () { window.open("https://wa.me/?text=" + encodeURIComponent("Rejoins-moi sur l'application JESUS : " + urlPage() + "?ref=" + encodeURIComponent(code())), "_blank"); };
   X.enregistrer({ id: "parrainage", label: "🎁 Parrainage", visible: function () { return !!membreCourant; }, rendre: function (z) {
     z.innerHTML = '<div class="card"><div class="loading">Chargement…</div></div>';
     appelServeur("monParrainage", code()).then(function (r) {
@@ -11003,6 +11043,7 @@ video.video-player-frame{object-fit:contain}
 
   // ---------------- Lancement ----------------
   function demarrer() {
+    return; // la page d'ouverture est supprimée : on arrive directement sur l'accueil « Aujourd'hui »
     var enCache = null; try { enCache = JSON.parse(lire(localStorage, CLE_CACHE) || "null"); } catch (e) { enCache = null; }
     var vu = lire(sessionStorage, CLE_VU);
     appelServeur("getAccueilPro").then(function (r) {
@@ -11023,6 +11064,11 @@ video.video-player-frame{object-fit:contain}
 
 <script>
 /* ===== ICÔNES PROFESSIONNELLES : remplace tous les emoji par des icônes vectorielles ===== */
+window.LOGO_SECOURS = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0c2f68"/><stop offset="1" stop-color="#0757a8"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g)"/><path d="M60 14v46M44 30h32" stroke="#ffbf1f" stroke-width="9" stroke-linecap="round"/><text x="60" y="94" font-family="Arial Black,Arial" font-weight="900" font-size="25" fill="#fff" text-anchor="middle">JESUS</text></svg>');
+document.querySelectorAll("img").forEach(function (im) {
+  var casse = function () { return im.complete && im.naturalWidth === 0 && /icon-192\.png|undefined$/.test(im.getAttribute("src") || ""); };
+  if (casse()) im.src = window.LOGO_SECOURS; else im.addEventListener("error", function () { if (im.src !== window.LOGO_SECOURS) im.src = window.LOGO_SECOURS; }, { once: true });
+});
 (function () {
   "use strict";
   var D = {
@@ -11229,19 +11275,33 @@ video.video-player-frame{object-fit:contain}
 <style>
 /* ===== BARRE DU BAS (rubriques défilables au doigt) ===== */
 #ecranDashboard.wrap{padding-bottom:104px}
-.tabs-wrap{position:fixed!important;left:0;right:0;bottom:0;z-index:900;background:#081c40;border-top:1px solid rgba(255,255,255,.09);box-shadow:0 -8px 28px rgba(4,14,36,.35);padding:4px 0 calc(4px + env(safe-area-inset-bottom))}
+.tabs-wrap{position:fixed!important;left:0;right:0;bottom:0;z-index:900;background:linear-gradient(180deg,#ffd23f,#f7a800);border-top:2px solid #fff3c4;box-shadow:0 -8px 28px rgba(120,70,0,.35);padding:4px 0 calc(4px + env(safe-area-inset-bottom))}
 .tabs-wrap .tabs{margin:0!important;padding:2px 8px!important;gap:2px!important;flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;scrollbar-width:none;touch-action:pan-x}
 .tabs-wrap .tabs::-webkit-scrollbar{display:none}
-.tabs-wrap .tab{flex:0 0 auto;min-width:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:7px 8px 6px;background:transparent;border:0;box-shadow:none;border-radius:12px;color:#8fa2c7;font-size:10.5px;font-weight:600;letter-spacing:.1px;scroll-snap-align:start;transition:color .15s}
+.tabs-wrap .tab{flex:0 0 auto;min-width:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:7px 8px 6px;background:transparent;border:0;box-shadow:none;border-radius:12px;color:#4a3300;font-size:11px;font-weight:900;letter-spacing:.1px;scroll-snap-align:start;transition:color .15s,background .15s}
 .tabs-wrap .tab .tab-ic svg{width:23px;height:23px;display:block;stroke-width:1.7}
 .tabs-wrap .tab .tab-lb{white-space:nowrap;line-height:1.1}
-.tabs-wrap .tab.active{background:transparent;color:#ffbf1f;box-shadow:none}
+.tabs-wrap .tab.active{background:#0c2f68;color:#fff;box-shadow:0 5px 14px rgba(12,47,104,.4)}
 .tabs-wrap .tab.active .tab-ic svg{stroke-width:2.1}
-.tabs-wrap .tab .badge-nouveau{top:3px;right:20px;box-shadow:0 0 0 2px #081c40}
-.tabs-wrap .tabs-scroll-hint{display:flex!important;top:0;bottom:0;width:34px;color:#fff;background:linear-gradient(to right,rgba(8,28,64,0),#081c40 65%);font-size:24px}
+.tabs-wrap .tab .badge-nouveau{top:3px;right:20px;background:#d71920;box-shadow:0 0 0 2px #ffd23f}
+.tabs-wrap .tabs-scroll-hint{display:flex!important;top:0;bottom:0;width:34px;color:#0c2f68;background:linear-gradient(to right,rgba(255,210,63,0),#f9b81c 65%);font-size:24px}
 .lecteur-persistant{bottom:84px}
 #lecteurTvZone.lecteur-persistant{bottom:84px}
 #bonjourNom{display:none}
+#carteAccueilPro{display:none!important}
+.topbar-nom-wrap{display:none!important}
+#topbarLogo{width:72px;height:72px;border-radius:20px}
+#topbarLogo img{width:100%;height:100%;object-fit:contain}
+.topbar{min-height:88px}
+@media(max-width:600px){
+  .topbar{gap:7px;padding:8px 10px;min-height:84px}
+  #topbarLogo{width:62px;height:62px;border-radius:17px}
+  .topbar .btn-langue{width:36px;height:36px;border-radius:11px}
+  .topbar .btn-langue svg{width:19px;height:19px}
+  .topbar-actions{gap:4px}
+  .btn-topbar-fort{padding:6px 9px;font-size:11px;border-width:1.5px;box-shadow:0 3px 8px rgba(0,0,0,.22)}
+  #btnInstallerApp{padding:6px 8px!important;font-size:11px!important}
+}
 
 /* ===== PAGE D'ACCUEIL « AUJOURD'HUI » ===== */
 body.acc-actif{background:linear-gradient(180deg,#071a3d,#04122b 70%)!important;color:#fff}
@@ -11266,6 +11326,7 @@ body.acc-actif #sliderAfficheZone{display:none!important}
 .acj-carte.c1{background:linear-gradient(140deg,#ff8a6b,#f2677c)}
 .acj-carte.c2{background:linear-gradient(140deg,#35c28c,#1f9a78)}
 .acj-carte.c3{background:linear-gradient(140deg,#5b8def,#6a5be0)}
+.acj-carte.c4{background:linear-gradient(140deg,#f0a52d,#e8693a)}.acj-carte.c4 .acj-etape{color:#b9560f}
 .acj-etape{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;background:#fff;color:#c23d4f;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase}
 .acj-carte.c2 .acj-etape{color:#14795e}.acj-carte.c3 .acj-etape{color:#4a45c0}
 .acj-ctitre{font-family:Montserrat,Inter,Arial,sans-serif;font-size:21px;font-weight:800;margin:16px 0 4px;line-height:1.2}
@@ -11298,6 +11359,42 @@ body.acc-actif #sliderAfficheZone{display:none!important}
 .acj-modal .r{font-size:13px;font-weight:700;opacity:.9;margin-bottom:12px;letter-spacing:.3px}
 .acj-modal .v{font-family:Georgia,serif;font-size:20px;line-height:1.5;margin:0 0 20px}
 </style>
+<style>
+.acj-h2{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 4px 12px}
+.acj-h2 .acj-h{margin:0}
+.acj-voir{width:auto;margin:0;padding:6px 4px;border:0;background:transparent;color:#ffbf1f;font-weight:800;font-size:13px;display:inline-flex;align-items:center;gap:4px;box-shadow:none}
+.acj-voir svg{width:15px;height:15px}
+.acj-ann{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:2px 4px 8px;margin:0 -4px 20px;scrollbar-width:none}
+.acj-ann::-webkit-scrollbar{display:none}
+.acj-vid{flex:0 0 86%;max-width:440px;scroll-snap-align:center;position:relative;aspect-ratio:16/9;border-radius:20px;overflow:hidden;background:linear-gradient(135deg,#c98a3d,#6d3f10);box-shadow:0 10px 26px rgba(0,0,0,.32);border:0;padding:0;margin:0;color:#fff;text-align:left}
+.acj-vid img.m{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.acj-vid:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.55))}
+.acj-vid .acj-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:64px;height:64px;background:rgba(255,255,255,.3);backdrop-filter:blur(3px)}
+.acj-vid .tt{position:absolute;left:14px;right:14px;bottom:12px;z-index:2;font-weight:800;font-size:14px;line-height:1.25}
+.acj-vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:3;background:#000}
+.acj-comm{position:relative;display:block;width:100%;border:0;margin:0 0 22px;padding:0;border-radius:22px;overflow:hidden;text-align:left;color:#fff;background:#0f2f6b;box-shadow:0 10px 26px rgba(0,0,0,.3)}
+.acj-comm svg.il{display:block;width:100%;height:auto}
+.acj-comm .tx{position:absolute;left:0;right:0;bottom:0;padding:34px 18px 16px;background:linear-gradient(180deg,rgba(7,23,61,0),rgba(7,23,61,.92) 62%)}
+.acj-comm b{display:block;font-size:18px;font-weight:800;font-family:Montserrat,Inter,Arial,sans-serif}
+.acj-comm .s{display:block;font-size:12.5px;color:#cfdaf1;margin-top:3px}
+.acj-lr{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding:2px 4px 10px;margin:0 -4px 14px;scrollbar-width:none}
+.acj-lr::-webkit-scrollbar{display:none}
+.acj-vide{flex:1;border:1px dashed rgba(255,255,255,.25);border-radius:16px;padding:20px 16px;color:#a9b8d8;font-size:13px;text-align:center}
+.acj-lc{flex:0 0 150px;scroll-snap-align:start;border:0;margin:0;padding:0;background:transparent!important;box-shadow:none!important;border-radius:0;color:#fff;text-align:left;display:block}
+.acj-lc .im{position:relative;width:150px;height:100px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#2a4f94,#16316a);display:flex;align-items:center;justify-content:center;color:#ffbf1f;box-shadow:0 6px 16px rgba(0,0,0,.28)}
+.acj-lc .im img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.acj-lc .im svg{width:34px;height:34px;opacity:.9}
+.acj-lc .tt{display:block;font-size:13px;font-weight:700;line-height:1.25;margin-top:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.acj-lc .ss{display:block;font-size:11.5px;color:#a9b8d8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acj-live{position:absolute;left:8px;top:8px;z-index:2;background:#d71920;color:#fff;font-size:10px;font-weight:800;letter-spacing:.5px;padding:3px 8px;border-radius:999px}
+.acj-sem{flex:0 0 220px;scroll-snap-align:start;border:0;margin:0;padding:15px;border-radius:18px;background:linear-gradient(140deg,#1d8f63,#146b4c);color:#fff;text-align:left;display:flex;flex-direction:column;gap:9px;min-height:132px}
+.acj-sem b{font-size:15px;line-height:1.25}
+.acj-sem .bar{height:6px;border-radius:6px;background:rgba(255,255,255,.28);overflow:hidden}
+.acj-sem .bar i{display:block;height:100%;background:#ffd23f}
+.acj-sem .s{font-size:12px;opacity:.92}
+.acj-sem .go{margin-top:auto;display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:#ffd23f}
+.acj-sem .go svg{width:15px;height:15px}
+</style>
 <script>
 /* ===== PAGE D'ACCUEIL « AUJOURD'HUI » (style application mobile) ===== */
 (function () {
@@ -11306,11 +11403,12 @@ body.acc-actif #sliderAfficheZone{display:none!important}
   function jour() { var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
   function faits() { try { var a = JSON.parse(localStorage.getItem("jesus_parcours_" + jour()) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
   function marquer(i) { var a = faits(); if (a.indexOf(i) === -1) a.push(i); try { localStorage.setItem("jesus_parcours_" + jour(), JSON.stringify(a)); } catch (e) { /* ignoré */ } majProgres(); }
+  var NB = 4;
   function majProgres() {
     var f = faits(), z = document.getElementById("acjTraits"), c = document.getElementById("acjCompte");
-    if (z) z.innerHTML = [0, 1, 2].map(function (i) { return '<i class="' + (f.indexOf(i) !== -1 ? "on" : "") + '"></i>'; }).join("");
-    if (c) c.textContent = f.length + " sur 3";
-    [0, 1, 2].forEach(function (i) { var k = document.getElementById("acjC" + i); if (k) k.classList.toggle("fait", f.indexOf(i) !== -1); });
+    if (z) z.innerHTML = [0, 1, 2, 3].map(function (i) { return '<i class="' + (f.indexOf(i) !== -1 ? "on" : "") + '"></i>'; }).join("");
+    if (c) c.textContent = f.length + " sur " + NB;
+    [0, 1, 2, 3].forEach(function (i) { var k = document.getElementById("acjC" + i); if (k) k.classList.toggle("fait", f.indexOf(i) !== -1); });
   }
   function salut() {
     var h = new Date().getHours(), s = h < 5 ? "Bonsoir" : h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir";
@@ -11318,32 +11416,31 @@ body.acc-actif #sliderAfficheZone{display:none!important}
     return s + (m && m.prenom ? ", " + m.prenom : "");
   }
   function dateTexte() { try { var t = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }); return t.charAt(0).toUpperCase() + t.slice(1); } catch (e) { return ""; } }
-  var COULEURS = ["#e0556b", "#1f9a78", "#5b6ee1", "#d68a1e", "#0f8fb5", "#8b5cf6", "#c2410c", "#0f766e", "#b0121a", "#2563eb", "#9333ea", "#0e7490"];
-  var ICONES = window.ICO;
-
+  function ic(n) { return window.ICO.svg(n); }
   function verset() {
     var X = window.XTR;
     if (X && X.versetDuJour) return X.versetDuJour();
     return appelServeur("lireVersetDuJour").then(function (r) { return r && r.verset ? r.verset : null; });
   }
-  function ouvrirVerset() {
-    var o = document.createElement("div"); o.className = "acj-voile";
-    o.innerHTML = '<div class="acj-modal"><div class="r" id="acjMR">Verset du jour</div><p class="v" id="acjMV">…</p><button type="button" class="acj-btn" id="acjMF" style="margin:0;">Amen</button></div>';
+  function voile(html) {
+    var o = document.createElement("div"); o.className = "acj-voile"; o.innerHTML = html;
     document.body.appendChild(o);
-    function fermer() { o.remove(); }
-    o.onclick = function (e) { if (e.target === o) fermer(); };
-    o.querySelector("#acjMF").onclick = function () { marquer(0); fermer(); };
+    o.onclick = function (e) { if (e.target === o) o.remove(); };
+    return o;
+  }
+  function ouvrirVerset() {
+    var o = voile('<div class="acj-modal"><div class="r" id="acjMR">Verset du jour</div><p class="v" id="acjMV">…</p><button type="button" class="acj-btn" id="acjMF" style="margin:0;">Amen</button></div>');
+    o.querySelector("#acjMF").onclick = function () { marquer(1); o.remove(); };
     verset().then(function (v) { if (!v) return; o.querySelector("#acjMR").textContent = v.reference; o.querySelector("#acjMV").textContent = "« " + v.texte + " »"; });
   }
-  function alle(id) { if (typeof afficherOnglet === "function") afficherOnglet(id); }
-  function onglets() {
-    return Array.prototype.map.call(document.querySelectorAll("#tabsPrincipaux .tab"), function (t) { return { id: t.getAttribute("data-tab"), nom: (t.querySelector(".tab-lb") || t).textContent.trim() }; }).filter(function (o) { return o.id !== "accueil" && o.id !== "admin"; });
+  function choixLouange() {
+    var o = voile('<div class="acj-modal" style="background:linear-gradient(140deg,#e8a33d,#e0556b)"><div class="r">Louange et adoration</div><p class="v" style="font-size:17px;font-family:inherit;margin-bottom:16px;">Que voulez-vous écouter pour adorer et louer Dieu ?</p>' +
+      '<button type="button" class="acj-btn" data-c="audios" style="margin:0 0 10px;">' + ic("headphones") + ' Une chanson</button><button type="button" class="acj-btn" data-c="videos" style="margin:0;background:#fff;">' + ic("clapper") + " Une playlist</button></div>");
+    Array.prototype.forEach.call(o.querySelectorAll("[data-c]"), function (b) { b.onclick = function () { marquer(0); o.remove(); alle(b.getAttribute("data-c")); }; });
   }
+  function alle(id) { if (typeof afficherOnglet === "function") afficherOnglet(id); }
+  function peutAller(id) { return !!document.querySelector('#tabsPrincipaux .tab[data-tab="' + id + '"]'); }
 
-  (function () {
-    var d = document.getElementById("ecranDashboard"); if (!d || !window.MutationObserver) return;
-    new MutationObserver(function () { if (d.style.display === "none") document.body.classList.remove("acc-actif"); }).observe(d, { attributes: true, attributeFilter: ["style"] });
-  })();
   (function () {
     var d = document.getElementById("ecranDashboard"); if (!d || !window.MutationObserver) return;
     new MutationObserver(function () { if (d.style.display === "none") document.body.classList.remove("acc-actif"); }).observe(d, { attributes: true, attributeFilter: ["style"] });
@@ -11354,42 +11451,346 @@ body.acc-actif #sliderAfficheZone{display:none!important}
     if (b && b.style.display !== "none") b.click();
     else if (typeof quitterVisiteurEtSeConnecter === "function") quitterVisiteurEtSeConnecter();
   };
-  A.go = function (id) { alle(id); };
+  A.go = function (id) { if (peutAller(id)) alle(id); else if (typeof quitterVisiteurEtSeConnecter === "function") quitterVisiteurEtSeConnecter(); };
   A.etape = function (i) {
-    if (i === 0) { ouvrirVerset(); return; }
+    if (i === 0) { choixLouange(); return; }
+    if (i === 1) { ouvrirVerset(); return; }
     marquer(i);
-    alle(i === 1 ? "prieres" : "audios");
+    alle(i === 2 ? "audios" : "prieres");
   };
-  A.aide = function () { if (typeof afficherEcranContact === "function") afficherEcranContact(); };
+  A.jouer = function (btn) {
+    var url = btn.getAttribute("data-u"), emb = window.XTR && XTR.integrer ? XTR.integrer(url) : "";
+    if (!emb) { window.open(url, "_blank"); return; }
+    var sep = emb.indexOf("?") === -1 ? "?" : "&";
+    btn.innerHTML = '<iframe src="' + esc(emb + sep + "autoplay=1&rel=0") + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+    btn.onclick = null;
+  };
+
+  // Illustration : une communauté chrétienne qui se retrouve en ligne
+  var ILLUSTRATION = '<svg class="il" viewBox="0 0 400 210" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<defs><linearGradient id="gf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#143c86"/><stop offset="1" stop-color="#2a6fd6"/></linearGradient><radialGradient id="gl" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd23f" stop-opacity=".55"/><stop offset="1" stop-color="#ffd23f" stop-opacity="0"/></radialGradient></defs>' +
+    '<rect width="400" height="210" fill="url(#gf)"/><circle cx="200" cy="92" r="92" fill="url(#gl)"/>' +
+    '<g fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.5" stroke-dasharray="4 5"><path d="M62 70 200 98"/><path d="M338 66 200 98"/><path d="M96 158 200 98"/><path d="M308 160 200 98"/><path d="M200 30 200 98"/></g>' +
+    '<g><rect x="168" y="54" width="64" height="88" rx="12" fill="#0b2559" stroke="#fff" stroke-opacity=".7" stroke-width="2"/><rect x="175" y="64" width="50" height="62" rx="6" fill="#16398a"/><path d="M200 70v34M188 82h24" stroke="#ffd23f" stroke-width="5" stroke-linecap="round"/><circle cx="200" cy="134" r="3.5" fill="#fff" fill-opacity=".7"/></g>' +
+    // avatars
+    '<g><circle cx="62" cy="70" r="30" fill="#fff" fill-opacity=".16"/><circle cx="62" cy="62" r="11" fill="#8d5524"/><path d="M42 94c2-16 12-22 20-22s18 6 20 22z" fill="#e0556b"/></g>' +
+    '<g><circle cx="338" cy="66" r="30" fill="#fff" fill-opacity=".16"/><circle cx="338" cy="58" r="11" fill="#f1c27d"/><path d="M318 90c2-16 12-22 20-22s18 6 20 22z" fill="#1f9a78"/></g>' +
+    '<g><circle cx="96" cy="160" r="30" fill="#fff" fill-opacity=".16"/><circle cx="96" cy="152" r="11" fill="#c68642"/><path d="M76 184c2-16 12-22 20-22s18 6 20 22z" fill="#ffbf1f"/></g>' +
+    '<g><circle cx="308" cy="162" r="30" fill="#fff" fill-opacity=".16"/><circle cx="308" cy="154" r="11" fill="#5c3a21"/><path d="M288 186c2-16 12-22 20-22s18 6 20 22z" fill="#8b5cf6"/></g>' +
+    '<g><circle cx="200" cy="184" r="22" fill="#fff" fill-opacity=".16"/><circle cx="200" cy="178" r="8.5" fill="#e0ac69"/><path d="M185 200c1.5-12 9-17 15-17s13.500 5 15 17z" fill="#5b8def"/></g>' +
+    // bulles
+    '<g><rect x="86" y="30" width="46" height="26" rx="13" fill="#fff"/><path d="M99 54l-5 9 12-9z" fill="#fff"/><path d="M109 38.500c-1-2.400-4.500-2.200-4.500.800 0 2.800 4.500 5.700 4.500 5.700s4.500-2.900 4.500-5.700c0-3-3.500-3.200-4.500-.8z" fill="#e0556b"/></g>' +
+    '<g><rect x="268" y="28" width="58" height="26" rx="13" fill="#ffd23f"/><path d="M308 52l7 9-15-9z" fill="#ffd23f"/><text x="297" y="46" font-family="Arial" font-size="13" font-weight="800" fill="#0c2f68" text-anchor="middle">Amen</text></g>' +
+    '<g><rect x="122" y="122" width="40" height="24" rx="12" fill="#fff"/><path d="M130 144l-4 8 11-8z" fill="#fff"/><circle cx="133" cy="134" r="2.200" fill="#143c86"/><circle cx="142" cy="134" r="2.200" fill="#143c86"/><circle cx="151" cy="134" r="2.200" fill="#143c86"/></g>' +
+    '<g><rect x="240" y="124" width="52" height="24" rx="12" fill="#fff"/><path d="M276 146l6 8-13-8z" fill="#fff"/><path d="M266 141.500l-8-8.500c-2.400-2.600-.4-6 2.600-6 1.700 0 2.900 1 3.400 2 .5-1 1.700-2 3.400-2 3 0 5 3.400 2.600 6z" fill="#1f9a78"/></g>' +
+    '</svg>';
+
+  function carte(x, cible, icone, extra) {
+    return '<button type="button" class="acj-lc" onclick="ACCJ.go(\'' + cible + '\')"><span class="im">' + (x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy">' : ic(icone)) + (extra || "") + '</span><span class="tt">' + esc(x.t) + "</span>" + (x.s ? '<span class="ss">' + esc(x.s) + "</span>" : "") + "</button>";
+  }
+  function rangee(id, titre, cible) {
+    return '<section id="' + id + '"><div class="acj-h2"><div class="acj-h">' + esc(titre) + '</div><button type="button" class="acj-voir" onclick="ACCJ.go(\'' + cible + '\')">Tout voir ' + ic("arrow") + '</button></div><div class="acj-lr" id="' + id + 'L"></div></section>';
+  }
+  function remplir(id, html) {
+    var l = document.getElementById(id + "L");
+    if (!l) return;
+    l.innerHTML = html || '<div class="acj-vide">Rien à afficher pour le moment.</div>';
+  }
+  function couv(b64) { return b64 ? "data:image/jpeg;base64," + b64 : ""; }
+  function dateCourte(d) { return d ? String(d).slice(0, 10).split("-").reverse().join("/") : ""; }
+
+  function charger() {
+    appelServeur("getAnnoncesVideo").then(function (r) {
+      var l = (r && r.annonces) || [], z = document.getElementById("acjAnn"); if (!z) return;
+      if (!l.length) { z.innerHTML = '<div class="acj-vide" style="flex:1">Les annonces vidéo apparaîtront ici.</div>'; return; }
+      z.innerHTML = l.map(function (a) {
+        var m = String(a.lien).match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|live\/|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,20})/);
+        return '<button type="button" class="acj-vid" data-u="' + esc(a.lien) + '" onclick="ACCJ.jouer(this)" aria-label="Lire l\'annonce">' + (m ? '<img class="m" src="https://i.ytimg.com/vi/' + m[1] + '/hqdefault.jpg" alt="">' : "") + '<span class="acj-play">' + ic("play") + "</span>" + (a.titre ? '<span class="tt">' + esc(a.titre) + "</span>" : "") + "</button>";
+      }).join("");
+    }, function () { var z = document.getElementById("acjAnn"); if (z) z.innerHTML = '<div class="acj-vide" style="flex:1">Les annonces vidéo apparaîtront ici.</div>'; });
+    appelServeur("getEvenements").then(function (res) {
+      var l = Array.isArray(res) ? res : (res && res.evenements) || [];
+      remplir("acjEv", l.slice(0, 8).map(function (e) { return carte({ img: e.image, t: e.titre, s: [dateCourte(e.dateDebut), e.lieu].filter(Boolean).join(" · ") }, "evenements", "ticket"); }).join(""));
+    }, function () { remplir("acjEv", ""); });
+    appelServeur("getEnregistrementsPublic").then(function (l) {
+      l = Array.isArray(l) ? l : [];
+      remplir("acjAu", l.slice(0, 8).map(function (a) { return carte({ img: couv(a.CoverBase64), t: a.Titre, s: a.Auteur }, "audios", "headphones"); }).join(""));
+    }, function () { remplir("acjAu", ""); });
+    appelServeur("getVideos").then(function (l) {
+      l = Array.isArray(l) ? l : [];
+      remplir("acjVi", l.slice(0, 8).map(function (v) { return carte({ img: couv(v.CoverBase64), t: v.Titre, s: v.Auteur }, "videos", "clapper"); }).join(""));
+    }, function () { remplir("acjVi", ""); });
+    appelServeur("getDocuments").then(function (l) {
+      l = Array.isArray(l) ? l : [];
+      remplir("acjDo", l.slice(0, 8).map(function (d) { return carte({ img: couv(d.CoverBase64), t: d.Titre, s: d.Auteur }, "documents", "file"); }).join(""));
+    }, function () { remplir("acjDo", ""); });
+    appelServeur("getTvChaines").then(function (chs) {
+      chs = (Array.isArray(chs) ? chs : []).slice(0, 8);
+      return Promise.all(chs.map(function (c) {
+        return appelServeur("getTvEnCours", c.ID).then(function (r) { return { c: c, r: r }; }, function () { return { c: c, r: null }; });
+      }));
+    }).then(function (l) {
+      var chauds = l.filter(function (x) { return x.r && x.r.succes && (x.r.mode === "live" || x.r.titre); });
+      chauds.sort(function (a, b) { return (b.r.mode === "live") - (a.r.mode === "live"); });
+      remplir("acjTv", chauds.slice(0, 8).map(function (x) {
+        var live = x.r.mode === "live";
+        return carte({ img: x.c.LogoBase64 ? couv(x.c.LogoBase64) : "", t: x.r.titre || x.c.Nom, s: x.c.Nom }, "tv", "tv", live ? '<span class="acj-live">EN DIRECT</span>' : "");
+      }).join(""));
+    }).catch(function () { remplir("acjTv", ""); });
+    appelServeur("getTypesCotisation").then(function (l) {
+      l = (Array.isArray(l) ? l : []).filter(function (t) { return (t.Statut || "Active") === "Active"; }).slice(0, 8);
+      var z = document.getElementById("acjSemL"); if (!z) return;
+      if (!l.length) { z.innerHTML = '<div class="acj-vide">Rien à afficher pour le moment.</div>'; return; }
+      z.innerHTML = l.map(function (t) {
+        var obj = Number(t.MontantObjectif) > 0;
+        return '<button type="button" class="acj-sem" onclick="ACCJ.go(\'cotisation\')"><b>' + esc(t.Nom) + "</b>" + (obj ? '<span class="bar"><i style="width:' + Math.min(100, Number(t.Pourcentage) || 0) + '%"></i></span><span class="s">' + (Number(t.Pourcentage) || 0) + "% de l'objectif atteint</span>" : '<span class="s">Suggéré : ' + Number(t.Montant).toLocaleString("fr-FR") + " F</span>") + '<span class="go">Semer ' + ic("arrow") + "</span></button>";
+      }).join("");
+    }, function () { var z = document.getElementById("acjSemL"); if (z) z.innerHTML = '<div class="acj-vide">Rien à afficher pour le moment.</div>'; });
+  }
+
   A.rendre = function () {
     var z = document.getElementById("section-accueil"); if (!z) return;
-    var ic = function (n) { return ICONES.svg(n); };
     var connecte = typeof membreCourant !== "undefined" && !!membreCourant;
-    var rubs = onglets().map(function (o, i) {
-      return '<button type="button" class="acj-rub" onclick="ACCJ.go(\'' + o.id + '\')"><span class="t" style="background:' + COULEURS[i % COULEURS.length] + '">' + ICONES.tab(o.id) + '</span><span class="n">' + esc(o.nom) + "</span></button>";
-    }).join("");
+    var etape = function (i, cls, icone, lib, titre, texte, btn) {
+      return '<div class="acj-carte ' + cls + '" id="acjC' + i + '"><span class="acj-fait">' + ic("check") + '</span><span class="acj-etape">' + ic(icone) + " " + lib + '</span><div class="acj-ctitre">' + titre + "</div>" + texte + '<button type="button" class="acj-btn" onclick="ACCJ.etape(' + i + ')">' + btn + "</button></div>";
+    };
     z.innerHTML =
       '<div class="acj">' +
         '<div class="acj-tete"><div><h2 class="acj-salut">' + esc(salut()) + '</h2><div class="acj-date">' + ic("calendar") + "<span>" + esc(dateTexte()) + '</span></div></div>' +
         '<button type="button" class="acj-profil" aria-label="Mon compte" onclick="ACCJ.profil()">' + ic("user") + "</button></div>" +
-        '<div class="acj-prog"><b>Votre parcours du jour</b><span class="acj-traits" id="acjTraits"></span><em id="acjCompte">0 sur 3</em></div>' +
+        '<div class="acj-prog"><b>Votre parcours du jour</b><span class="acj-traits" id="acjTraits"></span><em id="acjCompte">0 sur 4</em></div>' +
         '<div class="acj-sous">' + ic("users") + "<span>Une communauté qui prie et grandit ensemble</span></div>" +
         '<div class="acj-rail">' +
-          '<div class="acj-carte c1" id="acjC0"><span class="acj-fait">' + ic("check") + '</span><span class="acj-etape">' + ic("book") + ' Étape 1 · 35 sec</span><div class="acj-ctitre">Verset du jour</div><p class="acj-cref" id="acjRef"> </p><p class="acj-ctexte" id="acjTxt"></p><button type="button" class="acj-btn" onclick="ACCJ.etape(0)">Voir maintenant</button></div>' +
-          '<div class="acj-carte c2" id="acjC1"><span class="acj-fait">' + ic("check") + '</span><span class="acj-etape">' + ic("radio") + ' Étape 2 · Prière</span><div class="acj-ctitre">Séance de prière en direct</div><p class="acj-ctexte">Rejoignez les frères et sœurs pour un temps de prière et d\'intercession.</p><button type="button" class="acj-btn" onclick="ACCJ.etape(1)">Rejoindre</button></div>' +
-          '<div class="acj-carte c3" id="acjC2"><span class="acj-fait">' + ic("check") + '</span><span class="acj-etape">' + ic("headphones") + ' Étape 3 · Écoute</span><div class="acj-ctitre">Une parole à écouter</div><p class="acj-ctexte">Enseignements et prédications audio pour nourrir votre foi aujourd\'hui.</p><button type="button" class="acj-btn" onclick="ACCJ.etape(2)">Écouter</button></div>' +
+          etape(0, "c4", "music", "Étape 1 · Louange", "Adorer et louer Dieu", '<p class="acj-ctexte">Écoutez une chanson ou une playlist pour commencer la journée dans l\'adoration.</p>', "Écouter") +
+          etape(1, "c1", "book", "Étape 2 · 35 sec", "Verset du jour", '<p class="acj-cref" id="acjRef"> </p><p class="acj-ctexte" id="acjTxt"></p>', "Voir maintenant") +
+          etape(2, "c3", "headphones", "Étape 3 · Écoute", "Une parole à écouter", '<p class="acj-ctexte">Enseignements et prédications audio pour nourrir votre foi aujourd\'hui.</p>', "Écouter") +
+          etape(3, "c2", "radio", "Étape 4 · Prière", "Séance de prière en direct", '<p class="acj-ctexte">Rejoignez les frères et sœurs pour un temps de prière et d\'intercession.</p>', "Rejoindre") +
         "</div>" +
-        '<div class="acj-h">Pour commencer</div>' +
-        '<button type="button" class="acj-demarrer" onclick="ACCJ.aide()"><span class="acj-play">' + ic("play") + '</span><span><b>Découvrir l\'application</b><span class="s">Centre d\'aide · Guide de prise en main</span></span></button>' +
-        '<div class="acj-h">Toutes les rubriques</div>' +
-        '<div class="acj-rubs">' + rubs + "</div>" +
-        '<button type="button" class="acj-bandeau" onclick="ACCJ.go(\'' + (connecte ? "groupes" : "communaute") + '\')"><span><b>' + (connecte ? "Groupes de prière" : "Communauté") + '</b><span class="s">' + (connecte ? "Rejoignez les groupes WhatsApp de l\'église" : "Découvrez les témoignages, les actualités et la vie de la communauté") + '</span></span><span class="g">' + ic("arrow") + "</span></button>" +
+        '<section id="acjAnnS"><div class="acj-h2"><div class="acj-h">Annonces</div></div><div class="acj-ann" id="acjAnn"></div></section>' +
+        '<button type="button" class="acj-comm" onclick="ACCJ.go(\'' + (connecte ? "communaute" : "communaute") + '\')">' + ILLUSTRATION + '<span class="tx"><b>Communauté</b><span class="s">Priez, partagez et grandissez avec des frères et sœurs du monde entier</span></span></button>' +
+        rangee("acjEv", "Prochains événements", "evenements") +
+        rangee("acjAu", "À écouter", "audios") +
+        rangee("acjVi", "À regarder", "videos") +
+        rangee("acjDo", "À lire", "documents") +
+        rangee("acjTv", "Programmes chauds à la télé", "tv") +
+        '<section id="acjSem"><div class="acj-h2"><div class="acj-h">Opportunités de semence</div><button type="button" class="acj-voir" onclick="ACCJ.go(\'cotisation\')">Tout voir ' + ic("arrow") + '</button></div><div class="acj-lr" id="acjSemL"></div></section>' +
       "</div>";
     majProgres();
     verset().then(function (v) {
       var r = document.getElementById("acjRef"), t = document.getElementById("acjTxt");
       if (v && r && t) { r.textContent = v.reference; t.textContent = "« " + v.texte + " »"; }
     });
+    charger();
+  };
+
+  // ---- console d'administration : annonces vidéo
+  A.rendreAdmin = function (zone) {
+    if (!zone) return;
+    var code = membreCourant.code;
+    zone.innerHTML = '<div class="card"><div class="evt-titre">Annonces vidéo de la page d\'accueil</div><p class="item-desc">Courtes vidéos d\'annonces (liens YouTube, Facebook ou Vimeo). Elles défilent sur la page d\'accueil et se lancent quand on appuie sur Play. 12 au maximum.</p>' +
+      '<label class="field-label">Titre (facultatif)</label><input id="avTitre" maxlength="80" placeholder="Ex : Grande conférence ce samedi">' +
+      '<label class="field-label">Lien de la vidéo</label><input id="avLien" maxlength="300" placeholder="https://www.youtube.com/watch?v=…">' +
+      '<div id="avErr" class="error" style="display:none;"></div><button id="avAjout">Ajouter l\'annonce</button></div><div class="card" id="avListe"><div class="loading">Chargement…</div></div>';
+    function lister() {
+      appelServeur("getAnnoncesVideo").then(function (r) {
+        var l = (r && r.annonces) || [], z2 = document.getElementById("avListe"); if (!z2) return;
+        z2.innerHTML = l.length ? l.map(function (a) {
+          return '<div class="item-block"><div class="item-row" style="border:none;padding:0;"><div style="min-width:0;"><div class="item-nom">' + esc(a.titre || "Sans titre") + '</div><div class="item-desc" style="word-break:break-all;">' + esc(a.lien) + '</div></div><button class="danger-outline small" data-d="' + esc(a.id) + '">Supprimer</button></div></div>';
+        }).join("") : '<p class="empty-state">Aucune annonce vidéo.</p>';
+        Array.prototype.forEach.call(z2.querySelectorAll("[data-d]"), function (b) { b.onclick = function () { if (!confirm("Supprimer cette annonce ?")) return; appelServeur("supprimerAnnonceVideo", code, b.getAttribute("data-d")).then(lister, function (e) { alert(e.message); }); }; });
+      });
+    }
+    document.getElementById("avAjout").onclick = function () {
+      var e = document.getElementById("avErr"); e.style.display = "none";
+      appelServeur("ajouterAnnonceVideo", code, document.getElementById("avTitre").value, document.getElementById("avLien").value.trim()).then(function () {
+        document.getElementById("avTitre").value = ""; document.getElementById("avLien").value = ""; lister();
+      }, function (er) { e.textContent = er.message; e.style.display = "block"; });
+    };
+    lister();
+  };
+})();
+</script>
+
+
+<script>
+/* ===== LEADERS + DEMANDES DE CODES DE VALIDATION ===== */
+(function () {
+  "use strict";
+  function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function mc() { return typeof membreCourant !== "undefined" ? membreCourant : null; }
+  function ic(n) { return window.ICO ? window.ICO.svg(n) : ""; }
+  var L = window.LEADER = {};
+
+  // ---- fenêtre
+  function fenetre(titre, corps, largeur) {
+    var o = document.createElement("div");
+    o.style.cssText = "position:fixed;inset:0;z-index:10060;background:rgba(10,20,40,.62);display:flex;align-items:center;justify-content:center;padding:12px;";
+    o.innerHTML = '<div style="background:#fff;color:#1b2430;border-radius:18px;width:100%;max-width:' + (largeur || 460) + 'px;max-height:92vh;overflow-y:auto;padding:18px 16px 16px;box-shadow:0 20px 60px rgba(0,0,0,.4);">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><div style="flex:1;font-weight:800;font-size:17px;color:#0c2f68;">' + titre + '</div><button type="button" class="secondary small" data-x style="width:auto;margin:0;">Fermer</button></div><div class="fz-corps">' + corps + "</div></div>";
+    document.body.appendChild(o);
+    o.querySelector("[data-x]").onclick = function () { o.remove(); };
+    o.addEventListener("click", function (e) { if (e.target === o) o.remove(); });
+    return o;
+  }
+
+  // ---- photo compressée (≤ ~400 000 caractères)
+  function compresser(fichier) {
+    return new Promise(function (ok, ko) {
+      var r = new FileReader();
+      r.onerror = function () { ko(new Error("Image illisible.")); };
+      r.onload = function () {
+        var im = new Image();
+        im.onerror = function () { ko(new Error("Image illisible : choisissez une photo (JPEG ou PNG).")); };
+        im.onload = function () {
+          var max = 1500, q = 0.78, d = "";
+          for (var essai = 0; essai < 7; essai++) {
+            var k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement("canvas");
+            c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+            var g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height);
+            d = c.toDataURL("image/jpeg", q);
+            if (d.length <= 420000) return ok(d);
+            q -= 0.1; max = Math.round(max * 0.82);
+          }
+          ko(new Error("Image trop lourde."));
+        };
+        im.src = r.result;
+      };
+      r.readAsDataURL(fichier);
+    });
+  }
+  function champPhoto(id, libelle) {
+    return '<label class="field-label">' + libelle + ' *</label><label class="file-btn-label" style="display:inline-flex;align-items:center;gap:6px;margin:0 0 4px;">' + ic("camera") + ' Choisir / prendre une photo<input type="file" accept="image/*" id="' + id + '" style="display:none;"></label>' +
+      '<div id="' + id + 'Ap" class="item-desc" style="margin-bottom:10px;">Aucune photo choisie.</div>';
+  }
+  function lierPhoto(o, id, etat) {
+    o.querySelector("#" + id).onchange = function () {
+      var f = this.files[0], ap = o.querySelector("#" + id + "Ap"); if (!f) return;
+      ap.textContent = "Préparation…";
+      compresser(f).then(function (d) { etat[id] = d; ap.innerHTML = '<img src="' + d + '" alt="" style="max-width:150px;max-height:110px;border-radius:8px;border:1px solid #dfe7f3;">'; }, function (e) { etat[id] = ""; ap.textContent = e.message; });
+    };
+  }
+
+  // ---- demande d'un code par un visiteur
+  L.demanderCode = function () {
+    var etat = {};
+    var o = fenetre(ic("key") + " Demander un code de validation",
+      '<p class="item-desc">Pour créer un compte, il faut un code de validation. Envoyez une pièce d\'identité valide et votre carte de baptême : si votre demande est acceptée, le code vous sera envoyé par e-mail. Vous serez aussi informé par e-mail en cas de refus.</p>' +
+      '<label class="field-label">Nom complet *</label><input id="dcNom" maxlength="120" placeholder="Nom et prénoms">' +
+      '<label class="field-label">Adresse e-mail *</label><input id="dcEmail" type="email" placeholder="vous@exemple.com">' +
+      champPhoto("dcPiece", "Pièce d'identité valide") + champPhoto("dcBapteme", "Carte de baptême") +
+      '<div class="item-desc" style="margin-bottom:8px;">' + ic("lock") + " Vos pièces ne sont vues que par l'administration et sont effacées dès que la demande est traitée.</div>" +
+      '<div id="dcErr" class="error" style="display:none;"></div><button id="dcEnvoi">Envoyer ma demande</button>');
+    lierPhoto(o, "dcPiece", etat); lierPhoto(o, "dcBapteme", etat);
+    o.querySelector("#dcEnvoi").onclick = function () {
+      var b = this, err = o.querySelector("#dcErr"); err.style.display = "none";
+      var d = { nom: o.querySelector("#dcNom").value.trim(), email: o.querySelector("#dcEmail").value.trim(), piece: etat.dcPiece, bapteme: etat.dcBapteme };
+      if (!d.nom || !d.email || !d.piece || !d.bapteme) { err.textContent = "Remplissez tous les champs et joignez les deux photos."; err.style.display = "block"; return; }
+      b.disabled = true; b.textContent = "Envoi…";
+      appelServeur("demanderCodeValidation", d).then(function () {
+        o.querySelector(".fz-corps").innerHTML = '<div style="text-align:center;padding:18px 6px;"><div style="font-size:44px;color:#168653;">' + ic("check") + '</div><div style="font-weight:800;font-size:17px;color:#0c2f68;margin:8px 0;">Demande envoyée</div><p class="item-desc">Vous recevrez la réponse par e-mail. Pensez à vérifier vos courriers indésirables.</p><button type="button" onclick="this.closest(\'div[style*=fixed]\').remove()">Fermer</button></div>';
+      }, function (e) { b.disabled = false; b.textContent = "Envoyer ma demande"; err.textContent = e.message; err.style.display = "block"; });
+    };
+  };
+
+  // ---- demande du statut Leader (membre)
+  L.demanderLeader = function () {
+    var etat = {};
+    var o = fenetre(ic("shield") + " Demander le statut Leader",
+      '<p class="item-desc">Un Leader peut générer des codes de validation pour inviter de nouvelles personnes. Fournissez des pièces qui prouvent votre identité et votre responsabilité dans une communauté chrétienne.</p>' +
+      '<label class="field-label">Nom de votre communauté / église *</label><input id="dlEglise" maxlength="120">' +
+      '<label class="field-label">Votre fonction (pasteur, responsable…) *</label><input id="dlFonction" maxlength="120">' +
+      champPhoto("dlPiece", "Pièce d'identité valide") + champPhoto("dlPreuve", "Preuve de votre responsabilité (attestation, lettre de l'église, carte de ministère…)") +
+      '<div class="item-desc" style="margin-bottom:8px;">' + ic("lock") + " Vos pièces ne sont vues que par l'administration et sont effacées dès la décision.</div>" +
+      '<div id="dlErr" class="error" style="display:none;"></div><button id="dlEnvoi">Envoyer ma demande</button>');
+    lierPhoto(o, "dlPiece", etat); lierPhoto(o, "dlPreuve", etat);
+    o.querySelector("#dlEnvoi").onclick = function () {
+      var b = this, err = o.querySelector("#dlErr"); err.style.display = "none";
+      var d = { eglise: o.querySelector("#dlEglise").value.trim(), fonction: o.querySelector("#dlFonction").value.trim(), piece: etat.dlPiece, preuve: etat.dlPreuve };
+      if (!d.eglise || !d.fonction || !d.piece || !d.preuve) { err.textContent = "Remplissez tous les champs et joignez les deux photos."; err.style.display = "block"; return; }
+      b.disabled = true; b.textContent = "Envoi…";
+      appelServeur("demanderStatutLeader", mc().code, d).then(function () { o.remove(); L.majCarte(); alert("Demande envoyée. Vous serez prévenu de la décision."); }, function (e) { b.disabled = false; b.textContent = "Envoyer ma demande"; err.textContent = e.message; err.style.display = "block"; });
+    };
+  };
+
+  // ---- espace Leader : mes codes
+  L.ouvrirCodes = function () {
+    var o = fenetre(ic("key") + " Mes codes de validation", '<p class="item-desc">Remettez un code à chaque personne que vous invitez : il ne sert qu\'une seule fois pour créer un compte. Vous pouvez garder jusqu\'à 10 codes non utilisés.</p><button id="lcGen">Générer un code</button><div id="lcListe" class="loading">Chargement…</div>');
+    function charger() {
+      appelServeur("getMesCodesLeader", mc().code).then(function (r) {
+        var l = r.codes || [], z = o.querySelector("#lcListe"); z.className = "";
+        z.innerHTML = l.length ? l.map(function (x) {
+          var dispo = String(x.statut).toUpperCase() === "DISPONIBLE";
+          return '<div style="display:flex;align-items:center;gap:8px;border:1px solid #e3e9f1;border-radius:12px;padding:9px 11px;margin-top:8px;"><div style="flex:1;"><div style="font-weight:800;letter-spacing:1.5px;color:#0c2f68;">' + esc(x.code) + '</div><div class="item-desc">' + esc(x.date) + " · " + esc(x.statut) + (x.utilisePar ? " · " + esc(x.utilisePar) : "") + "</div></div>" +
+            (dispo ? '<button class="secondary small" style="width:auto;margin:0;" data-cp="' + esc(x.code) + '">Partager</button>' : "") + "</div>";
+        }).join("") : '<p class="empty-state">Aucun code pour le moment.</p>';
+        Array.prototype.forEach.call(z.querySelectorAll("[data-cp]"), function (b) {
+          b.onclick = function () {
+            var txt = "Voici ton code de validation pour créer ton compte sur l'application JESUS : " + b.getAttribute("data-cp") + "\nOuvre " + "https://www.jesusonly.site/" + " puis « Créer un compte ».";
+            if (navigator.share) navigator.share({ text: txt }).catch(function () {});
+            else if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { alert("Message copié."); });
+            else window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank");
+          };
+        });
+      }, function (e) { o.querySelector("#lcListe").textContent = e.message; });
+    }
+    o.querySelector("#lcGen").onclick = function () {
+      var b = this; b.disabled = true;
+      appelServeur("genererCodesInscription", mc().code, 1, "Leader " + (mc().prenom || "")).then(function () { b.disabled = false; charger(); }, function (e) { b.disabled = false; alert(e.message); });
+    };
+    charger();
+  };
+
+  // ---- carte dans « Mon compte »
+  L.carteCompte = function () { setTimeout(L.majCarte, 0); return '<div id="carteLeader"></div>'; };
+  L.majCarte = function () {
+    var z = document.getElementById("carteLeader"), m = mc(); if (!z || !m) return;
+    var carte = function (titre, txt, btn) { return '<div class="card" style="margin-top:12px;"><p class="field-label">' + ic("shield") + " " + titre + '</p><p class="item-desc">' + txt + "</p>" + btn + "</div>"; };
+    if (m.estLeader) { z.innerHTML = carte("Leader", "Vous pouvez générer des codes de validation pour inviter de nouvelles personnes.", '<button class="secondary" onclick="LEADER.ouvrirCodes()">Mes codes de validation</button>'); return; }
+    z.innerHTML = carte("Devenir Leader", "Chargement…", "");
+    appelServeur("getMaDemandeLeader", m.code).then(function (r) {
+      if (r.estLeader) { m.estLeader = true; try { sauvegarderSession_(); } catch (e) { /* ignoré */ } L.majCarte(); return; }
+      var s = r.statut;
+      if (s === "En attente") z.innerHTML = carte("Statut Leader", "Votre demande est en cours d'examen.", "");
+      else z.innerHTML = carte("Devenir Leader", (s === "Rejetée" ? "<b>Votre dernière demande a été refusée.</b> Motif : " + esc(r.motif) + "<br>" : "") + "Le statut Leader permet de générer des codes de validation pour inviter d'autres personnes. Il faut prouver votre identité et votre responsabilité dans une communauté chrétienne.", '<button class="secondary" onclick="LEADER.demanderLeader()">' + (s === "Rejetée" ? "Refaire une demande" : "Faire une demande") + "</button>");
+    }, function () { z.innerHTML = ""; });
+  };
+
+  // ---- console d'administration : demandes à examiner
+  function voirPieces(type, id) {
+    var o = fenetre("Pièces fournies", '<div class="loading">Chargement…</div>', 640);
+    appelServeur("getPiecesDemande", mc().code, type, id).then(function (r) {
+      o.querySelector(".fz-corps").innerHTML = (r.pieces || []).map(function (p) {
+        return '<div style="margin-bottom:12px;"><div style="font-weight:800;margin-bottom:4px;">' + esc(p.titre) + "</div>" + (p.image ? '<img src="' + p.image + '" alt="" style="width:100%;border-radius:10px;border:1px solid #dfe7f3;">' : '<div class="item-desc">Aucune pièce (déjà effacée).</div>') + "</div>";
+      }).join("");
+    }, function (e) { o.querySelector(".fz-corps").textContent = e.message; });
+  }
+  function decider(type, id, accepter, recharger) {
+    var motif = "";
+    if (!accepter) { motif = prompt("Motif du refus (il sera envoyé au demandeur) :") || ""; if (!motif.trim()) return; }
+    appelServeur("traiterDemande", mc().code, type, id, accepter ? "accepter" : "refuser", motif).then(recharger, function (e) { alert(e.message); });
+  }
+  L.rendreAdmin = function (zone) {
+    if (!zone) return;
+    zone.innerHTML = '<div class="loading">Chargement…</div>';
+    function charger() {
+      appelServeur("getDemandesAdmin", mc().code).then(function (r) {
+        function bloc(titre, liste, type) {
+          var attente = liste.filter(function (x) { return x.statut === "En attente"; }), autres = liste.filter(function (x) { return x.statut !== "En attente"; }).slice(0, 15);
+          var carte = function (x, actions) {
+            return '<div class="item-block"><div class="item-row" style="border:none;padding:0;"><div><div class="item-nom">' + esc(x.nom) + '</div><div class="item-desc">' + esc(x.date) + " · " + esc(x.email || x.telephone) + (x.eglise ? " · " + esc(x.eglise) + " — " + esc(x.fonction) : "") + '</div>' +
+              (x.statut !== "En attente" ? '<div class="item-desc"><b>' + esc(x.statut) + "</b>" + (x.motif ? " — " + esc(x.motif) : "") + "</div>" : "") + "</div></div>" + actions + "</div>";
+          };
+          return '<div class="card" style="margin-bottom:14px;"><div class="evt-titre">' + titre + " (" + attente.length + " en attente)</div>" +
+            (attente.length ? attente.map(function (x) { return carte(x, '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"><button class="secondary small" style="width:auto;margin:0;" data-v="' + type + ":" + esc(x.id) + '">Voir les pièces</button><button class="small" style="width:auto;margin:0;" data-a="' + type + ":" + esc(x.id) + '">Accepter</button><button class="danger-outline small" style="width:auto;margin:0;" data-r="' + type + ":" + esc(x.id) + '">Refuser</button></div>'); }).join("") : '<p class="empty-state">Aucune demande en attente.</p>') +
+            (autres.length ? '<div class="item-desc" style="margin:12px 0 4px;">Dernières décisions</div>' + autres.map(function (x) { return carte(x, ""); }).join("") : "") + "</div>";
+        }
+        zone.innerHTML = bloc("Demandes de statut Leader", r.leaders || [], "leader") + bloc("Demandes de code de validation (visiteurs)", r.codes || [], "code");
+        Array.prototype.forEach.call(zone.querySelectorAll("[data-v]"), function (b) { b.onclick = function () { var p = b.getAttribute("data-v").split(":"); voirPieces(p[0], p[1]); }; });
+        Array.prototype.forEach.call(zone.querySelectorAll("[data-a]"), function (b) { b.onclick = function () { var p = b.getAttribute("data-a").split(":"); if (confirm("Accepter cette demande ?")) decider(p[0], p[1], true, charger); }; });
+        Array.prototype.forEach.call(zone.querySelectorAll("[data-r]"), function (b) { b.onclick = function () { var p = b.getAttribute("data-r").split(":"); decider(p[0], p[1], false, charger); }; });
+      }, function (e) { zone.innerHTML = '<p class="error">' + esc(e.message) + "</p>"; });
+    }
+    charger();
   };
 })();
 </script>
