@@ -20,6 +20,7 @@
 @media(min-width:900px){.mkt-grille{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(min-width:1150px){.mkt-grille{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .mkt-carte{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;box-shadow:0 4px 14px rgba(12,47,104,.07);transition:transform .15s,box-shadow .15s;min-width:0}
+.fav-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}.fav-carre{position:relative;aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,var(--blue2),var(--blue));cursor:pointer;box-shadow:0 6px 16px rgba(12,47,104,.18)}.fav-carre img{width:100%;height:100%;object-fit:cover;display:block}.fav-carre .fav-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff}.fav-carre .fav-titre{position:absolute;left:0;right:0;bottom:0;padding:18px 7px 7px;background:linear-gradient(transparent,rgba(0,0,0,.78));color:#fff;font-size:11.5px;font-weight:800;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.fav-carre .fav-etoile{position:absolute;top:5px;left:6px;font-size:13px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
 .mkt-carte:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(12,47,104,.14)}
 .mkt-img{position:relative;aspect-ratio:1/1;background:#eef3f9;overflow:hidden}
 .mkt-img img{width:100%;height:100%;object-fit:cover;display:block}
@@ -1104,6 +1105,11 @@ video.video-player-frame{object-fit:contain}
           <input id="adminEmailContact" type="email" placeholder="contact@exemple.com">
           <div id="erreurEmailContact" class="error" style="display:none;"></div>
           <button onclick="enregistrerEmailContact()">Enregistrer l'e-mail</button>
+          <p class="field-label" style="margin-top:14px;">📱 Numéro de téléphone de la page Contact (Super Admin)</p>
+          <p class="subtitle left" style="margin:0 0 8px;font-size:11px;">Affiché dans « Contactez-nous ». Laissez vide pour le masquer.</p>
+          <input id="adminTelContact" type="tel" placeholder="+229 01 00 00 00 00" maxlength="30">
+          <div id="erreurTelContact" class="error" style="display:none;"></div>
+          <button onclick="enregistrerTelContact()">Enregistrer le numéro</button>
         </div>
         <div class="card" id="carteBadge">
           <label class="field-label">Badge des membres</label>
@@ -3320,10 +3326,21 @@ video.video-player-frame{object-fit:contain}
     (liste || []).forEach(function (x) { (x && x.ALaUne === true ? unes : autres).push(x); });
     return unes.concat(autres);
   }
+  // Trois « favoris » carrés, côte à côte. Sans favori choisi, on montre les 3 contenus les plus récents.
+  function construireFavoris_(liste, icone, clicDe_) {
+    const choisis = liste.filter(function (x) { return x && x.ALaUne === true; }).slice(0, 3);
+    const trio = choisis.length ? choisis : liste.slice(0, 3);
+    const html = '<p class="field-label">' + (choisis.length ? "⭐ Favoris" : "À l\'affiche") + '</p><div class="fav-trio">' + trio.map(function (x, i) {
+      return '<div class="fav-carre" onclick="' + clicDe_(i) + '">' + (x.CoverBase64 ? '<img src="data:image/jpeg;base64,' + x.CoverBase64 + '" alt="">' : '<div class="fav-ph">' + icone + '</div>') +
+        (choisis.length ? '<span class="fav-etoile">⭐</span>' : "") + '<div class="fav-titre">' + escapeHtml(x.Titre) + '</div></div>';
+    }).join("") + '</div>';
+    return { html: html, nb: trio.length };
+  }
   function caseALaUne_(type, id, coche) {
-    if (!membreCourant || permissionsDe_(membreCourant).indexOf("systeme") === -1) return "";
+    const perms = membreCourant ? permissionsDe_(membreCourant) : [];
+    if (perms.indexOf("systeme") === -1 && perms.indexOf("contenus") === -1) return "";
     return '<label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;"><input type="checkbox" style="width:auto;margin:0;"' + (coche ? " checked" : "") +
-      ' onchange="basculerALaUne_(\'' + type + '\',\'' + id + '\',this)">⭐ À la une</label>';
+      ' onchange="basculerALaUne_(\'' + type + '\',\'' + id + '\',this)">⭐ Favori (3 max)</label>';
   }
   function basculerALaUne_(type, id, caseHtml) {
     const valeur = caseHtml.checked;
@@ -3360,17 +3377,13 @@ video.video-player-frame{object-fit:contain}
     afficherPubsDoubles_("audios", "pubAudiosHaut", "pubAudiosBas");
     const zone = document.getElementById("audiosAlaUne");
     if (!audiosCache.length) { zone.innerHTML = '<p class="empty-state">Aucun audio disponible pour le moment.</p>'; return; }
-    const vedette = audiosCache[0];
-    const restants = audiosCache.slice(1, 9);
-    let html = '<div class="hero-vedette" onclick="jouerAudioDepuisAccueil_(0)">' +
-      (vedette.CoverBase64 ? '<img src="data:image/jpeg;base64,' + vedette.CoverBase64 + '">' : '') +
-      '<div class="hero-vedette-body"><div class="hero-vedette-label">🎧 À l\'affiche</div><div class="hero-vedette-titre">' + escapeHtml(vedette.Titre) + '</div>' +
-      (vedette.Auteur ? '<div class="item-desc" style="color:rgba(255,255,255,.85);">Par ' + escapeHtml(vedette.Auteur) + '</div>' : '') +
-      '</div></div>';
+    const fav = construireFavoris_(audiosCache, "🎧", function (i) { return "jouerAudioDepuisAccueil_(" + i + ")"; });
+    const restants = audiosCache.slice(fav.nb, fav.nb + 8);
+    let html = fav.html;
     if (restants.length) {
       html += '<p class="field-label">Récemment ajoutés</p><div class="grille-alaune">' + restants.map(function (a, i) {
         const cover = a.CoverBase64 ? '<img src="data:image/jpeg;base64,' + a.CoverBase64 + '">' : '<div style="height:90px;background:#eef3f9;display:flex;align-items:center;justify-content:center;">🎧</div>';
-        return '<div class="carte-alaune" onclick="jouerAudioDepuisAccueil_(' + (i + 1) + ')">' + cover + '<div class="carte-alaune-body"><div class="carte-alaune-titre">' + escapeHtml(a.Titre) + '</div></div></div>';
+        return '<div class="carte-alaune" onclick="jouerAudioDepuisAccueil_(' + (i + fav.nb) + ')">' + cover + '<div class="carte-alaune-body"><div class="carte-alaune-titre">' + escapeHtml(a.Titre) + '</div></div></div>';
       }).join("") + '</div>';
     }
     zone.innerHTML = html;
@@ -4133,13 +4146,9 @@ video.video-player-frame{object-fit:contain}
     afficherPubsDoubles_("documents", "pubDocumentsHaut", "pubDocumentsBas");
     const zone = document.getElementById("documentsAlaUne");
     if (!documentsCache.length) { zone.innerHTML = '<p class="empty-state">Aucun document pour le moment.</p>'; return; }
-    const vedette = documentsCache[0];
-    const restants = documentsCache.slice(1, 9);
-    let html = '<div class="hero-vedette" onclick="afficherSousDocuments(\'tous\')">' +
-      (vedette.CoverBase64 ? '<img src="data:image/jpeg;base64,' + vedette.CoverBase64 + '">' : '') +
-      '<div class="hero-vedette-body"><div class="hero-vedette-label">📄 À la une</div><div class="hero-vedette-titre">' + escapeHtml(vedette.Titre) + '</div>' +
-      (vedette.Auteur ? '<div class="item-desc" style="color:rgba(255,255,255,.85);">Par ' + escapeHtml(vedette.Auteur) + '</div>' : '') +
-      '</div></div>';
+    const fav = construireFavoris_(documentsCache, "📄", function () { return "afficherSousDocuments('tous')"; });
+    const restants = documentsCache.slice(fav.nb, fav.nb + 8);
+    let html = fav.html;
     if (restants.length) {
       html += '<p class="field-label">Récemment ajoutés</p><div class="grille-alaune">' + restants.map(function (d) {
         const cover = d.CoverBase64 ? '<img src="data:image/jpeg;base64,' + d.CoverBase64 + '">' : '<div style="height:90px;background:#eef3f9;display:flex;align-items:center;justify-content:center;">📄</div>';
@@ -5038,17 +5047,13 @@ video.video-player-frame{object-fit:contain}
       zone.innerHTML = '<p class="empty-state">Aucune vidéo mise en avant pour le moment — consultez les Émissions pour voir toutes les playlists.</p>';
       return;
     }
-    const vedette = videosPlateformeCache[0];
-    const restants = videosPlateformeCache.slice(1, 9);
-    let html = '<div class="hero-vedette" onclick="jouerVideoDepuisAccueil_(0)">' +
-      (vedette.CoverBase64 ? '<img src="data:image/jpeg;base64,' + vedette.CoverBase64 + '">' : '') +
-      '<div class="hero-vedette-body"><div class="hero-vedette-label">▶️ À l\'affiche</div><div class="hero-vedette-titre">' + escapeHtml(vedette.Titre) + '</div>' +
-      (vedette.Auteur ? '<div class="item-desc" style="color:rgba(255,255,255,.85);">Par ' + escapeHtml(vedette.Auteur) + '</div>' : '') +
-      '</div></div>';
+    const fav = construireFavoris_(videosPlateformeCache, "🎬", function (i) { return "jouerVideoDepuisAccueil_(" + i + ")"; });
+    const restants = videosPlateformeCache.slice(fav.nb, fav.nb + 8);
+    let html = fav.html;
     if (restants.length) {
       html += '<p class="field-label">Récemment ajoutées</p><div class="grille-alaune">' + restants.map(function (v, i) {
         const cover = v.CoverBase64 ? '<img src="data:image/jpeg;base64,' + v.CoverBase64 + '">' : '<div style="height:90px;background:#eef3f9;display:flex;align-items:center;justify-content:center;">🎬</div>';
-        return '<div class="carte-alaune" onclick="jouerVideoDepuisAccueil_(' + (i + 1) + ')">' + cover + '<div class="carte-alaune-body"><div class="carte-alaune-titre">' + escapeHtml(v.Titre) + '</div></div></div>';
+        return '<div class="carte-alaune" onclick="jouerVideoDepuisAccueil_(' + (i + fav.nb) + ')">' + cover + '<div class="carte-alaune-body"><div class="carte-alaune-titre">' + escapeHtml(v.Titre) + '</div></div></div>';
       }).join("") + '</div>';
     }
     zone.innerHTML = html;
@@ -5305,6 +5310,7 @@ video.video-player-frame{object-fit:contain}
     const estSuper_ = !!(membreCourant && membreCourant.role === "Admin_Super");
     document.getElementById("carteEmailContact").style.display = estSuper_ ? "block" : "none";
     document.getElementById("adminEmailContact").value = (configApp && configApp.EmailContact) || "";
+    document.getElementById("adminTelContact").value = (configApp && configApp.TelephoneContact) || "";
     if (configApp && configApp.LogoBase64) {
       document.getElementById("logoPreview").innerHTML = '<img src="data:image/png;base64,' + configApp.LogoBase64 + '">';
     }
@@ -5359,6 +5365,16 @@ video.video-player-frame{object-fit:contain}
     appelServeur("definirEmailContact", membreCourant.code, email).then(function () {
       configApp.EmailContact = email.toLowerCase();
       alert("E-mail de contact enregistré.");
+    }).catch(function (e) { err.textContent = "Erreur : " + e.message; err.style.display = "block"; });
+  }
+
+  function enregistrerTelContact() {
+    const tel = document.getElementById("adminTelContact").value.trim();
+    const err = document.getElementById("erreurTelContact");
+    err.style.display = "none";
+    appelServeur("definirTelephoneContact", membreCourant.code, tel).then(function () {
+      configApp.TelephoneContact = tel;
+      alert("Numéro de contact enregistré.");
     }).catch(function (e) { err.textContent = "Erreur : " + e.message; err.style.display = "block"; });
   }
 
@@ -7835,7 +7851,7 @@ video.video-player-frame{object-fit:contain}
     function googleTranslateElementInit() {
       new google.translate.TranslateElement({
         pageLanguage: 'fr',
-        includedLanguages: 'en,es,pt,ar,de,sw,fr,am,ti,mg,ny,rw,so,st',
+        includedLanguages: 'am,ar,az,be,bg,bn,bs,ca,cs,da,de,el,en,es,et,fa,fi,fr,hi,hr,hu,hy,id,is,it,iw,ja,ka,kk,km,ko,ky,lo,lt,lv,mg,mk,mn,ms,mt,my,ne,nl,no,ny,pl,pt,ro,ru,rw,si,sk,sl,so,sq,sr,st,sv,sw,tg,th,ti,tk,tl,tr,uk,ur,uz,vi,zh-CN,zh-TW',
         autoDisplay: false
       }, 'google_translate_element');
     }
@@ -8221,11 +8237,16 @@ video.video-player-frame{object-fit:contain}
       '<div class="evt-meta">' + (c.dateFin ? "⏰ Fin : " + quand(c.dateFin) + "<br>" : "") +
       (c.prixVote > 0 ? (c.exigerCompte && !membreCourant ? "🔒 Un compte est requis pour voter." : "") : (c.exigerCompte && !membreCourant ? "🔒 Un compte est requis pour voter." : "Il vous reste " + restants + " vote(s). Pas besoin de compte.")) +
       (c.scoresVisibles ? "<br>" + c.totalVotes + " vote(s) au total" : "<br>Résultats visibles à la clôture") + "</div>";
-    h += c.candidats.map(function (x) {
+    // Classement automatique : du plus de votes au moins de votes (seulement quand les scores sont visibles ; égalité = ordre d'origine)
+    var classes = c.candidats.map(function (x, i) { return { x: x, i: i }; });
+    if (c.scoresVisibles) classes.sort(function (p, q) { return ((q.x.votes || 0) - (p.x.votes || 0)) || (p.i - q.i); });
+    h += classes.map(function (cl, rang) {
+      var x = cl.x;
+      var medaille = c.scoresVisibles && (x.votes || 0) > 0 ? (rang === 0 ? "🥇 " : rang === 1 ? "🥈 " : rang === 2 ? "🥉 " : (rang + 1) + ". ") : "";
       var pct = c.scoresVisibles ? Math.round(((x.votes || 0) / Math.max(1, c.totalVotes)) * 100) : 0;
       var peutVoter = c.ouvert && (c.prixVote > 0 || restants > 0);
       return '<div class="evt-cand">' + (x.image ? '<img src="' + x.image + '" alt="">' : '<div class="evt-av">👤</div>') +
-        '<div style="flex:1;min-width:0;"><div class="item-nom">' + esc(x.nom) + "</div>" +
+        '<div style="flex:1;min-width:0;"><div class="item-nom">' + medaille + esc(x.nom) + "</div>" +
         (x.description ? '<div class="item-desc">' + esc(x.description) + "</div>" : "") +
         (c.scoresVisibles ? '<div class="evt-barre" style="margin-top:6px;"><div style="width:' + Math.round((x.votes || 0) / max * 100) + '%"></div></div><div class="item-desc">' + x.votes + " vote(s) · " + pct + " %</div>" : "") + "</div>" +
         (x.video ? '<button class="secondary small" style="width:auto;margin-right:6px;" onclick="EVT.voirVideo(\'' + jsq_(c.id) + "','" + jsq_(x.id) + '\')">▶️ Vidéo</button>' : "") + (peutVoter ? '<button class="flame small" style="width:auto;" onclick="EVT.voter(\'' + jsq_(c.id) + "','" + jsq_(x.id) + '\')">' + (c.exigerCompte && !membreCourant ? "🔒 Se connecter pour voter" : (c.prixVote > 0 ? "Voter" : "🗳️ Voter")) + "</button>" : "") + "</div>";
@@ -9657,9 +9678,32 @@ video.video-player-frame{object-fit:contain}
 
   // ---- Annuaire d'églises
   var EGL = { liste: [], q: "" };
-  function lienCarte(e) { return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent([e.nom, e.adresse, e.ville, e.pays].filter(Boolean).join(", ")); }
+  // Logo réduit en carré (144 px) pour rester léger
+  function logoCarre(fichier) {
+    return new Promise(function (ok, ko) {
+      var r = new FileReader();
+      r.onerror = function () { ko(new Error("Image illisible.")); };
+      r.onload = function () {
+        var im = new Image();
+        im.onerror = function () { ko(new Error("Image illisible.")); };
+        im.onload = function () {
+          var c = document.createElement("canvas"); c.width = c.height = 144;
+          var x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, 144, 144);
+          var t = Math.min(im.width, im.height);
+          x.drawImage(im, (im.width - t) / 2, (im.height - t) / 2, t, t, 0, 0, 144, 144);
+          var d = c.toDataURL("image/jpeg", 0.72);
+          if (d.length > 38000) d = c.toDataURL("image/jpeg", 0.5);
+          ok(d);
+        };
+        im.src = r.result;
+      };
+      r.readAsDataURL(fichier);
+    });
+  }
+  X.logoCarre = logoCarre;
+  function lienCarte(e) { if (e.localisation) return e.localisation; return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent([e.nom, e.adresse, e.ville, e.pays].filter(Boolean).join(", ")); }
   function carteEglise(e, modo) {
-    return '<div class="evt-carte xtr-egl" style="margin-bottom:10px;" data-s="' + esc(norm(e.nom + " " + e.ville + " " + e.pays + " " + e.pasteur)) + '"><div class="evt-titre">⛪ ' + esc(e.nom) + '</div><div class="evt-meta">📍 ' + esc([e.adresse, e.ville, e.pays].filter(Boolean).join(", ")) + "</div>" +
+    return '<div class="evt-carte xtr-egl" style="margin-bottom:10px;" data-s="' + esc(norm(e.nom + " " + e.ville + " " + e.pays + " " + e.pasteur)) + '"><div class="evt-titre">' + (e.logo ? '<img src="' + esc(e.logo) + '" alt="" style="width:34px;height:34px;border-radius:9px;object-fit:cover;vertical-align:middle;margin-right:8px;">' : "⛪ ") + esc(e.nom) + '</div><div class="evt-meta">📍 ' + esc([e.adresse, e.ville, e.pays].filter(Boolean).join(", ")) + "</div>" +
       (e.pasteur ? '<div class="evt-meta">👤 ' + esc(e.pasteur) + "</div>" : "") + (e.horaires ? '<div class="evt-meta">🕒 ' + esc(e.horaires) + "</div>" : "") + (e.description ? '<p class="item-desc">' + esc(e.description) + "</p>" : "") +
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;"><a class="small-lien" href="' + lienCarte(e) + '" target="_blank" rel="noopener"><button class="small" type="button">🧭 Itinéraire</button></a>' +
       (e.telephone ? '<a href="tel:' + esc(e.telephone.replace(/[^+\d]/g, "")) + '"><button class="small secondary" type="button">📞 Appeler</button></a>' : "") +
@@ -9674,11 +9718,18 @@ video.video-player-frame{object-fit:contain}
   };
   X.proposerEglise = function () {
     if (!besoinMembre()) return;
-    var m = modalX('<div class="evt-titre">⛪ Proposer une église</div><input id="egN" maxlength="80" placeholder="Nom de l\'église *"><input id="egV" maxlength="60" placeholder="Ville *"><select id="egP">' + PAYS.liste.map(function (x) { return '<option value="' + x[1].replace(/"/g, "&quot;") + '"' + (x[0] === PAYS.code() ? " selected" : "") + ">" + PAYS.drapeau(x[0]) + " " + x[1] + "</option>"; }).join("") + '</select><input id="egA" maxlength="160" placeholder="Adresse / quartier"><input id="egPa" maxlength="80" placeholder="Pasteur / responsable"><input id="egT" maxlength="30" placeholder="Téléphone de l\'église"><input id="egH" maxlength="200" placeholder="Horaires (ex. Dimanche 9h)"><input id="egL" maxlength="200" placeholder="Site ou page Facebook (https://…)"><textarea id="egD" rows="2" maxlength="300" placeholder="Description"></textarea><p class="item-desc">Ces informations seront visibles par tous les utilisateurs. N\'indiquez que des coordonnées d\'église.</p><button id="egOk">Envoyer</button> <button class="secondary" id="egKo">Annuler</button>');
+    var m = modalX('<div class="evt-titre">⛪ Proposer une église</div><input id="egN" maxlength="80" placeholder="Nom de l\'église *"><input id="egV" maxlength="60" placeholder="Ville *"><select id="egP">' + PAYS.liste.map(function (x) { return '<option value="' + x[1].replace(/"/g, "&quot;") + '"' + (x[0] === PAYS.code() ? " selected" : "") + ">" + PAYS.drapeau(x[0]) + " " + x[1] + "</option>"; }).join("") + '</select><input id="egA" maxlength="160" placeholder="Adresse / quartier"><label class="field-label">Localisation * (lien Google Maps, Waze… ou coordonnées)</label><input id="egLoc" maxlength="400" placeholder="https://maps.app.goo.gl/… ou 6.3703, 2.3912"><label class="field-label">Logo de l\'église *</label><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><img id="egLogoApercu" alt="" style="display:none;width:56px;height:56px;border-radius:12px;object-fit:cover;"><label class="file-btn-label" style="margin:0;">🖼️ Choisir le logo<input type="file" id="egLogoFic" accept="image/*" style="display:none;"></label></div><input id="egPa" maxlength="80" placeholder="Pasteur / responsable"><input id="egT" maxlength="30" placeholder="Téléphone de l\'église"><input id="egH" maxlength="200" placeholder="Horaires (ex. Dimanche 9h)"><input id="egL" maxlength="200" placeholder="Site ou page Facebook (https://…)"><textarea id="egD" rows="2" maxlength="300" placeholder="Description"></textarea><p class="item-desc">Ces informations seront visibles par tous les utilisateurs. N\'indiquez que des coordonnées d\'église.</p><button id="egOk">Envoyer</button> <button class="secondary" id="egKo">Annuler</button>');
     var g = function (i) { return m.el.querySelector("#" + i).value; };
     m.el.querySelector("#egKo").onclick = m.close;
+    var logoDonnees = "";
+    m.el.querySelector("#egLogoFic").onchange = function () {
+      var f = this.files[0]; if (!f) return;
+      logoCarre(f).then(function (d) { logoDonnees = d; var im = m.el.querySelector("#egLogoApercu"); im.src = d; im.style.display = "block"; }, echec);
+    };
     m.el.querySelector("#egOk").onclick = function () {
-      appelServeur("proposerEglise", code(), { nom: g("egN"), ville: g("egV"), pays: g("egP"), adresse: g("egA"), pasteur: g("egPa"), telephone: g("egT"), horaires: g("egH"), lien: g("egL"), description: g("egD") })
+      if (!g("egLoc").trim()) { alert("Ajoutez la localisation de l'église (lien Google Maps ou autre)."); return; }
+      if (!logoDonnees) { alert("Ajoutez le logo de l'église."); return; }
+      appelServeur("proposerEglise", code(), { localisation: g("egLoc"), logo: logoDonnees, nom: g("egN"), ville: g("egV"), pays: g("egP"), adresse: g("egA"), pasteur: g("egPa"), telephone: g("egT"), horaires: g("egH"), lien: g("egL"), description: g("egD") })
         .then(function (r) { m.close(); alert(r.publie ? "Église ajoutée à l'annuaire." : "Merci ! Votre proposition sera publiée après vérification par l'équipe."); window.chargerCommunaute(); }, echec);
     };
   };
@@ -9901,17 +9952,204 @@ video.video-player-frame{object-fit:contain}
 (function () {
   "use strict";
   var LISTE = [
-    ["DZ","Algérie","ar"],["AO","Angola","pt"],["BJ","Bénin","fr"],["BW","Botswana","en"],["BF","Burkina Faso","fr"],["BI","Burundi","fr"],
-    ["CV","Cap-Vert","pt"],["CM","Cameroun","fr"],["CF","Centrafrique","fr"],["TD","Tchad","fr"],["KM","Comores","fr"],["CG","Congo-Brazzaville","fr"],
-    ["CD","RD Congo","fr"],["CI","Côte d'Ivoire","fr"],["DJ","Djibouti","fr"],["EG","Égypte","ar"],["GQ","Guinée équatoriale","es"],["ER","Érythrée","ti"],
-    ["SZ","Eswatini","en"],["ET","Éthiopie","am"],["GA","Gabon","fr"],["GM","Gambie","en"],["GH","Ghana","en"],["GN","Guinée","fr"],["GW","Guinée-Bissau","pt"],
-    ["KE","Kenya","en"],["LS","Lesotho","st"],["LR","Libéria","en"],["LY","Libye","ar"],["MG","Madagascar","mg"],["MW","Malawi","ny"],["ML","Mali","fr"],
-    ["MR","Mauritanie","ar"],["MU","Maurice","fr"],["MA","Maroc","ar"],["MZ","Mozambique","pt"],["NA","Namibie","en"],["NE","Niger","fr"],["NG","Nigéria","en"],
-    ["RW","Rwanda","rw"],["ST","Sao Tomé-et-Principe","pt"],["SN","Sénégal","fr"],["SC","Seychelles","fr"],["SL","Sierra Leone","en"],["SO","Somalie","so"],
-    ["ZA","Afrique du Sud","en"],["SS","Soudan du Sud","en"],["SD","Soudan","ar"],["TZ","Tanzanie","sw"],["TG","Togo","fr"],["TN","Tunisie","ar"],
-    ["UG","Ouganda","en"],["ZM","Zambie","en"],["ZW","Zimbabwe","en"]
+    ["DZ","Algérie","ar",1],
+    ["AO","Angola","pt",1],
+    ["BJ","Bénin","fr",1],
+    ["BW","Botswana","en",1],
+    ["BF","Burkina Faso","fr",1],
+    ["BI","Burundi","fr",1],
+    ["CV","Cap-Vert","pt",1],
+    ["CM","Cameroun","fr",1],
+    ["CF","Centrafrique","fr",1],
+    ["TD","Tchad","fr",1],
+    ["KM","Comores","fr",1],
+    ["CG","Congo-Brazzaville","fr",1],
+    ["CD","RD Congo","fr",1],
+    ["CI","Côte d'Ivoire","fr",1],
+    ["DJ","Djibouti","fr",1],
+    ["EG","Égypte","ar",1],
+    ["GQ","Guinée équatoriale","es",1],
+    ["ER","Érythrée","ti",1],
+    ["SZ","Eswatini","en",1],
+    ["ET","Éthiopie","am",1],
+    ["GA","Gabon","fr",1],
+    ["GM","Gambie","en",1],
+    ["GH","Ghana","en",1],
+    ["GN","Guinée","fr",1],
+    ["GW","Guinée-Bissau","pt",1],
+    ["KE","Kenya","en",1],
+    ["LS","Lesotho","st",1],
+    ["LR","Libéria","en",1],
+    ["LY","Libye","ar",1],
+    ["MG","Madagascar","mg",1],
+    ["MW","Malawi","ny",1],
+    ["ML","Mali","fr",1],
+    ["MR","Mauritanie","ar",1],
+    ["MU","Maurice","fr",1],
+    ["MA","Maroc","ar",1],
+    ["MZ","Mozambique","pt",1],
+    ["NA","Namibie","en",1],
+    ["NE","Niger","fr",1],
+    ["NG","Nigéria","en",1],
+    ["RW","Rwanda","rw",1],
+    ["ST","Sao Tomé-et-Principe","pt",1],
+    ["SN","Sénégal","fr",1],
+    ["SC","Seychelles","fr",1],
+    ["SL","Sierra Leone","en",1],
+    ["SO","Somalie","so",1],
+    ["ZA","Afrique du Sud","en",1],
+    ["SS","Soudan du Sud","en",1],
+    ["SD","Soudan","ar",1],
+    ["TZ","Tanzanie","sw",1],
+    ["TG","Togo","fr",1],
+    ["TN","Tunisie","ar",1],
+    ["UG","Ouganda","en",1],
+    ["ZM","Zambie","en",1],
+    ["ZW","Zimbabwe","en",1],
+    ["AL","Albanie","sq",0],
+    ["AD","Andorre","ca",0],
+    ["DE","Allemagne","de",0],
+    ["AT","Autriche","de",0],
+    ["BE","Belgique","fr",0],
+    ["BY","Biélorussie","be",0],
+    ["BA","Bosnie-Herzégovine","bs",0],
+    ["BG","Bulgarie","bg",0],
+    ["CY","Chypre","el",0],
+    ["HR","Croatie","hr",0],
+    ["DK","Danemark","da",0],
+    ["ES","Espagne","es",0],
+    ["EE","Estonie","et",0],
+    ["FI","Finlande","fi",0],
+    ["FR","France","fr",0],
+    ["GR","Grèce","el",0],
+    ["HU","Hongrie","hu",0],
+    ["IE","Irlande","en",0],
+    ["IS","Islande","is",0],
+    ["IT","Italie","it",0],
+    ["LV","Lettonie","lv",0],
+    ["LI","Liechtenstein","de",0],
+    ["LT","Lituanie","lt",0],
+    ["LU","Luxembourg","fr",0],
+    ["MK","Macédoine du Nord","mk",0],
+    ["MT","Malte","mt",0],
+    ["MD","Moldavie","ro",0],
+    ["MC","Monaco","fr",0],
+    ["ME","Monténégro","sr",0],
+    ["NO","Norvège","no",0],
+    ["NL","Pays-Bas","nl",0],
+    ["PL","Pologne","pl",0],
+    ["PT","Portugal","pt",0],
+    ["CZ","Tchéquie","cs",0],
+    ["RO","Roumanie","ro",0],
+    ["GB","Royaume-Uni","en",0],
+    ["RU","Russie","ru",0],
+    ["SM","Saint-Marin","it",0],
+    ["RS","Serbie","sr",0],
+    ["SK","Slovaquie","sk",0],
+    ["SI","Slovénie","sl",0],
+    ["SE","Suède","sv",0],
+    ["CH","Suisse","fr",0],
+    ["UA","Ukraine","uk",0],
+    ["VA","Vatican","it",0],
+    ["AG","Antigua-et-Barbuda","en",0],
+    ["AR","Argentine","es",0],
+    ["BS","Bahamas","en",0],
+    ["BB","Barbade","en",0],
+    ["BZ","Belize","en",0],
+    ["BO","Bolivie","es",0],
+    ["BR","Brésil","pt",0],
+    ["CA","Canada","en",0],
+    ["CL","Chili","es",0],
+    ["CO","Colombie","es",0],
+    ["CR","Costa Rica","es",0],
+    ["CU","Cuba","es",0],
+    ["DM","Dominique","en",0],
+    ["DO","République dominicaine","es",0],
+    ["EC","Équateur","es",0],
+    ["US","États-Unis","en",0],
+    ["GD","Grenade","en",0],
+    ["GT","Guatemala","es",0],
+    ["GY","Guyana","en",0],
+    ["HT","Haïti","fr",0],
+    ["HN","Honduras","es",0],
+    ["JM","Jamaïque","en",0],
+    ["MX","Mexique","es",0],
+    ["NI","Nicaragua","es",0],
+    ["PA","Panama","es",0],
+    ["PY","Paraguay","es",0],
+    ["PE","Pérou","es",0],
+    ["KN","Saint-Christophe-et-Niévès","en",0],
+    ["LC","Sainte-Lucie","en",0],
+    ["VC","Saint-Vincent-et-les-Grenadines","en",0],
+    ["SV","Salvador","es",0],
+    ["SR","Suriname","nl",0],
+    ["TT","Trinité-et-Tobago","en",0],
+    ["UY","Uruguay","es",0],
+    ["VE","Venezuela","es",0],
+    ["AF","Afghanistan","fa",0],
+    ["SA","Arabie saoudite","ar",0],
+    ["AM","Arménie","hy",0],
+    ["AZ","Azerbaïdjan","az",0],
+    ["BH","Bahreïn","ar",0],
+    ["BD","Bangladesh","bn",0],
+    ["BT","Bhoutan","en",0],
+    ["BN","Brunéi","ms",0],
+    ["KH","Cambodge","km",0],
+    ["CN","Chine","zh-CN",0],
+    ["KR","Corée du Sud","ko",0],
+    ["KP","Corée du Nord","ko",0],
+    ["AE","Émirats arabes unis","ar",0],
+    ["GE","Géorgie","ka",0],
+    ["IN","Inde","hi",0],
+    ["ID","Indonésie","id",0],
+    ["IQ","Irak","ar",0],
+    ["IR","Iran","fa",0],
+    ["IL","Israël","iw",0],
+    ["JP","Japon","ja",0],
+    ["JO","Jordanie","ar",0],
+    ["KZ","Kazakhstan","kk",0],
+    ["KG","Kirghizistan","ky",0],
+    ["KW","Koweït","ar",0],
+    ["LA","Laos","lo",0],
+    ["LB","Liban","ar",0],
+    ["MY","Malaisie","ms",0],
+    ["MV","Maldives","en",0],
+    ["MN","Mongolie","mn",0],
+    ["MM","Birmanie","my",0],
+    ["NP","Népal","ne",0],
+    ["OM","Oman","ar",0],
+    ["UZ","Ouzbékistan","uz",0],
+    ["PK","Pakistan","ur",0],
+    ["PS","Palestine","ar",0],
+    ["PH","Philippines","tl",0],
+    ["QA","Qatar","ar",0],
+    ["SG","Singapour","en",0],
+    ["LK","Sri Lanka","si",0],
+    ["SY","Syrie","ar",0],
+    ["TJ","Tadjikistan","tg",0],
+    ["TW","Taïwan","zh-TW",0],
+    ["TH","Thaïlande","th",0],
+    ["TL","Timor oriental","pt",0],
+    ["TM","Turkménistan","tk",0],
+    ["TR","Turquie","tr",0],
+    ["VN","Vietnam","vi",0],
+    ["YE","Yémen","ar",0],
+    ["AU","Australie","en",0],
+    ["FJ","Fidji","en",0],
+    ["KI","Kiribati","en",0],
+    ["MH","Îles Marshall","en",0],
+    ["FM","Micronésie","en",0],
+    ["NR","Nauru","en",0],
+    ["NZ","Nouvelle-Zélande","en",0],
+    ["PW","Palaos","en",0],
+    ["PG","Papouasie-Nouvelle-Guinée","en",0],
+    ["WS","Samoa","en",0],
+    ["SB","Îles Salomon","en",0],
+    ["TO","Tonga","en",0],
+    ["TV","Tuvalu","en",0],
+    ["VU","Vanuatu","en",0]
   ].sort(function (a, b) { return a[1].localeCompare(b[1], "fr"); });
-  var NOMS_LANGUES = { fr: "français", en: "English", pt: "Português", ar: "العربية", es: "Español", sw: "Kiswahili", am: "አማርኛ", ti: "ትግርኛ", mg: "Malagasy", ny: "Chichewa", rw: "Kinyarwanda", so: "Soomaali", st: "Sesotho" };
+  var NOMS_LANGUES = { de: "Deutsch", it: "Italiano", nl: "Nederlands", ru: "Русский", "zh-CN": "中文", "zh-TW": "中文 (繁體)", ja: "日本語", ko: "한국어", hi: "हिन्दी", tr: "Türkçe", pl: "Polski", uk: "Українська", el: "Ελληνικά", sv: "Svenska", no: "Norsk", da: "Dansk", fi: "Suomi", cs: "Čeština", hu: "Magyar", ro: "Română", bg: "Български", sr: "Српски", hr: "Hrvatski", sk: "Slovenčina", sl: "Slovenščina", lt: "Lietuvių", lv: "Latviešu", et: "Eesti", iw: "עברית", fa: "فارسی", ur: "اردو", bn: "বাংলা", th: "ไทย", vi: "Tiếng Việt", id: "Bahasa Indonesia", ms: "Bahasa Melayu", tl: "Filipino", ka: "ქართული", hy: "Հայերեն", az: "Azərbaycan", kk: "Қазақша", uz: "Oʻzbekcha", ky: "Кыргызча", tg: "Тоҷикӣ", tk: "Türkmençe", mn: "Монгол", ne: "नेपाली", si: "සිංහල", km: "ខ្មែរ", lo: "ລາວ", my: "မြန်မာ", is: "Íslenska", sq: "Shqip", mk: "Македонски", bs: "Bosanski", be: "Беларуская", ca: "Català", mt: "Malti", fr: "français", en: "English", pt: "Português", ar: "العربية", es: "Español", sw: "Kiswahili", am: "አማርኛ", ti: "ትግርኛ", mg: "Malagasy", ny: "Chichewa", rw: "Kinyarwanda", so: "Soomaali", st: "Sesotho" };
   var CLE = "jesus_pays", CLE_VU = "jesus_pays_vu";
   var P = window.PAYS = { liste: LISTE, bypass: 0 };
 
@@ -9961,9 +10199,10 @@ video.video-player-frame{object-fit:contain}
     if (c !== ancien) location.reload(); else majBoutons();
   };
 
+  var ICONE_GLOBE = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4"/><path d="M12 2.8c2.6 2.6 4 5.8 4 9.2s-1.4 6.6-4 9.2c-2.6-2.6-4-5.8-4-9.2s1.4-6.6 4-9.2z"/></svg>';
   function majBoutons() {
     var c = P.code(), f = drapeau(c);
-    var b = document.getElementById("btnPays"); if (b) { b.textContent = f; b.title = c ? "Pays : " + P.nom(c) + " (changer)" : "Choisir mon pays"; }
+    var b = document.getElementById("btnPays"); if (b) { b.innerHTML = ICONE_GLOBE + (c ? '<span style="position:absolute;right:-5px;bottom:-5px;min-width:19px;height:19px;padding:0 3px;border-radius:10px;background:#f4c20d;color:#0c2f68;font-size:10px;font-weight:800;line-height:19px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.35);">' + c + "</span>" : ""); b.style.position = "relative"; b.title = c ? "Pays : " + P.nom(c) + " (changer)" : "Choisir mon pays"; }
     var a = document.getElementById("btnPaysAccueil"); if (a) a.textContent = c ? f + " " + P.nom(c) + " — changer de pays" : "🌍 Choisir mon pays";
   }
 
@@ -9988,7 +10227,12 @@ video.video-player-frame{object-fit:contain}
     function rendre(q) {
       var n = norm(q), h = "";
       if (!n) h += ligne("", "Tous les pays", "Mélange des contenus de tous les pays");
-      h += LISTE.filter(function (x) { return !n || norm(x[1]).indexOf(n) !== -1; }).map(function (x) { return ligne(x[0], x[1], "Langue : " + (NOMS_LANGUES[x[2]] || x[2])); }).join("");
+      var visibles = LISTE.filter(function (x) { return !n || norm(x[1]).indexOf(n) !== -1; });
+      var titre = function (t) { return '<div style="font-size:12px;font-weight:800;color:#0c2f68;margin:10px 4px 2px;">' + t + "</div>"; };
+      var afr = visibles.filter(function (x) { return x[3] === 1; }), aut = visibles.filter(function (x) { return x[3] !== 1; });
+      var rl = function (x) { return ligne(x[0], x[1], "Langue : " + (NOMS_LANGUES[x[2]] || x[2])); };
+      if (afr.length) h += titre("🌍 Afrique") + afr.map(rl).join("");
+      if (aut.length) h += titre("🌐 Autres pays du monde") + aut.map(rl).join("");
       document.getElementById("paysListe").innerHTML = h || '<p style="padding:14px;opacity:.7;">Aucun pays trouvé.</p>';
     }
     rendre("");
@@ -10093,6 +10337,130 @@ video.video-player-frame{object-fit:contain}
     if (!lire(CLE_VU)) setTimeout(P.ouvrir, 900);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", demarrer); else demarrer();
+})();
+</script>
+
+<script>
+/* ===== SUPER ADMIN : contrôle total de la rubrique Communauté ===== */
+(function () {
+  "use strict";
+  function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function estSuper() { var p = window.membreCourant ? permissionsDe_(membreCourant) : []; return p.indexOf("systeme") !== -1; }
+  function code() { return membreCourant && membreCourant.code; }
+  function erreur(e) { alert((e && e.message) || "Erreur."); }
+  var etat = { onglet: "apercu", zone: null, donnees: {} };
+
+  function fenetre(html) {
+    var o = document.createElement("div");
+    o.style.cssText = "position:fixed;inset:0;z-index:10040;background:rgba(10,20,40,.6);display:flex;align-items:center;justify-content:center;padding:14px;";
+    o.innerHTML = '<div style="background:#fff;color:#1b2430;border-radius:18px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.4);">' + html + "</div>";
+    document.body.appendChild(o);
+    o.close = function () { o.remove(); };
+    return o;
+  }
+  function recharger() { if (etat.zone) dessiner(etat.zone); }
+
+  var ONGLETS = [["apercu", "📊 Aperçu"], ["cellules", "👥 Groupes"], ["eglises", "⛪ Églises"], ["mur", "🙏 Mur de prière"]];
+  function dessiner(z) {
+    etat.zone = z;
+    z.innerHTML = '<div class="card"><div class="evt-titre">🛡️ Contrôle total — Super Admin</div><p class="item-desc">Vous pouvez modifier ou supprimer n\'importe quel élément de la rubrique Communauté. Les versets, notifications, comptes vérifiés, codes promo, engagements et pays des contenus se gèrent dans leurs onglets dédiés.</p>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;">' + ONGLETS.map(function (o) { return '<button type="button" class="small ' + (o[0] === etat.onglet ? "" : "secondary") + '" style="width:auto;" data-o="' + o[0] + '">' + o[1] + "</button>"; }).join("") + '</div></div><div id="scCorps"><div class="card"><p class="item-desc">Chargement…</p></div></div>';
+    Array.prototype.forEach.call(z.querySelectorAll("[data-o]"), function (b) { b.onclick = function () { etat.onglet = b.getAttribute("data-o"); dessiner(z); }; });
+    var c = z.querySelector("#scCorps");
+    ({ apercu: vueApercu, cellules: vueCellules, eglises: vueEglises, mur: vueMur })[etat.onglet](c);
+  }
+  function enErreur(c) { return function (e) { c.innerHTML = '<div class="card"><p class="error">' + esc(e.message) + "</p></div>"; }; }
+
+  function vueApercu(c) {
+    appelServeur("scApercu", code()).then(function (r) {
+      var k = r.compteurs, t = [["👥 Groupes", k.cellules], ["⛪ Églises publiées", k.eglises], ["⏳ Églises à valider", k.eglisesAttente], ["🙏 Messages publiés", k.murPublies], ["🚫 Messages masqués", k.murMasques],
+        ["🔔 Appareils abonnés", k.abonnesPush], ["🏷️ Codes promo", k.promos], ["💝 Dons mensuels actifs", k.engagementsActifs], ["🤝 Parrains", k.parrains], ["✔ Comptes vérifiés", k.verifies]];
+      c.innerHTML = '<div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' + t.map(function (x) { return '<div style="background:#eef3f9;border-radius:12px;padding:10px;"><div class="item-desc">' + x[0] + '</div><div class="item-nom" style="font-size:20px;">' + x[1] + "</div></div>"; }).join("") + "</div></div>";
+    }, enErreur(c));
+  }
+
+  // ---- Groupes
+  function vueCellules(c) {
+    appelServeur("scCellules", code()).then(function (r) {
+      etat.donnees.cellules = r.cellules;
+      c.innerHTML = '<div class="card">' + (r.cellules.length ? r.cellules.map(function (g) {
+        return '<div class="xtr-ligne" style="gap:8px;"><div class="tt" style="flex:1;min-width:0;"><b>' + esc(g.nom) + '</b><span class="item-desc">' + esc(g.ville) + (g.pays ? " · " + esc(PAYS.nom(g.pays)) : "") + " · " + g.nb + " membre(s) · resp. " + esc(g.responsableNom) + " (" + esc(g.responsable) + ")</span></div>" +
+          '<button class="small secondary" style="width:auto;" data-m="' + esc(g.id) + '">✏️</button><button class="small secondary" style="width:auto;" data-s="' + esc(g.id) + '">🗑️</button></div>';
+      }).join("") : '<p class="item-desc">Aucun groupe.</p>') + "</div>";
+      Array.prototype.forEach.call(c.querySelectorAll("[data-m]"), function (b) { b.onclick = function () { modifierCellule(etat.donnees.cellules.filter(function (g) { return g.id === b.getAttribute("data-m"); })[0]); }; });
+      Array.prototype.forEach.call(c.querySelectorAll("[data-s]"), function (b) { b.onclick = function () {
+        confirmerApp_("Supprimer définitivement ce groupe et ses messages ?", function () { appelServeur("supprimerCellule", code(), b.getAttribute("data-s")).then(recharger, erreur); });
+      }; });
+    }, enErreur(c));
+  }
+  function modifierCellule(g) {
+    var f = fenetre('<div class="evt-titre">✏️ Modifier le groupe</div><input id="scN" maxlength="60" value="' + esc(g.nom) + '"><input id="scV" maxlength="60" value="' + esc(g.ville) + '"><select id="scP">' + PAYS.options(g.pays, "🌍 Tous les pays") + '</select><textarea id="scD" rows="3" maxlength="300">' + esc(g.description) + '</textarea>' +
+      '<label class="field-label">Nouveau responsable (code d\'un membre du groupe — facultatif)</label><input id="scR" placeholder="' + esc(g.responsable) + '"><div style="display:flex;gap:8px;"><button id="scOk">Enregistrer</button><button class="secondary" id="scKo">Annuler</button></div>');
+    f.querySelector("#scKo").onclick = f.close;
+    f.querySelector("#scOk").onclick = function () {
+      appelServeur("scModifierCellule", code(), g.id, { nom: f.querySelector("#scN").value, ville: f.querySelector("#scV").value, pays: f.querySelector("#scP").value, description: f.querySelector("#scD").value, responsable: f.querySelector("#scR").value })
+        .then(function () { f.close(); recharger(); }, erreur);
+    };
+  }
+
+  // ---- Églises
+  function vueEglises(c) {
+    appelServeur("scEglises", code()).then(function (r) {
+      etat.donnees.eglises = r.eglises;
+      c.innerHTML = '<div class="card"><input type="search" id="scRechE" placeholder="Rechercher une église…">' + (r.eglises.length ? r.eglises.map(function (e) {
+        return '<div class="xtr-ligne sc-egl" style="gap:8px;" data-t="' + esc((e.nom + " " + e.ville + " " + e.pays).toLowerCase()) + '"><div class="tt" style="flex:1;min-width:0;"><b>' + esc(e.nom) + (e.statut === "EnAttente" ? " ⏳" : "") + '</b><span class="item-desc">' + esc([e.ville, e.pays].filter(Boolean).join(", ")) + (e.statut === "EnAttente" ? " · à valider" : "") + "</span></div>" +
+          '<button class="small secondary" style="width:auto;" data-m="' + esc(e.id) + '">✏️</button><button class="small secondary" style="width:auto;" data-s="' + esc(e.id) + '">🗑️</button></div>';
+      }).join("") : '<p class="item-desc">Aucune église.</p>') + "</div>";
+      c.querySelector("#scRechE").oninput = function () { var q = this.value.toLowerCase(); Array.prototype.forEach.call(c.querySelectorAll(".sc-egl"), function (l) { l.style.display = l.getAttribute("data-t").indexOf(q) !== -1 ? "" : "none"; }); };
+      Array.prototype.forEach.call(c.querySelectorAll("[data-m]"), function (b) { b.onclick = function () { modifierEglise(etat.donnees.eglises.filter(function (e) { return e.id === b.getAttribute("data-m"); })[0]); }; });
+      Array.prototype.forEach.call(c.querySelectorAll("[data-s]"), function (b) { b.onclick = function () {
+        confirmerApp_("Supprimer cette église de l'annuaire ?", function () { appelServeur("supprimerEglise", code(), b.getAttribute("data-s")).then(recharger, erreur); });
+      }; });
+    }, enErreur(c));
+  }
+  function modifierEglise(e) {
+    var champ = function (id, val, ph, max) { return '<input id="' + id + '" maxlength="' + max + '" placeholder="' + ph + '" value="' + esc(val) + '">'; };
+    var f = fenetre('<div class="evt-titre">✏️ Modifier l\'église</div>' + champ("seN", e.nom, "Nom *", 80) + champ("seV", e.ville, "Ville *", 60) +
+      '<select id="seP">' + PAYS.liste.map(function (x) { return '<option value="' + esc(x[1]) + '"' + (PAYS.codeDe(e.pays) === x[0] ? " selected" : "") + ">" + PAYS.drapeau(x[0]) + " " + esc(x[1]) + "</option>"; }).join("") + '</select>' +
+      champ("seA", e.adresse, "Adresse", 160) + champ("seL", e.localisation, "Localisation (lien Google Maps…) *", 400) + champ("sePa", e.pasteur, "Pasteur", 80) + champ("seT", e.telephone, "Téléphone", 30) + champ("seH", e.horaires, "Horaires", 200) + champ("seW", e.lien, "Site (https://…)", 200) +
+      '<textarea id="seD" rows="2" maxlength="300" placeholder="Description">' + esc(e.description) + '</textarea>' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><img id="seLogo" src="' + esc(e.logo) + '" alt="" style="' + (e.logo ? "" : "display:none;") + 'width:56px;height:56px;border-radius:12px;object-fit:cover;"><label class="file-btn-label" style="margin:0;">🖼️ Changer le logo<input type="file" id="seLogoF" accept="image/*" style="display:none;"></label></div>' +
+      '<select id="seS"><option value="Publié"' + (e.statut !== "EnAttente" ? " selected" : "") + '>✅ Publiée</option><option value="EnAttente"' + (e.statut === "EnAttente" ? " selected" : "") + '>⏳ En attente</option></select>' +
+      '<div style="display:flex;gap:8px;"><button id="seOk">Enregistrer</button><button class="secondary" id="seKo">Annuler</button></div>');
+    var nouveauLogo = "";
+    f.querySelector("#seKo").onclick = f.close;
+    f.querySelector("#seLogoF").onchange = function () { var fi = this.files[0]; if (!fi) return; XTR.logoCarre(fi).then(function (d) { nouveauLogo = d; var im = f.querySelector("#seLogo"); im.src = d; im.style.display = "block"; }, erreur); };
+    var g = function (i) { return f.querySelector("#" + i).value; };
+    f.querySelector("#seOk").onclick = function () {
+      appelServeur("scModifierEglise", code(), e.id, { nom: g("seN"), ville: g("seV"), pays: g("seP"), adresse: g("seA"), localisation: g("seL"), pasteur: g("sePa"), telephone: g("seT"), horaires: g("seH"), lien: g("seW"), description: g("seD"), statut: g("seS"), logo: nouveauLogo })
+        .then(function () { f.close(); recharger(); }, erreur);
+    };
+  }
+
+  // ---- Mur de prière
+  function vueMur(c) {
+    var statut = etat.statutMur || "Publié";
+    appelServeur("scMur", code(), statut).then(function (r) {
+      etat.donnees.mur = r.posts;
+      c.innerHTML = '<div class="card"><div style="display:flex;gap:6px;margin-bottom:8px;"><button class="small ' + (statut === "Publié" ? "" : "secondary") + '" style="width:auto;" data-st="Publié">Publiés</button><button class="small ' + (statut === "Masqué" ? "" : "secondary") + '" style="width:auto;" data-st="Masqué">Masqués (signalés)</button></div>' +
+        (r.posts.length ? r.posts.map(function (p) {
+          return '<div class="xtr-ligne" style="gap:8px;align-items:flex-start;"><div class="tt" style="flex:1;min-width:0;"><span class="item-desc">' + esc(p.type) + " · " + esc(p.nom) + (p.signalements ? " · 🚩" + p.signalements : "") + '</span><div style="white-space:pre-wrap;font-size:13px;">' + esc(p.texteBrut) + "</div></div>" +
+            '<div style="display:flex;flex-direction:column;gap:4px;">' + (statut === "Masqué" ? '<button class="small secondary" style="width:auto;" data-r="' + esc(p.id) + '">↩️</button>' : "") + '<button class="small secondary" style="width:auto;" data-m="' + esc(p.id) + '">✏️</button><button class="small secondary" style="width:auto;" data-s="' + esc(p.id) + '">🗑️</button></div></div>';
+        }).join("") : '<p class="item-desc">Aucun message.</p>') + "</div>";
+      Array.prototype.forEach.call(c.querySelectorAll("[data-st]"), function (b) { b.onclick = function () { etat.statutMur = b.getAttribute("data-st"); recharger(); }; });
+      Array.prototype.forEach.call(c.querySelectorAll("[data-r]"), function (b) { b.onclick = function () { appelServeur("retablirMur", code(), b.getAttribute("data-r")).then(recharger, erreur); }; });
+      Array.prototype.forEach.call(c.querySelectorAll("[data-s]"), function (b) { b.onclick = function () { confirmerApp_("Supprimer ce message ?", function () { appelServeur("supprimerMur", code(), b.getAttribute("data-s")).then(recharger, erreur); }); }; });
+      Array.prototype.forEach.call(c.querySelectorAll("[data-m]"), function (b) { b.onclick = function () {
+        var p = etat.donnees.mur.filter(function (x) { return x.id === b.getAttribute("data-m"); })[0];
+        var f = fenetre('<div class="evt-titre">✏️ Modifier le message</div><textarea id="smT" rows="5" maxlength="600">' + esc(p.texteBrut) + '</textarea><div style="display:flex;gap:8px;"><button id="smOk">Enregistrer</button><button class="secondary" id="smKo">Annuler</button></div>');
+        f.querySelector("#smKo").onclick = f.close;
+        f.querySelector("#smOk").onclick = function () { appelServeur("scModifierMur", code(), p.id, { texte: f.querySelector("#smT").value, categorie: p.categorie }).then(function () { f.close(); recharger(); }, erreur); };
+      }; });
+    }, enErreur(c));
+  }
+
+  function init() { if (window.XTR && XTR.enregistrer) XTR.enregistrer({ id: "controle", label: "🛡️ Contrôle", visible: estSuper, rendre: dessiner }); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();
 </script>
 
