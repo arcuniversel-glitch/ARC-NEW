@@ -1,20 +1,18 @@
-/* Service worker — JESUS
- *
- * Principe : le RÉSEAU d'abord, le cache seulement en secours (hors connexion).
- * Ainsi, dès qu'une nouvelle version de index.html est mise en ligne sur GitHub, elle est
- * affichée à l'ouverture suivante — plus besoin de changer un numéro de version à la main.
- *
- * Les appels vers Apps Script, YouTube, Google Fonts, Kkiapay… (autres domaines) et toutes les
- * requêtes qui ne sont pas des GET ne sont JAMAIS interceptés : ils passent directement.
+/**
+ * Service worker de l'application JESUS.
+ * - Pages et fichiers de l'appli : « réseau d'abord » (les mises à jour apparaissent tout de suite),
+ *   avec la dernière copie connue quand il n'y a pas de connexion.
+ * - Notifications push : à la réception, on lit le dernier message envoyé par l'équipe puis on l'affiche.
+ * Les appels vers les autres domaines (Worker, Apps Script, YouTube…) et les requêtes non GET ne sont jamais interceptés.
  */
-const CACHE = "jesus-cache-v2";
+const CACHE = "jesus-cache-v3";
+const API = "https://sun-api.arcuniversel.workers.dev";
 const FICHIERS_DE_BASE = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-512-maskable.png"];
 
 self.addEventListener("install", function (event) {
-  self.skipWaiting(); // la nouvelle version s'active tout de suite, sans attendre la fermeture de l'appli
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE).then(function (cache) {
-      // Un fichier absent ne doit pas faire échouer l'installation
       return Promise.all(FICHIERS_DE_BASE.map(function (fichier) {
         return cache.add(new Request(fichier, { cache: "reload" })).catch(function () {});
       }));
@@ -25,20 +23,19 @@ self.addEventListener("install", function (event) {
 self.addEventListener("activate", function (event) {
   event.waitUntil(
     caches.keys().then(function (noms) {
-      // Supprime tous les anciens caches (versions précédentes de l'appli)
-      return Promise.all(noms.filter(function (nom) { return nom !== CACHE; }).map(function (nom) { return caches.delete(nom); }));
+      // Supprime les anciennes versions de l'appli, mais GARDE les audios enregistrés pour le mode hors-ligne.
+      return Promise.all(noms.filter(function (nom) { return nom !== CACHE && nom !== "jesus-hors-ligne"; }).map(function (nom) { return caches.delete(nom); }));
     }).then(function () { return self.clients.claim(); })
   );
 });
 
 self.addEventListener("fetch", function (event) {
   const requete = event.request;
-  if (requete.method !== "GET") return;                       // POST vers l'API, etc.
+  if (requete.method !== "GET") return;
   const url = new URL(requete.url);
-  if (url.origin !== self.location.origin) return;            // autres domaines : pas touchés
+  if (url.origin !== self.location.origin) return;
 
   const estPage = requete.mode === "navigate" || url.pathname.endsWith("/") || url.pathname.endsWith(".html");
-  // Pour les pages : on revalide toujours auprès du serveur (pas de copie HTTP périmée)
   const aller = estPage ? new Request(requete.url, { cache: "no-cache", credentials: "same-origin" }) : requete;
 
   event.respondWith(
@@ -49,10 +46,40 @@ self.addEventListener("fetch", function (event) {
       }
       return reponse;
     }).catch(function () {
-      // Hors connexion : on sert la dernière copie connue
       return caches.match(requete).then(function (enCache) {
         return enCache || (estPage ? caches.match("index.html") : undefined);
       });
+    })
+  );
+});
+
+// ---- Notifications push ----
+self.addEventListener("push", function (event) {
+  const parDefaut = { titre: "JESUS — Réveil Chrétien", message: "Une nouvelle notification vous attend.", lien: "" };
+  event.waitUntil(
+    fetch(API, { method: "POST", body: JSON.stringify({ action: "dernierePush", params: [] }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { return (j && j.succes && j.resultat) ? j.resultat : parDefaut; })
+      .catch(function () { return parDefaut; })
+      .then(function (n) {
+        return self.registration.showNotification(n.titre || parDefaut.titre, {
+          body: n.message || parDefaut.message,
+          icon: "icon-192.png",
+          badge: "icon-192.png",
+          data: { lien: n.lien || "" }
+        });
+      })
+  );
+});
+
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+  const lien = (event.notification.data && event.notification.data.lien) || "";
+  const cible = /^https?:\/\//i.test(lien) ? lien : self.registration.scope;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (fenetres) {
+      for (const f of fenetres) { if ("focus" in f && cible === self.registration.scope) return f.focus(); }
+      return self.clients.openWindow(cible);
     })
   );
 });
