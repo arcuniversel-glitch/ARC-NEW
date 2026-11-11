@@ -5,7 +5,7 @@
  * - Notifications push : à la réception, on lit le dernier message envoyé par l'équipe puis on l'affiche.
  * Les appels vers les autres domaines (Worker, Apps Script, YouTube…) et les requêtes non GET ne sont jamais interceptés.
  */
-const CACHE = "jesus-cache-v5";
+const CACHE = "jesus-cache-v6";
 const API = "https://sun-api.arcuniversel.workers.dev";
 const FICHIERS_DE_BASE = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-512-maskable.png"];
 
