@@ -5,7 +5,7 @@
  * - Notifications push : à la réception, on lit le dernier message envoyé par l'équipe puis on l'affiche.
  * Les appels vers les autres domaines (Worker, Apps Script, YouTube…) et les requêtes non GET ne sont jamais interceptés.
  */
-const CACHE = "jesus-cache-v4";
+const CACHE = "jesus-cache-v5";
 const API = "https://sun-api.arcuniversel.workers.dev";
 const FICHIERS_DE_BASE = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-512-maskable.png"];
 
@@ -71,11 +71,21 @@ self.addEventListener("push", function (event) {
           data: { lien: n.lien || "" }
         });
       })
+      .then(majBadge)
   );
 });
 
+// Pastille de l'icône de l'application : nombre de notifications non lues
+function majBadge() {
+  return self.registration.getNotifications().then(function (l) {
+    const n = l.length;
+    if (self.navigator && self.navigator.setAppBadge) return n ? self.navigator.setAppBadge(n) : self.navigator.clearAppBadge();
+  }).catch(function () {});
+}
+
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
+  event.waitUntil(majBadge());
   const lien = (event.notification.data && event.notification.data.lien) || "";
   const cible = /^https?:\/\//i.test(lien) ? lien : self.registration.scope;
   event.waitUntil(
