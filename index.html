@@ -291,7 +291,7 @@ video.video-player-frame{object-fit:contain}
 <style id="l19css">
 .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,.VIpgJd-ZVi9od-aZ2wEe-OiiCO,.VIpgJd-ZVi9od-ORHb-OEVmcd,.VIpgJd-ZVi9od-l4eHX-hSRGPd,#goog-gt-tt,.goog-tooltip,.goog-te-spinner-pos,.goog-te-balloon-frame,iframe.skiptranslate,.VIpgJd-yAWNEb-L7lbkb{display:none!important;visibility:hidden!important}
 body{top:0!important}
-.top-rech{flex:1 1 auto;min-width:0;max-width:560px;margin:0 6px}.top-rech input{width:100%;margin:0;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.18);color:#fff;padding:0 14px;font-size:14px}.top-rech input::placeholder{color:rgba(255,255,255,.85)}.top-rech input:focus{background:#fff;color:#0c2f68}
+.top-rech{flex:1 1 auto;min-width:0;max-width:560px;margin:0 6px;display:flex;gap:6px;align-items:center}.top-rech-btn{width:44px;height:40px;flex:none;margin:0;padding:0;border-radius:12px;background:#fff;color:#0c2f68;border:0;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.2)}.top-rech input{flex:1;min-width:0;width:auto;margin:0;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.18);color:#fff;padding:0 14px;font-size:14px}.top-rech input::placeholder{color:rgba(255,255,255,.85)}.top-rech input:focus{background:#fff;color:#0c2f68}
 #btnRecherche{display:none}
 @media(max-width:700px){.top-rech{display:none}#btnRecherche{display:inline-flex}}
 #btnCloche{position:relative}#btnCloche.off{opacity:.65}#btnCloche.off:after{content:"";position:absolute;width:26px;height:2.5px;background:#fff;transform:rotate(-45deg);border-radius:2px}
@@ -300,6 +300,9 @@ body{top:0!important}
 .l19-com{border-top:1px solid #e4e9f2;padding:8px 0;font-size:13.5px}.l19-com b{font-size:12.5px}
 .dis-carte{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #e4e9f2}.dis-carte:last-child{border-bottom:0}.dis-photo{width:54px;height:54px;border-radius:50%;background:#eef3f9;object-fit:cover;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}.dis-corps{flex:1;min-width:0;font-size:12.5px;color:#5b6b86}.dis-corps b{display:block;color:#12233f;font-size:14.5px}.dis-act{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.dis-act button{width:auto;margin:0}
 .cel-b{-webkit-touch-callout:none}.l19-grande{position:relative;width:min(88vw,480px);aspect-ratio:1;margin:8px auto;border-radius:16px;background-size:cover;background-position:center;-webkit-user-select:none;user-select:none}.l19-voile{position:absolute;inset:0}.l19-statut{position:relative;min-height:260px;max-height:60vh;aspect-ratio:3/4;margin:0 auto;border-radius:16px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-size:22px;font-weight:700;padding:16px;-webkit-user-select:none;user-select:none;white-space:pre-wrap}.l19-statut span{text-shadow:0 1px 6px rgba(0,0,0,.6)}.col-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;margin:8px 0}.col-photos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px}.col-video{width:100%;border-radius:12px;margin:6px 0;max-height:260px;background:#000}
+.tabs-wrap .tab{color:#04122e!important;font-weight:900!important}.tabs-wrap .tab .tab-ic svg{stroke:#04122e;color:#04122e;stroke-width:2.1!important}
+.tabs-wrap .tab.active{background:#04122e!important;color:#fff!important}.tabs-wrap .tab.active .tab-ic svg{stroke:#fff;color:#fff}
+.tabs-wrap .tabs>.tab:first-child{margin-left:auto!important}.tabs-wrap .tabs>.tab:last-child{margin-right:auto!important}
 </style>
 </head>
 <body>
@@ -330,7 +333,7 @@ body{top:0!important}
       <div class="topbar-sub" id="topbarSub">Espace membres</div>
     </div>
     <button id="btnRecherche" class="btn-langue" onclick="L19.ouvrirRecherche()" title="Rechercher" aria-label="Rechercher"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg></button>
-    <form class="top-rech" id="topRech" onsubmit="return L19.lancerRecherche(event)"><input id="topRechQ" type="search" placeholder="Rechercher dans toute l'application…" autocomplete="off" aria-label="Rechercher"></form>
+    <form class="top-rech" id="topRech" onsubmit="return L19.lancerRecherche(event)"><input id="topRechQ" type="search" placeholder="Rechercher dans toute l'application…" autocomplete="off" aria-label="Rechercher"><button type="submit" class="top-rech-btn" aria-label="Lancer la recherche" title="Rechercher"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg></button></form>
     <button id="btnLangue" class="btn-langue" onclick="ouvrirMenuLangue_(event)" title="Changer la langue de l'application" aria-label="Changer la langue"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg></button>
     <button id="btnCompte" class="btn-langue" onclick="afficherOnglet('badge')" title="Mon compte" aria-label="Mon compte" style="display:none;"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></button>
     <button id="btnCloche" class="btn-langue" onclick="L19.basculerNotifs()" title="Notifications" aria-label="Notifications"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="currentColor"><path d="M12 22a2.4 2.4 0 002.3-1.8h-4.6A2.4 2.4 0 0012 22zm7-5.5v-5.2a7 7 0 00-5.2-6.8V3.8a1.8 1.8 0 00-3.6 0v.7A7 7 0 005 11.3v5.2l-2 2v1h18v-1z"/></svg></button>
@@ -2424,7 +2427,9 @@ body{top:0!important}
         { id: "evenements", label: "🎫 Événements" },
         { id: "offrandes", label: "🙌 Offrandes" },
         { id: "cotisation", label: "💳 Collectes" },
-        { id: "demandePriere", label: "✉️ Demande de prière" }
+        { id: "demandePriere", label: "✉️ Demande de prière" },
+        { id: "groupes", label: "Groupes" },
+        { id: "soumissions", label: "✍️ Soumissions" }
       ];
     } else {
       onglets = [
@@ -9095,11 +9100,10 @@ body{top:0!important}
 
   // ------------------------------------------------------------------ navigation
   function nav() {
-    var o = VUES.filter(function (v) { return !v.cachee && !v.admin && (!v.visible || v.visible()); });
+    var o = VUES.filter(function (v) { return !v.cachee && !v.admin && (!v.visible || v.visible() || (!membreCourant && v.compte)); });
     // Aujourd'hui, Plans de lecture, puis Discussions et Églises, puis les autres sous-rubriques
     var tete = ["aujourdhui", "plans", "discussions", "eglises"].map(function (id) { return o.filter(function (v) { return v.id === id; })[0]; }).filter(Boolean);
     o = tete.concat(o.filter(function (v) { return ["aujourdhui", "plans", "discussions", "eglises"].indexOf(v.id) === -1; }));
-    if (!membreCourant) o = o.filter(function (v) { return v.id !== "discussions"; });
     var cur = VUES.filter(function (v) { return v.id === S.vue; })[0];
     if (!cur || (!cur.cachee && cur.visible && !cur.visible())) S.vue = o[0].id;
     document.getElementById("xtrNav").innerHTML = o.map(function (v) {
@@ -9112,7 +9116,11 @@ body{top:0!important}
     if (v) v.rendre(zone());
     if (ZONE_ADMIN && document.body.contains(ZONE_ADMIN.zone) && ZONE_ADMIN.zone.offsetParent !== null) ZONE_ADMIN.vue.rendre(ZONE_ADMIN.zone);
   };
-  X.vue = function (id) { S.vue = id; window.chargerCommunaute(); };
+  X.vue = function (id) {
+    var v = VUES.filter(function (x) { return x.id === id; })[0];
+    if (!membreCourant && v && v.compte && window.L19) { L19.exigerCompte(v.label); return; }
+    S.vue = id; window.chargerCommunaute();
+  };
   X.S = S; X.esc = esc; X.zone = zone; X.echec = echec; X.besoinMembre = besoinMembre; X.ilya = ilya; X.lsGet = lsGet; X.lsSet = lsSet; X.code = code;
   X.estAdminContenus = estAdminContenus; X.estModerateur = estModerateur;
 
@@ -10026,7 +10034,7 @@ body{top:0!important}
   };
   X.basculerPromo = function (c) { appelServeur("basculerPromo", code(), c).then(function () { window.chargerCommunaute(); }, echec); };
   X.supprimerPromo = function (c) { confirmerApp_("Supprimer ce code promo ?", function () { appelServeur("supprimerPromo", code(), c).then(function () { window.chargerCommunaute(); }, echec); }); };
-  X.enregistrer({ id: "promos", label: "🏷️ Promos", visible: function () { return !!membreCourant; }, rendre: function (z) {
+  X.enregistrer({ id: "promos", compte: true, label: "🏷️ Promos", visible: function () { return !!membreCourant; }, rendre: function (z) {
     z.innerHTML = '<div class="card"><div class="loading">Chargement…</div></div>';
     var modo = estAdminContenus() || (permissionsDe_(membreCourant).indexOf("evenements") !== -1);
     Promise.all([appelServeur("getMesEvenements", code()), appelServeur("mesPromos", code())]).then(function (r) {
@@ -10052,7 +10060,7 @@ body{top:0!important}
     else prompt("Copiez ce lien :", url);
   };
   X.whatsappParrain = function () { window.open("https://wa.me/?text=" + encodeURIComponent("Rejoins-moi sur l'application JESUS : " + urlPage() + "?ref=" + encodeURIComponent(code())), "_blank"); };
-  X.enregistrer({ id: "parrainage", label: "🎁 Parrainage", visible: function () { return !!membreCourant; }, rendre: function (z) {
+  X.enregistrer({ id: "parrainage", compte: true, label: "🎁 Parrainage", visible: function () { return !!membreCourant; }, rendre: function (z) {
     z.innerHTML = '<div class="card"><div class="loading">Chargement…</div></div>';
     appelServeur("monParrainage", code()).then(function (r) {
       z.innerHTML = '<div class="card"><div class="evt-titre">🎁 Invitez vos proches</div><p class="item-desc">Partagez votre lien personnel : chaque nouveau membre qui s\'inscrit avec ce lien compte comme votre filleul.</p>' +
@@ -10076,7 +10084,7 @@ body{top:0!important}
     };
     boucle(0).then(function () { s.textContent = "✅ " + rap + " engagé(s) à relancer, " + env + " notification(s) envoyée(s)."; }, function (e) { s.textContent = "Erreur : " + e.message; });
   };
-  X.enregistrer({ id: "dons", label: "💝 Dons mensuels", visible: function () { return !!membreCourant; }, rendre: function (z) {
+  X.enregistrer({ id: "dons", compte: true, label: "💝 Dons mensuels", visible: function () { return !!membreCourant; }, rendre: function (z) {
     z.innerHTML = '<div class="card"><div class="loading">Chargement…</div></div>';
     var p = permissionsDe_(membreCourant), fin = p.indexOf("finances") !== -1 || p.indexOf("systeme") !== -1;
     Promise.all([appelServeur("getTypesCotisation"), appelServeur("mesEngagements", code()), fin ? appelServeur("statEngagements", code()) : Promise.resolve(null)]).then(function (r) {
@@ -10108,7 +10116,7 @@ body{top:0!important}
       '<div class="t">' + Number(r.montant).toLocaleString("fr-FR") + ' FCFA</div><p style="text-align:center"><small>Merci. Conservez ce reçu comme preuve de paiement.</small></p><script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script>');
     w.document.close();
   };
-  X.enregistrer({ id: "recus", label: "🧾 Mes reçus", visible: function () { return !!membreCourant; }, rendre: function (z) {
+  X.enregistrer({ id: "recus", compte: true, label: "🧾 Mes reçus", visible: function () { return !!membreCourant; }, rendre: function (z) {
     z.innerHTML = '<div class="card"><div class="loading">Chargement…</div></div>';
     appelServeur("mesRecus", code()).then(function (r) {
       RECUS = r.recus || []; X.membreRecu = r.membre;
@@ -12862,7 +12870,7 @@ body.acc-actif #sliderAfficheZone{display:none!important}
       if (document.body.contains(z) && X.S.vue === "discussions" && !X.S.cel && D.onglet === "annuaire") rendreDisc(z);
     }, function (e) { D.charge = true; z.insertAdjacentHTML("beforeend", '<p class="error">' + esc(e.message) + "</p>"); });
   }
-  X.enregistrer({ id: "discussions", label: "💬 Discussions", rendre: function (z) {
+  X.enregistrer({ id: "discussions", compte: true, label: "💬 Discussions", rendre: function (z) {
     if (!membreCourant) { z.innerHTML = '<div class="card"><p class="item-desc">Les discussions sont réservées aux personnes qui ont un compte.</p><button onclick="quitterVisiteurEtSeConnecter()">Créer un compte / Se connecter</button></div>'; return; }
     if (X.S.cel) { if (window.CEL) CEL.rendre(z, X.S.cel); return; }
     z.innerHTML = '<div class="card"><div class="loading">Chargement…</div></div>';
@@ -12984,10 +12992,17 @@ body.acc-actif #sliderAfficheZone{display:none!important}
   effacerBadge();
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") effacerBadge(); });
 
+  // Fonctions réservées aux comptes : visibles par tous, mais on invite à créer un compte au moment d'y accéder
+  L.exigerCompte = function (nom) {
+    var o = fen('<div class="evt-titre">🔒 Un compte est nécessaire</div><p class="item-desc">« ' + esc(String(nom || "Cette fonction").replace(/^[^A-Za-zÀ-ÿ0-9]+/, "")) + ' » est réservé aux membres. Créez un compte gratuit (ou connectez-vous) pour y accéder.</p><button id="ecA">Créer un compte / Se connecter</button><button id="ecB" class="secondary">Plus tard</button>');
+    o.querySelector("#ecA").onclick = function () { o.remove(); quitterVisiteurEtSeConnecter(); };
+    o.querySelector("#ecB").onclick = function () { o.remove(); };
+  };
   // ------------------------------------------------------------------ Branchements sur la navigation
   var ancien = window.afficherOnglet;
   if (typeof ancien === "function") {
     window.afficherOnglet = function (id) {
+      if (typeof modeVisiteur !== "undefined" && modeVisiteur && (id === "groupes" || id === "soumissions" || id === "badge")) { L.exigerCompte(id === "groupes" ? "Groupes" : id === "soumissions" ? "Soumissions" : "Mon compte"); return; }
       var r = ancien.apply(this, arguments);
       if (id === "prieres") setTimeout(L.majOrganiser, 50);
       if (id === "badge") setTimeout(L.carteCompte, 50);
