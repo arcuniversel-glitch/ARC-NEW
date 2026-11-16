@@ -380,6 +380,8 @@ body{top:0!important}
     </div>
   </div>
 
+<button id="btnInstallerFlottant" onclick="installerApplication()" style="display:none;position:fixed;top:10px;right:10px;z-index:9000;width:auto;padding:8px 12px;font-size:12px;background:#0c2f68;color:#fff;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.3);white-space:nowrap;">📲 Installer</button>
+
   <div class="topbar" id="topbar">
     <div class="logo-circle" id="topbarLogo"><img src="icon-192.png" alt="JESUS" onerror="this.onerror=null;this.src=window.LOGO_SECOURS"></div>
     <div class="topbar-nom-wrap">
@@ -2030,11 +2032,19 @@ body{top:0!important}
     return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
   }
 
+  // Le bouton est présent TOUT LE TEMPS tant que l'application n'est pas installée : dans l'en-tête quand il est
+  // affiché, et en bouton flottant sur les écrans sans en-tête (connexion, choix du pays…). Sans invite automatique
+  // du navigateur, le bouton affiche les instructions d'installation.
   function afficherBoutonsInstallation() {
-    if (estDejaInstallee()) return;
-    const b1 = document.getElementById("btnInstallerApp");
-    if (b1) b1.style.display = "inline-flex";
+    const b1 = document.getElementById("btnInstallerApp"), b2 = document.getElementById("btnInstallerFlottant"), tb = document.getElementById("topbar");
+    const installee = estDejaInstallee();
+    const enteteVisible = !!tb && tb.style.display !== "none" && getComputedStyle(tb).display !== "none";
+    if (b1) b1.style.display = !installee && enteteVisible ? "inline-flex" : "none";
+    if (b2) b2.style.display = !installee && !enteteVisible ? "inline-flex" : "none";
   }
+  window.addEventListener("appinstalled", function () { promptInstallDiffere = null; afficherBoutonsInstallation(); });
+  setInterval(afficherBoutonsInstallation, 1200);
+  document.addEventListener("DOMContentLoaded", afficherBoutonsInstallation);
 
   // Chrome/Android déclenche cet évènement quand l'app remplit les critères d'installation.
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -2045,7 +2055,7 @@ body{top:0!important}
 
   // iOS n'a pas d'invite automatique : on affiche quand même le bouton, avec des instructions.
   window.addEventListener("load", function () {
-    if (estIOS() && !estDejaInstallee()) afficherBoutonsInstallation();
+    afficherBoutonsInstallation();
     if ("serviceWorker" in navigator) {
       // Quand une nouvelle version de l'appli prend le relais, on recharge la page une seule fois
       // pour afficher tout de suite la nouvelle version (sauf à la toute première installation).
