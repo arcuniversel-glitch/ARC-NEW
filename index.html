@@ -4,6 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="manifest" href="manifest.json">
+  <script>
+    // Capte tout de suite la proposition d'installation du navigateur (elle peut arriver avant le chargement complet)
+    window.__invitInstall = null;
+    window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); window.__invitInstall = e; if (window.__surInvit) window.__surInvit(e); });
+  </script>
   <link rel="apple-touch-icon" href="icon-512-maskable.png">
   <link rel="icon" type="image/png" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2022,7 +2027,8 @@ body{top:0!important}
   }
 
   // ==================== INSTALLATION (PWA) ====================
-  let promptInstallDiffere = null;
+  let promptInstallDiffere = window.__invitInstall || null;
+  window.__surInvit = function (e) { promptInstallDiffere = e; afficherBoutonsInstallation(); };
 
   function estIOS() {
     return /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -2099,7 +2105,9 @@ body{top:0!important}
     } else if (estIOS()) {
       alert("Pour installer l'application sur iPhone/iPad :\n\n1. Appuyez sur le bouton Partager (le carré avec une flèche vers le haut) en bas de Safari.\n2. Choisissez \"Sur l'écran d'accueil\".\n3. Confirmez en haut à droite.");
     } else {
-      alert("Pour installer l'application : ouvrez le menu de votre navigateur (⋮ ou ...) et choisissez \"Installer l'application\" ou \"Ajouter à l'écran d'accueil\".");
+      const chrome = /chrome|crios/i.test(navigator.userAgent) && !/edg|opr|samsung/i.test(navigator.userAgent);
+      alert("Pour installer l'application : ouvrez le menu de votre navigateur (⋮ ou ...) et choisissez \"Installer l'application\" ou \"Ajouter à l'écran d'accueil\"." +
+        (chrome ? "\n\nAstuce : si ces choix n'apparaissent pas, fermez complètement Chrome puis rouvrez www.jesusonly.site, attendez quelques secondes et réessayez. Sinon, utilisez « 🔧 Diagnostic installation » sur l'écran de connexion et envoyez-nous le résultat." : "\n\nPour une installation en un clic, ouvrez l'application avec Google Chrome."));
     }
   }
 
@@ -2153,7 +2161,12 @@ body{top:0!important}
     }).then(function (texte) {
       try {
         const donnees = JSON.parse(texte);
-        lignes.push("JSON valide. start_url = " + donnees.start_url);
+        lignes.push("JSON valide. start_url = " + donnees.start_url + " · scope = " + donnees.scope + " · display = " + donnees.display + " · id = " + donnees.id);
+        const ic = Array.isArray(donnees.icons) ? donnees.icons : [];
+        lignes.push("Icônes déclarées : " + (ic.map(function (i) { return i.sizes + " " + (i.purpose || "any"); }).join(" | ") || "AUCUNE"));
+        if (!donnees.name && !donnees.short_name) lignes.push("⚠️ Le manifeste n'a ni name ni short_name.");
+        if (!ic.some(function (i) { return /192x192/.test(i.sizes || ""); }) || !ic.some(function (i) { return /512x512/.test(i.sizes || ""); })) lignes.push("⚠️ Il faut une icône 192x192 ET une 512x512 pour que Chrome propose l'installation.");
+        if (["standalone", "fullscreen", "minimal-ui"].indexOf(donnees.display) === -1) lignes.push("⚠️ display doit être standalone (ou minimal-ui/fullscreen).");
       } catch (err) {
         lignes.push("⚠️ Le contenu de manifest.json n'est PAS un JSON valide.");
       }
