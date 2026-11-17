@@ -11577,9 +11577,10 @@ body{top:0!important}
   function drapeau(c) { return /^[A-Z]{2}$/.test(c || "") ? String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65, 0x1F1E6 + c.charCodeAt(1) - 65) : "🌍"; }
 
   // Drapeau en image (les emojis de drapeau ne s'affichent pas sous Windows) ; repli sur l'emoji si l'image ne charge pas.
-  function drapeauHtml(c, larg) {
+  function drapeauHtml(c, larg, plein) {
     if (!/^[A-Z]{2}$/.test(c || "")) return "\uD83C\uDF0D";
     var l = c.toLowerCase(), w = larg || 24, h = Math.round(w * 0.75);
+    if (plein) return '<img src="https://flagcdn.com/w160/' + l + '.png" alt="' + c + '" decoding="async" style="display:block;width:100%;height:100%;border-radius:inherit;object-fit:cover;" onerror="this.outerHTML=\'<span style=&quot;font-size:22px;&quot;>' + drapeau(c) + '</span>\'">';
     return '<img src="https://flagcdn.com/w40/' + l + '.png" srcset="https://flagcdn.com/w80/' + l + '.png 2x" width="' + w + '" height="' + h + '" alt="' + c + '" decoding="async" style="display:inline-block;vertical-align:middle;border-radius:3px;object-fit:cover;box-shadow:0 0 0 1px rgba(0,0,0,.18);" onerror="this.outerHTML=\'<span>' + drapeau(c) + '</span>\'">';
   }
 
@@ -11666,7 +11667,7 @@ body{top:0!important}
   var ICONE_GLOBE = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4"/><path d="M12 2.8c2.6 2.6 4 5.8 4 9.2s-1.4 6.6-4 9.2c-2.6-2.6-4-5.8-4-9.2s1.4-6.6 4-9.2z"/></svg>';
   function majBoutons() {
     var c = P.code(), f = drapeau(c);
-    var b = document.getElementById("btnPays"); if (b) { b.innerHTML = c ? drapeauHtml(c, 26) : ICONE_GLOBE; b.style.position = "relative"; b.title = c ? "Pays : " + P.nom(c) + " (changer)" : "Choisir mon pays"; }
+    var b = document.getElementById("btnPays"); if (b) { b.innerHTML = c ? drapeauHtml(c, 0, true) : ICONE_GLOBE; b.style.position = "relative"; b.style.padding = c ? "0" : ""; b.style.overflow = c ? "hidden" : ""; b.title = c ? "Pays : " + P.nom(c) + " (changer)" : "Choisir mon pays"; }
     var a = document.getElementById("btnPaysAccueil"); if (a) a.textContent = c ? f + " " + P.nom(c) + " — changer de pays" : "🌍 Choisir mon pays";
   }
 
@@ -12282,7 +12283,7 @@ body{top:0!important}
       (estSuper() && !apercu ? '<button type="button" class="ap-edit" id="apEdit">✏️ Modifier cette page</button>' : "");
     // bouton pays (même icône que l'en-tête)
     var bp = o.querySelector("#apPays");
-    if (bp && window.PAYS) { var cp = PAYS.code(); bp.innerHTML = (document.getElementById("btnPays") ? document.getElementById("btnPays").innerHTML : "🌍"); bp.style.position = "relative"; bp.onclick = function () { PAYS.ouvrir(); }; }
+    if (bp && window.PAYS) { var cp = PAYS.code(); bp.innerHTML = (document.getElementById("btnPays") ? document.getElementById("btnPays").innerHTML : "🌍"); bp.style.position = "relative"; bp.style.padding = (document.getElementById("btnPays") || {}).style ? document.getElementById("btnPays").style.padding : ""; bp.style.overflow = "hidden"; bp.onclick = function () { PAYS.ouvrir(); }; }
     Array.prototype.forEach.call(o.querySelectorAll("[data-go]"), function (b) { b.onclick = function () { if (apercu) { fermer(); return; } aller(b.getAttribute("data-go")); }; });
     var an = o.querySelector(".ap-annonce[data-lien]"); if (an) an.onclick = function () { window.open(an.getAttribute("data-lien"), "_blank", "noopener"); };
     var ed = o.querySelector("#apEdit"); if (ed) ed.onclick = function () { editer(); };
