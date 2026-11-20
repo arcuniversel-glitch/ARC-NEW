@@ -1,11 +1,11 @@
 /**
  * Service worker de l'application JESUS.
- * - Pages et fichiers de l'appli : « réseau d'abord » (les mises à jour apparaissent tout de suite),
- *   avec la dernière copie connue quand il n'y a pas de connexion.
+ * - Pages et fichiers de l'appli : « copie d'abord » (ouverture instantanée), mise à jour récupérée en arrière-plan
+ *   puis proposée par un bandeau « Mise à jour disponible ».
  * - Notifications push : à la réception, on lit le dernier message envoyé par l'équipe puis on l'affiche.
  * Les appels vers les autres domaines (Worker, Apps Script, YouTube…) et les requêtes non GET ne sont jamais interceptés.
  */
-const CACHE = "jesus-cache-v32";
+const CACHE = "jesus-cache-v35";
 const API = "https://sun-api.arcuniversel.workers.dev";
 const FICHIERS_DE_BASE = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-512-maskable.png"];
 
@@ -36,19 +36,30 @@ self.addEventListener("fetch", function (event) {
   if (url.origin !== self.location.origin) return;
 
   const estPage = requete.mode === "navigate" || url.pathname.endsWith("/") || url.pathname.endsWith(".html");
+  const cle = estPage ? new Request(url.origin + url.pathname) : requete;
   const aller = estPage ? new Request(requete.url, { cache: "no-cache", credentials: "same-origin" }) : requete;
 
+  // « Copie d'abord » : l'application s'ouvre instantanément depuis l'appareil ; la version la plus récente est
+  // récupérée en arrière-plan et proposée à l'utilisateur (bandeau « Mise à jour disponible »).
   event.respondWith(
-    fetch(aller).then(function (reponse) {
-      if (reponse && reponse.ok && reponse.type === "basic") {
-        const copie = reponse.clone();
-        caches.open(CACHE).then(function (cache) { cache.put(requete, copie); });
-      }
-      return reponse;
-    }).catch(function () {
-      return caches.match(requete).then(function (enCache) {
-        return enCache || (estPage ? caches.match("index.html") : undefined);
+    caches.match(cle, { ignoreSearch: estPage }).then(function (enCache) {
+      const reseau = fetch(aller).then(function (reponse) {
+        if (reponse && reponse.ok && reponse.type === "basic") {
+          const copie = reponse.clone();
+          const neuf = reponse.clone();
+          caches.open(CACHE).then(function (cache) { cache.put(cle, copie); });
+          if (enCache && estPage) {
+            Promise.all([enCache.clone().text(), neuf.text()]).then(function (t) {
+              if (t[0] !== t[1]) {
+                self.clients.matchAll({ type: "window" }).then(function (l) { l.forEach(function (c) { c.postMessage({ type: "maj-disponible" }); }); });
+              }
+            }).catch(function () {});
+          }
+        }
+        return reponse;
       });
+      if (enCache) { reseau.catch(function () {}); return enCache; }
+      return reseau.catch(function () { return estPage ? caches.match("index.html") : undefined; });
     })
   );
 });
