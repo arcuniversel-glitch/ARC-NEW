@@ -1938,6 +1938,12 @@ body{top:0!important}
   // Adresse publique des liens de partage. Une fois votre domaine relié au Worker dans Cloudflare
   // (ex. « partage.jesusonly.site »), écrivez-la ici : https://partage.jesusonly.site — les liens partagés ne montreront plus le nom technique.
   window.DOMAINE_PARTAGE = "";
+  // Votre domaine de partage est utilisé automatiquement dès qu'il répond (test par une image) ; sinon on garde l'adresse technique du Worker, qui fonctionne toujours.
+  (function () {
+    var d = "https://partage.jesusonly.site", im = new Image();
+    im.onload = function () { window.DOMAINE_PARTAGE = d; };
+    im.src = d + "/og/app?t=" + Date.now();
+  })();
   // Le NOUVEAU serveur (Cloudflare) reçoit toutes les requêtes. Il exécute lui-même les actions déjà
   // portées et relaie le reste à l'ANCIEN serveur (Apps Script). Si le nouveau serveur est injoignable,
   // l'appli retombe automatiquement sur l'ancien, comme avant.
@@ -16866,8 +16872,8 @@ body.acc-actif #sliderAfficheZone{display:none!important}
     } catch (e) { return ""; }
   }
   // Adresse des liens de partage. Remplacez-la par votre propre domaine (ex. "https://partage.jesusonly.site") une fois celui-ci relié au Worker.
-  var API = window.DOMAINE_PARTAGE || "https://sun-api.arcuniversel.workers.dev";
-  P.lien = function (type, id, canal) { return API + "/s/" + encodeURIComponent(type) + "." + encodeURIComponent(id) + (canal ? "?c=" + canal : ""); };
+  var API_ = function () { return window.DOMAINE_PARTAGE || "https://sun-api.arcuniversel.workers.dev"; };
+  P.lien = function (type, id, canal) { return API_() + "/s/" + encodeURIComponent(type) + "." + encodeURIComponent(id) + (canal ? "?c=" + canal : ""); };
   function svg(ch) { return '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ch + "</svg>"; }
   var CANAUX = [
     ["interne", "JESUS", "#0c2f68", svg('<path d="M4 5h16v11H9l-5 4z"/>')],
