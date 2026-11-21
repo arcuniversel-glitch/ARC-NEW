@@ -1937,13 +1937,7 @@ body{top:0!important}
   // ==================== ADRESSES DE L'API ====================
   // Adresse publique des liens de partage. Une fois votre domaine relié au Worker dans Cloudflare
   // (ex. « partage.jesusonly.site »), écrivez-la ici : https://partage.jesusonly.site — les liens partagés ne montreront plus le nom technique.
-  window.DOMAINE_PARTAGE = "";
-  // Votre domaine de partage est utilisé automatiquement dès qu'il répond (test par une image) ; sinon on garde l'adresse technique du Worker, qui fonctionne toujours.
-  (function () {
-    var d = "https://partage.jesusonly.site", im = new Image();
-    im.onload = function () { window.DOMAINE_PARTAGE = d; };
-    im.src = d + "/og/app?t=" + Date.now();
-  })();
+  window.DOMAINE_PARTAGE = "https://partage.jesusonly.site";
   // Le NOUVEAU serveur (Cloudflare) reçoit toutes les requêtes. Il exécute lui-même les actions déjà
   // portées et relaie le reste à l'ANCIEN serveur (Apps Script). Si le nouveau serveur est injoignable,
   // l'appli retombe automatiquement sur l'ancien, comme avant.
