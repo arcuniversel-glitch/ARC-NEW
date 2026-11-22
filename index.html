@@ -2287,7 +2287,7 @@ body{top:0!important}
       Notification.requestPermission().catch(function () { /* pas grave si refusé */ });
     }
     verifierAlertesSeances_();
-    setInterval(verifierAlertesSeances_, 30000);
+    setInterval(function () { if (document.visibilityState !== "hidden") verifierAlertesSeances_(); }, 90000);
     setTimeout(verifierAlertesTv_, 8000);
     setInterval(verifierAlertesTv_, 60000);
     if (restaurerSessionSiRecente_()) {
@@ -15019,7 +15019,7 @@ body.acc-actif #sliderAfficheZone{display:none!important}
         '<div class="cel-bar" id="celBar">' + BARRE() + '</div>' +
         '<div id="celOpt" style="margin-top:6px;font-size:12.5px;display:flex;gap:14px;flex-wrap:wrap;"></div><div id="celErr" class="error" style="display:none;"></div></div></div>';
       majEntete(); majOptions(); majMessages(true); C.saisie();
-      E.poll = setInterval(function () { if (!document.getElementById("celMsgs")) { fini(); return; } if (document.querySelector(".cel-menu")) return; actualiser(); }, 6000);
+      E.poll = setInterval(function () { if (!document.getElementById("celMsgs")) { fini(); return; } if (document.querySelector(".cel-menu") || document.visibilityState === "hidden") return; actualiser(); }, 10000);
     }, function (e) { z.innerHTML = '<button class="small secondary" onclick="XTR.fermerCel()">← Retour</button><div class="card"><p class="error">' + esc(e.message) + '</p>' + (String(id).indexOf("DM_") === 0 ? "" : '<button class="small" onclick="XTR.rejoindre(\'' + esc(id) + '\')">Rejoindre la cellule</button>') + '</div>'; });
   };
   function actualiser() {
